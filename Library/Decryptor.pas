@@ -180,7 +180,8 @@ try
           OutSize := LongWord(Header.DataSize);
           GetMem(OutData,Header.DataSize);
           try
-            Uncompress(OutData,OutSize,Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)));
+            If Uncompress(OutData,OutSize,Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader))) <> Z_OK then
+              raise Exception.Create('Decompression error.');
         {$ELSE}
           DecompressBuf(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)),PSIIHeader(Input)^.DataSize,OutData,OutSize);
           try

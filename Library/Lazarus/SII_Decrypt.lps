@@ -3,13 +3,13 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
-    <BuildModes Active="Release_win_x64"/>
+    <BuildModes Active="Debug_win_x86"/>
     <Units Count="4">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos Y="6"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -18,21 +18,21 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <CursorPos X="3" Y="18"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\LibExport.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit3>
     </Units>
