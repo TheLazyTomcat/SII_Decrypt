@@ -8,32 +8,29 @@
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="13" Y="6"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="8"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\LibExport.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <CursorPos Y="11"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\Source\Decryptor.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\Decryptor.pas"/>
@@ -51,10 +48,6 @@
       <Define5 Value="x64"/>
       <Define6 Value="IsLibrary"/>
     </CustomDefines>
-    <JumpHistory Count="1">
-      <Position1>
-        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
-      </Position1>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectSession>
 </CONFIG>
