@@ -96,7 +96,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=..\..\Source\Libs
 Packages=vcl;rtl;vclx;VclSmp;vclshlctrls;AdvCircularProgressPkgD7;TMSMenusD7;AdvShaperPkgD7;alpb;sulab;butcmps;EZJTexturePanelD6;FormShapePkgD7;GradientLabelPkgD7;ic;l3d;lfr;fw;mmjl;ash;tqpb;shlab;vaf;ish;xib;TPNGButton;wbme;verinf;aled;DelphiX70
-Conditionals=IsLibrary
+Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -106,12 +106,12 @@ Launcher=
 UseLauncher=0
 DebugCWD=
 [Version Info]
-IncludeVerInfo=1
-AutoIncBuild=1
+IncludeVerInfo=0
+AutoIncBuild=0
 MajorVer=1
 MinorVer=0
 Release=0
-Build=2
+Build=0
 Debug=0
 PreRelease=0
 Special=0
@@ -120,26 +120,22 @@ DLL=0
 Locale=1029
 CodePage=1250
 [Version Info Keys]
-CompanyName=František Milt
-FileDescription=Library for SII file decryption
-FileVersion=1.0.0.2
-InternalName=SII Decrypt Library
-LegalCopyright=© 2016 František Milt
-LegalTrademarks=SII Decrypt Library
-OriginalFilename=SII_Decrypt.dll
-ProductName=SII Decrypt Library
-ProductVersion=1.0.0
-Comments=Library designed to decrypt SII files (save format of SCS Software truck games)
-[HistoryLists\hlConditionals]
-Count=1
-Item0=IsLibrary
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
+Count=1
 Item0=..\..\Source\Libs
-Item1=..\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=.\DCU

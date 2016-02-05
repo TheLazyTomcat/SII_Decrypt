@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Debug_win_x86"/>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="SII_Decrypt.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="20" Y="16"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\Source\Decryptor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="3" Y="18"/>
+        <UsageCount Value="20"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\SII_Decrypt_Program.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit2>
+    </Units>
+    <CustomDefines Count="6">
+      <Define0 Value="FPC"/>
+      <Define1 Value="Windows"/>
+      <Define2 Value="Debug"/>
+      <Define3 Value="Release"/>
+      <Define4 Value="x86"/>
+      <Define5 Value="x64"/>
+    </CustomDefines>
+    <JumpHistory Count="1">
+      <Position1>
+        <Filename Value="SII_Decrypt.lpr"/>
+        <Caret Line="8"/>
+      </Position1>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
