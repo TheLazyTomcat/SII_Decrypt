@@ -62,7 +62,7 @@
 -dWindows
 -dRelease
 -dx86
--dLibrary"/>
+-dIsLibrary"/>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -108,7 +108,7 @@
 -dWindows
 -dDebug
 -dx64
--dLibrary"/>
+-dIsLibrary"/>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -147,7 +147,7 @@
 -dWindows
 -dRelease
 -dx64
--dLibrary"/>
+-dIsLibrary"/>
           </Other>
         </CompilerOptions>
       </Item4>
@@ -220,7 +220,7 @@
 -dWindows
 -dDebug
 -dx86
--dLibrary"/>
+-dIsLibrary"/>
     </Other>
   </CompilerOptions>
   <Debugging>

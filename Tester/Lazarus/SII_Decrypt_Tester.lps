@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Devel_win_x64"/>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="12"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="55"/>
+        <CursorPos Y="77"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\Headers\SII_DecryptLib.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="36" Y="60"/>
+        <UsageCount Value="21"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Source\Decryptor.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+    </Units>
+    <CustomDefines Count="7">
+      <Define0 Value="FPC"/>
+      <Define1 Value="Windows"/>
+      <Define2 Value="Debug"/>
+      <Define3 Value="Release"/>
+      <Define4 Value="x86"/>
+      <Define5 Value="x64"/>
+      <Define6 Value="PurePascal"/>
+    </CustomDefines>
+    <JumpHistory Count="19" HistoryIndex="18">
+      <Position1>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="11" Column="23"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="14" Column="7"/>
+      </Position3>
+      <Position4>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="13" Column="91"/>
+      </Position4>
+      <Position5>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="6" Column="12"/>
+      </Position5>
+      <Position6>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="8" Column="3"/>
+      </Position6>
+      <Position7>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="14"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="64" TopLine="53"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="66" TopLine="53"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="67" TopLine="53"/>
+      </Position10>
+      <Position11>
+        <Filename Value="SII_Decrypt_Tester.lpr"/>
+        <Caret Line="14"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="64" TopLine="53"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="66" TopLine="53"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="67" TopLine="53"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="69" TopLine="53"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="70" TopLine="53"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="71" TopLine="53"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="72" TopLine="53"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
+        <Caret Line="73" TopLine="53"/>
+      </Position19>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
