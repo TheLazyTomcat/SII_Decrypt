@@ -1,4 +1,4 @@
-================================================================================
+ï»¿================================================================================
 
                               SII Decrypt library
 
@@ -115,10 +115,10 @@ this license in file license.txt or on web page https://www.mozilla.org/MPL/2.0/
 
 Authors, contacts
 ----------------------------------------
-František Milt, frantisek.milt@gmail.com
+FrantiÅ¡ek Milt, frantisek.milt@gmail.com
 
 
 
 Copyright
 ----------------------------------------
-©2016 František Milt, all rights reserved
+Â©2016 FrantiÅ¡ek Milt, all rights reserved
