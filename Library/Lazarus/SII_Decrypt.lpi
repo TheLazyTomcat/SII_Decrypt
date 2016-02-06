@@ -36,7 +36,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -75,7 +75,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -121,7 +121,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -160,7 +160,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <Units Count="4">
+    <Units Count="3">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -170,13 +170,9 @@
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="..\..\Source\Decryptor.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit3>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -187,7 +183,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+      <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

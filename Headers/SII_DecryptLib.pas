@@ -15,10 +15,8 @@ unit SII_DecryptLib;
 
 interface
 
-{$IFNDEF IsLibrary}
 uses
   AuxTypes;
-{$ENDIF IsLibrary}
 
 const
   SIIDEC_SUCCESS          = 0;
@@ -32,7 +30,6 @@ const
 
 //------------------------------------------------------------------------------
      
-{$IFNDEF IsLibrary}
 {$IFDEF AutoLoad}
 
 Function IsEncryptedMemory(Mem: Pointer; Size: TMemSize): UInt32; stdcall; external SIIDecrypt_LibFileName;
@@ -58,11 +55,10 @@ procedure Load_SII_Decrypt(const LibraryFile: String = 'SII_Decrypt.dll');
 procedure Unload_SII_Decrypt;
 
 {$ENDIF AutoLoad}
-{$ENDIF IsLibrary}
 
 implementation
       
-{$IF not Defined(IsLibrary) and not Defined(AutoLoad)}
+{$IFNDEF AutoLoad}
 
 uses
   SysUtils, Windows;
@@ -95,6 +91,7 @@ If LibHandle <> 0 then
   FreeLibrary(LibHandle);
 LibHandle := 0;
 end;
-{$IFEND}
+
+{$ENDIF AutoLoad}
 
 end.

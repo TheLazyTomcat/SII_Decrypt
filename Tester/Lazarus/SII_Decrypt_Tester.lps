@@ -3,12 +3,11 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
-    <BuildModes Active="Devel_win_x64"/>
+    <BuildModes Active="Devel_win_x86"/>
     <Units Count="4">
       <Unit0>
         <Filename Value="SII_Decrypt_Tester.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="3"/>
         <CursorPos X="7" Y="15"/>
         <UsageCount Value="21"/>
@@ -17,10 +16,12 @@
       <Unit1>
         <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="55"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="16"/>
         <CursorPos Y="77"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\Headers\SII_DecryptLib.pas"/>

@@ -11,8 +11,7 @@ library SII_Decrypt;
 
 uses
   Decryptor,
-  LibExport,
-  SII_DecryptLib;
+  LibExport;
 
 {$R *.res}
 

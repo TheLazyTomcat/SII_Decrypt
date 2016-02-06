@@ -12,23 +12,7 @@ interface
 implementation
 
 uses
-  AuxTypes, Decryptor, SII_DecryptLib;
-
-//==============================================================================  
-
-Function NumResultCode(SIIResult: TSIIResult): UInt32;
-begin
-case SIIResult of
-  rSuccess:         Result := SIIDEC_SUCCESS;
-  rNotEncrypted:    Result := SIIDEC_NOT_ENCRYPTED;
-  rUnknownFormat:   Result := SIIDEC_UNKNOWN_FORMAT;
-  rTooSmall:        Result := SIIDEC_TOO_SMALL;
-  rBufferTooSmall:  Result := SIIDEC_BUFFER_TOO_SMALL;
-else
- {rGenericError}
-  Result := SIIDEC_GENERIC_ERROR;
-end;
-end;
+  AuxTypes, Decryptor;
 
 //==============================================================================
 
@@ -36,7 +20,7 @@ Function Exp_IsEncryptedMemory(Mem: Pointer; Size: TMemSize): UInt32; stdcall;
 begin
 with TSIIDecryptor.Create do
   begin
-    Result := NumResultCode(IsEncryptedMemory(Mem,Size));
+    Result := Ord(IsEncryptedMemory(Mem,Size));
     Free;
   end;
 end;
@@ -47,7 +31,7 @@ Function Exp_IsEncryptedFile(FileName: PAnsiChar): UInt32; stdcall;
 begin
 with TSIIDecryptor.Create do
   begin
-    Result := NumResultCode(IsEncryptedFile(FileName));
+    Result := Ord(IsEncryptedFile(FileName));
     Free;
   end;
 end;
@@ -58,7 +42,7 @@ Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; Ou
 begin
 with TSIIDecryptor.Create do
   begin
-    Result := NumResultCode(DecryptMemory(Input,InSize,Output,OutSize^));
+    Result := Ord(DecryptMemory(Input,InSize,Output,OutSize^));
     Free;
   end;
 end;
@@ -70,7 +54,7 @@ Function Exp_DecryptFile(InputFile: PAnsiChar; OutputFile: PAnsiChar): UInt32; s
 begin
 with TSIIDecryptor.Create do
   begin
-    Result := NumResultCode(DecryptFile(InputFile,OutputFile));
+    Result := Ord(DecryptFile(InputFile,OutputFile));
     Free;
   end;
 end;
@@ -81,7 +65,7 @@ Function Exp_DecryptFile2(FileName: PAnsiChar): UInt32; stdcall;
 begin
 with TSIIDecryptor.Create do
   begin
-    Result := NumResultCode(DecryptFile(FileName,FileName));
+    Result := Ord(DecryptFile(FileName,FileName));
     Free;
   end;
 end;

@@ -21,7 +21,6 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
-        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="11"/>
         <UsageCount Value="21"/>
