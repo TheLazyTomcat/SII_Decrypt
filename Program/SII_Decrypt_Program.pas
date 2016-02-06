@@ -40,16 +40,19 @@ try
       with TSIIDecryptor.Create do
       try
         If ParamCount >= 2 then
-          WriteLn(Ord(DecryptFile(ParamStr(1),ParamStr(2))))
+          ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(2)))
         else
-          WriteLn(Ord(DecryptFile(ParamStr(1),ParamStr(1))));
+          ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(1)));
       finally
         Free;
       end;
     end;
 except
   on E: Exception do
-    WriteLn(E.Message);
+    begin
+      WriteLn(E.Message);
+      ExitCode := -1;
+    end;
 end;
 end;
 
