@@ -23,7 +23,7 @@ Description
 ------------------------------
 This library is designed to decrypt SII files that are used as a primary mean of
 storing save data in truck games developed by SCS Software. It was tested on
-saves from Euro Truck Simulator 2.
+saves from Euro Truck Simulator 2 and American Truck Simulator.
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.4.4 and
 therefore can be compiled by those development tools. But it should be also
 possible to compile it in newer versions of mentioned tools/compilers.
@@ -80,7 +80,7 @@ List of folders with description of their content:
 
   .\Program
 
-    Console program part of the library
+    Console program part of the library.
 
   .\Tester
 
