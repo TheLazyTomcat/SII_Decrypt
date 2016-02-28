@@ -57,7 +57,7 @@ const
 type
   TBCMode            = (cmUndefined,cmEncrypt,cmDecrypt);
   TBCModeOfOperation = (moECB,moCBC,moPCBC,moCFB,moOFB,moCTR);
-  TBCPadding         = (padZeroes,padPKCS7);
+  TBCPadding         = (padZeroes,padPKCS7,padANSIX923,padISO10126,padISOIEC7816_4);
 
   TBCUpdateProc = procedure(const Input; out Output) of object;
   TProgressEvent = procedure(Sender: TObject; Progress: Single) of object;
@@ -111,6 +111,8 @@ type
     procedure ProcessStream(Stream: TStream); overload; virtual;
     procedure ProcessFile(const InputFileName, OutputFileName: String); overload; virtual;
     procedure ProcessFile(const FileName: String); overload; virtual;
+    procedure ProcessString(const InputStr: String; var OutputStr: String); overload; virtual;
+    procedure ProcessString(var Str: String); overload; virtual;
     property InitVector: Pointer read fInitVector;
     property Key: Pointer read fKey;
   published
@@ -270,8 +272,20 @@ var
   i:  PtrUInt;
 begin
 If fBlockBytes > 0 then
-  For i := 0 to Pred(fBlockBytes) do
-    {%H-}PByte({%H-}PtrUInt(@Dest) + i)^ := {%H-}PByte({%H-}PtrUInt(@Src1) + i)^ xor {%H-}PByte({%H-}PtrUInt(@Src2) + i)^;
+  If fBlockBytes and 3 = 0 then
+    begin
+      For i := 0 to Pred(fBlockBytes shr 2) do
+        {%H-}PUInt32({%H-}PtrUInt(@Dest) + (i shl 2))^ :=
+          {%H-}PUInt32({%H-}PtrUInt(@Src1) + (i shl 2))^ xor
+          {%H-}PUInt32({%H-}PtrUInt(@Src2) + (i shl 2))^
+    end
+  else
+    begin
+      For i := 0 to Pred(fBlockBytes) do
+        {%H-}PByte({%H-}PtrUInt(@Dest) + i)^ :=
+          {%H-}PByte({%H-}PtrUInt(@Src1) + i)^ xor
+          {%H-}PByte({%H-}PtrUInt(@Src2) + i)^;
+    end;
 end;
 
 //------------------------------------------------------------------------------
@@ -506,17 +520,46 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TBlockCipher.Final(const Input; InputSize: TMemSize; out Output);
+var
+  i:          Integer;
+  TempBlock:  Pointer;
 begin
 If InputSize > fBlockBytes then
   raise Exception.CreateFmt('TBlockCipher.Final: Input buffer is too large (%d/%d).',[InputSize,fBlockBytes]);
 If InputSize < fBlockBytes then
-  case fPadding of
-    padPKCS7: FillChar(fTempBlock^,fBlockBytes,Byte(fBlockBytes - InputSize));
-  else
-   {padZeroes}FillChar(fTempBlock^,fBlockBytes,0);
-  end;
-Move(Input,fTempBlock^,InputSize);
-Update(fTempBlock^,Output);
+  begin
+    GetMem(TempBlock,fBlockBytes);
+    try
+      case fPadding of
+        padPKCS7:     {PKCS#7}
+          FillChar(TempBlock^,fBlockBytes,Byte(fBlockBytes - InputSize));
+        padANSIX923:  {ANSI X.923}
+          begin
+            FillChar(TempBlock^,fBlockBytes,0);
+            {%H-}PByte({%H-}PtrUInt(TempBlock) + Pred(fBlockBytes))^ := Byte(fBlockBytes - InputSize);
+          end;
+        padISO10126:  {ISO 10126}
+          begin
+            Randomize;
+            For i := InputSize to Pred(fBlockBytes) do
+              {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(i))^ := Byte(Random(256));
+          end;
+        padISOIEC7816_4:  {ISO/IEC 7816-4}
+          begin
+            FillChar(TempBlock^,fBlockBytes,0);
+            {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(InputSize))^ := $80;
+          end;
+      else
+        {padZeroes}
+        FillChar(TempBlock^,fBlockBytes,0);
+      end;
+      Move(Input,TempBlock^,InputSize);
+      Update(TempBlock^,Output);
+    finally
+      FreeMem(TempBlock,fBlockBytes);
+    end;
+  end
+else Update(Input,Output);
 end;
 
 //------------------------------------------------------------------------------
@@ -665,6 +708,30 @@ try
 finally
   FileStream.Free;
 end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TBlockCipher.ProcessString(const InputStr: String; var OutputStr: String);
+begin
+If PChar(InputStr) = PChar(OutputStr) then
+  ProcessString(OutputStr)
+else
+  begin
+    SetLength(OutputStr,Ceil(OutputSize(Length(InputStr) * SizeOf(Char)) / SizeOf(Char)));
+    ProcessBytes(PChar(InputStr)^,Length(InputStr) * SizeOf(Char),PChar(OutputStr)^);
+  end;
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+procedure TBlockCipher.ProcessString(var Str: String);
+var
+  InLength: TStrSize;
+begin
+InLength := Length(Str);
+SetLength(Str,Ceil(OutputSize(InLength * SizeOf(Char)) / SizeOf(Char)));
+ProcessBytes(PChar(Str)^,InLength * SizeOf(Char));
 end;
 
 
@@ -1318,10 +1385,10 @@ For i := fNk to Pred(fNb * (fNr + 1)) do
 
   ...and since decoding tables a constructed this way:
 
-    Table 1:  W1[i] = [glt14(invsub(i)),glt9(invsub(i)),glt13(invsub(i)),glt11(invsub(i))]
-    Table 2:  W2[i] = [glt11(invsub(i)),glt14(invsub(i)),glt9(invsub(i)),glt13(invsub(i))]
-    Table 3:  W3[i] = [glt13(invsub(i)),glt11(invsub(i)),glt14(invsub(i)),glt9(invsub(i))]
-    Table 4:  W4[i] = [glt9(invsub(i)),glt13(invsub(i)),glt11(invsub(i)),glt14(invsub(i))]
+    Table 1:  W1[i] = {glt14(invsub(i)),glt9(invsub(i)),glt13(invsub(i)),glt11(invsub(i))}
+    Table 2:  W2[i] = {glt11(invsub(i)),glt14(invsub(i)),glt9(invsub(i)),glt13(invsub(i))}
+    Table 3:  W3[i] = {glt13(invsub(i)),glt11(invsub(i)),glt14(invsub(i)),glt9(invsub(i))}
+    Table 4:  W4[i] = {glt9(invsub(i)),glt13(invsub(i)),glt11(invsub(i)),glt14(invsub(i))}
 
   ...we can use them in here for lookup. Only problem is, that every decoding
   table already incorporates inverse substitution, so every byte used to index
@@ -1546,7 +1613,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := 1 to (fNr - 1) do
   begin
-    TempState := State;
+    TempState := {%H-}State;
     For i := 0 to Pred(fNb) do
       State[i] := EncTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   EncTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1579,7 +1646,7 @@ For i := 0 to Pred(fNb) do
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)] and $FF) shl 16) or
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)] and $FF) shl 24) xor
                   fKeySchedule[fNr * fNb + i];
-Move(TempState,{%H-}Output,BlockBytes);
+Move({%H-}TempState,{%H-}Output,BlockBytes);
 end;
 
 //------------------------------------------------------------------------------
@@ -1734,7 +1801,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := (fNr - 1) downto 1 do
   begin
-    TempState := State;
+    TempState := {%H-}State;
     For i := 0 to Pred(fNb) do
       State[i] := DecTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   DecTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1763,7 +1830,7 @@ For i := 0 to Pred(fNb) do
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)]) shl 16) or
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)]) shl 24) xor
                   fKeySchedule[i];
-Move(TempState,{%H-}Output,BlockBytes);
+Move({%H-}TempState,{%H-}Output,BlockBytes);
 end;
 
 {------------------------------------------------------------------------------}

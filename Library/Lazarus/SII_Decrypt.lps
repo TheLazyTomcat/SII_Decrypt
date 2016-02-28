@@ -3,11 +3,12 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
-    <BuildModes Active="Debug_win_x86"/>
-    <Units Count="5">
+    <BuildModes Active="Debug_win_x64"/>
+    <Units Count="3">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <CursorPos Y="8"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -15,7 +16,6 @@
       <Unit1>
         <Filename Value="..\LibExport.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -26,27 +26,15 @@
         <EditorIndex Value="-1"/>
         <UsageCount Value="20"/>
       </Unit2>
-      <Unit3>
-        <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="11"/>
-        <UsageCount Value="21"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\Decryptor.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="3" Y="18"/>
-        <UsageCount Value="21"/>
-      </Unit4>
     </Units>
-    <CustomDefines Count="6">
+    <OtherDefines Count="6">
       <Define0 Value="FPC"/>
       <Define1 Value="Windows"/>
       <Define2 Value="Debug"/>
       <Define3 Value="Release"/>
       <Define4 Value="x86"/>
       <Define5 Value="x64"/>
-    </CustomDefines>
+    </OtherDefines>
     <JumpHistory HistoryIndex="-1"/>
   </ProjectSession>
 </CONFIG>
