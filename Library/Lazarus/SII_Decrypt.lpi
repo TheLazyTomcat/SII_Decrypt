@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="8"/>
+      <BuildNr Value="35"/>
       <Language Value="0405"/>
       <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.0.0"/>
     </VersionInfo>
@@ -145,6 +145,14 @@
 -dWindows
 -dRelease
 -dx64"/>
+            <OtherDefines Count="6">
+              <Define0 Value="FPC"/>
+              <Define1 Value="Windows"/>
+              <Define2 Value="Debug"/>
+              <Define3 Value="Release"/>
+              <Define4 Value="x86"/>
+              <Define5 Value="x64"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item4>
@@ -215,17 +223,4 @@
 -dx86"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="3">
-      <Item1>
-        <Name Value="EAbort"/>
-      </Item1>
-      <Item2>
-        <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EFOpenError"/>
-      </Item3>
-    </Exceptions>
-  </Debugging>
 </CONFIG>

@@ -38,11 +38,11 @@ type
 {$IF (SizeOf(LongInt) = 4) and (SizeOf(LongWord) = 4)}
   Int32  = LongInt;       UInt32  = LongWord;
 {$ELSE}
-{$IF (SizeOf(Integer) <> 4) and (SizeOf(Cardinal) <> 4)}
-  {$MESSAGE FATAL 'Wrong size of 32bit integers'}
-{$ELSE}
+  {$IF (SizeOf(Integer) <> 4) or (SizeOf(Cardinal) <> 4)}
+    {$MESSAGE FATAL 'Wrong size of 32bit integers'}
+  {$ELSE}
   Int32  = Integer;       UInt32  = Cardinal;
-{$IFEND}
+  {$IFEND}
 {$IFEND}
   PInt32 = ^Int32;        PUInt32 = ^UInt32;
 

@@ -8,6 +8,7 @@
       <Unit0>
         <Filename Value="SII_Decrypt_Tester.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="3"/>
         <CursorPos X="7" Y="15"/>
         <UsageCount Value="21"/>
@@ -16,7 +17,6 @@
       <Unit1>
         <Filename Value="..\..\Headers\SII_DecryptLib.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="16"/>
         <CursorPos Y="77"/>
@@ -35,7 +35,7 @@
         <UsageCount Value="20"/>
       </Unit3>
     </Units>
-    <CustomDefines Count="7">
+    <OtherDefines Count="7">
       <Define0 Value="FPC"/>
       <Define1 Value="Windows"/>
       <Define2 Value="Debug"/>
@@ -43,7 +43,7 @@
       <Define4 Value="x86"/>
       <Define5 Value="x64"/>
       <Define6 Value="PurePascal"/>
-    </CustomDefines>
+    </OtherDefines>
     <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="SII_Decrypt_Tester.lpr"/>
