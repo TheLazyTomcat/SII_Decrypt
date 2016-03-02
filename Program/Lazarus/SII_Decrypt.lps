@@ -8,7 +8,6 @@
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="20" Y="16"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -24,23 +23,37 @@
       <Unit2>
         <Filename Value="..\SII_Decrypt_Program.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="43"/>
+        <CursorPos X="69" Y="49"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\Source\Libs\AES.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1400"/>
-        <CursorPos X="18" Y="1549"/>
+        <TopLine Value="202"/>
+        <CursorPos X="5" Y="215"/>
         <UsageCount Value="10"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="1">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="SII_Decrypt.lpr"/>
         <Caret Line="8"/>
       </Position1>
+      <Position2>
+        <Filename Value="..\SII_Decrypt_Program.pas"/>
+        <Caret Line="46" Column="84" TopLine="25"/>
+      </Position2>
     </JumpHistory>
   </ProjectSession>
+  <Debugging>
+    <Watches Count="1">
+      <Item1>
+        <Expression Value="ParamStr(1)"/>
+      </Item1>
+    </Watches>
+  </Debugging>
 </CONFIG>

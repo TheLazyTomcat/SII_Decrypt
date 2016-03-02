@@ -9,9 +9,9 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2016-02-04
+  ©František Milt 2016-03-01
 
-  Version 1.0.1
+  Version 1.0.2
 
   All combinations of allowed key and block sizes are implemented and should be
   compatible with reference Rijndael cipher.
@@ -206,7 +206,14 @@ type
 implementation
 
 uses
-  SysUtils, Math;
+  SysUtils, Math
+  {$IF Defined(FPC) and not Defined(Unicode)}
+  (*
+    If compiler throws error that LazUTF8 unit cannot be found, you have to
+    add LazUtils to required packages (Project > Project Inspector).
+  *)
+  , LazUTF8
+  {$IFEND};
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -682,9 +689,17 @@ If AnsiSameText(InputFileName,OutputFileName) then
   ProcessFile(InputFileName)
 else
   begin
+  {$IF Defined(FPC) and not Defined(Unicode)}
+    InputStream := TFileStream.Create(UTF8ToSys(InputFileName),fmOpenRead or fmShareDenyWrite);
+  {$ELSE}
     InputStream := TFileStream.Create(InputFileName,fmOpenRead or fmShareDenyWrite);
+  {$IFEND}
     try
+    {$IF Defined(FPC) and not Defined(Unicode)}
+      OutputStream := TFileStream.Create(UTF8ToSys(OutputFileName),fmCreate or fmShareExclusive);
+    {$ELSE}
       OutputStream := TFileStream.Create(OutputFileName,fmCreate or fmShareExclusive);
+    {$IFEND}
       try
         ProcessStream(InputStream,OutputStream);
       finally
@@ -702,7 +717,11 @@ procedure TBlockCipher.ProcessFile(const FileName: String);
 var
   FileStream: TFileStream;
 begin
+{$IF Defined(FPC) and not Defined(Unicode)}
+FileStream := TFileStream.Create(UTF8ToSys(FileName),fmOpenReadWrite or fmShareExclusive);
+{$ELSE}
 FileStream := TFileStream.Create(FileName,fmOpenReadWrite or fmShareExclusive);
+{$IFEND}
 try
   ProcessStream(FileStream);
 finally

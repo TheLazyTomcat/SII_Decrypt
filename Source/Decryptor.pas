@@ -73,7 +73,15 @@ type
 implementation
 
 uses
-  SysUtils,{$IFDEF FPC} PasZLib{$ELSE} ZLib{$ENDIF};
+  SysUtils
+  {$IFDEF FPC}
+    , PasZLib
+    {$IF not Defined(Unicode)}
+      , LazUTF8
+    {$IFEND}
+  {$ELSE}
+    , ZLib
+  {$ENDIF};
 
 {==============================================================================}
 {   TSIIDecryptor - initialization                                             }
@@ -86,7 +94,7 @@ uses
 constructor TSIIDecryptor.Create;
 begin
 inherited Create;
-fReraiseExceptions := True;
+fReraiseExceptions := False;
 end;
 
 //------------------------------------------------------------------------------
@@ -140,7 +148,11 @@ var
   FileStream: TFileStream;
 begin
 try
+{$IF Defined(FPC) and not Defined(Unicode)}
+  FileStream := TFileStream.Create(UTF8ToSys(FileName),fmOpenRead or fmShareDenyWrite);
+{$ELSE}
   FileStream := TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
+{$IFEND}
   try
     Result := IsEncryptedStream(FileStream);
   finally
@@ -274,7 +286,11 @@ begin
 try
   If AnsiSameText(Input,Output) then
     begin
+    {$IF Defined(FPC) and not Defined(Unicode)}
+      InputStream := TFileStream.Create(UTF8ToSys(Input),fmOpenReadWrite or fmShareExclusive);
+    {$ELSE}
       InputStream := TFileStream.Create(Input,fmOpenReadWrite or fmShareExclusive);
+    {$IFEND}
       try
         Result := DecryptStream(InputStream,InputStream);
       finally
@@ -283,9 +299,17 @@ try
     end
   else
     begin
+    {$IF Defined(FPC) and not Defined(Unicode)}
+      InputStream := TFileStream.Create(UTF8ToSys(Input),fmOpenRead or fmShareDenyWrite);
+    {$ELSE}
       InputStream := TFileStream.Create(Input,fmOpenRead or fmShareDenyWrite);
+    {$IFEND}
       try
+      {$IF Defined(FPC) and not Defined(Unicode)}
+        OutputStream := TFileStream.Create(UTF8ToSys(Output),fmCreate or fmShareExclusive);
+      {$ELSE}
         OutputStream := TFileStream.Create(Output,fmCreate or fmShareExclusive);
+      {$IFEND}
         try
           Result := DecryptStream(InputStream,OutputStream);
         finally

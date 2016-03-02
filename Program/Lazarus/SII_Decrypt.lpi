@@ -140,6 +140,11 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LazUtils"/>
+      </Item1>
+    </RequiredPackages>
     <Units Count="3">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>

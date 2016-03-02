@@ -3,29 +3,41 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
-    <BuildModes Active="Debug_win_x64"/>
-    <Units Count="3">
+    <BuildModes Active="Debug_win_x86"/>
+    <Units Count="4">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos Y="8"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\LibExport.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="73"/>
+        <CursorPos Y="83"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\Source\Decryptor.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="20"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="294"/>
+        <CursorPos X="83" Y="76"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\Source\Libs\AES.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="202"/>
+        <CursorPos X="5" Y="215"/>
+        <UsageCount Value="10"/>
+      </Unit3>
     </Units>
     <OtherDefines Count="6">
       <Define0 Value="FPC"/>
@@ -35,6 +47,23 @@
       <Define4 Value="x86"/>
       <Define5 Value="x64"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="..\LibExport.pas"/>
+        <Caret Line="48" Column="8" TopLine="28"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\LibExport.pas"/>
+        <Caret Line="72" Column="68" TopLine="54"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\LibExport.pas"/>
+        <Caret Line="35" Column="33"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\Source\Decryptor.pas"/>
+        <Caret Line="301" Column="61" TopLine="296"/>
+      </Position4>
+    </JumpHistory>
   </ProjectSession>
 </CONFIG>

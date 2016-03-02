@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="9"/>
+      <BuildNr Value="15"/>
       <Language Value="0405"/>
       <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.0.0"/>
     </VersionInfo>
@@ -173,6 +173,11 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LazUtils"/>
+      </Item1>
+    </RequiredPackages>
     <Units Count="3">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
@@ -229,6 +234,14 @@
 -dWindows
 -dDebug
 -dx86"/>
+      <OtherDefines Count="6">
+        <Define0 Value="FPC"/>
+        <Define1 Value="Windows"/>
+        <Define2 Value="Debug"/>
+        <Define3 Value="Release"/>
+        <Define4 Value="x86"/>
+        <Define5 Value="x64"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
 </CONFIG>
