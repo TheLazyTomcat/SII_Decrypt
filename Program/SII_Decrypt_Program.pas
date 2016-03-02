@@ -14,7 +14,10 @@ procedure Main;
 implementation
 
 uses
-  SysUtils, Decryptor;
+  SysUtils, Decryptor
+  {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701)}
+  , LazUTF8
+  {$IFEND};
 
 procedure Main;
 begin
@@ -40,9 +43,15 @@ try
       with TSIIDecryptor.Create do
       try
         If ParamCount >= 2 then
+      {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701)}
+          ExitCode := Ord(DecryptFile(WinCPToUTF8(ParamStr(1)),WinCPToUTF8(ParamStr(2))))
+        else
+          ExitCode := Ord(DecryptFile(WinCPToUTF8(ParamStr(1)),WinCPToUTF8(ParamStr(1))));
+      {$ELSE}
           ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(2)))
         else
           ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(1)));
+      {$IFEND}
       finally
         Free;
       end;
