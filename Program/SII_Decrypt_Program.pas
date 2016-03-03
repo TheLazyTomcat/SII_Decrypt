@@ -44,9 +44,9 @@ try
       try
         If ParamCount >= 2 then
       {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701)}
-          ExitCode := Ord(DecryptFile(WinCPToUTF8(ParamStr(1)),WinCPToUTF8(ParamStr(2))))
+          ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(2))))
         else
-          ExitCode := Ord(DecryptFile(WinCPToUTF8(ParamStr(1)),WinCPToUTF8(ParamStr(1))));
+          ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(1))));
       {$ELSE}
           ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(2)))
         else
