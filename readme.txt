@@ -11,12 +11,12 @@ Index
 
   Index ...................................................   9
   Description .............................................  22
-  Parts of the library ....................................  34
-  Library files ...........................................  61
-  Repositories ............................................  95
-  Licensing ............................................... 107
-  Authors, contacts ....................................... 115
-  Copyright ............................................... 121
+  Parts of the library ....................................  44
+  Library files ...........................................  71
+  Repositories ............................................ 105
+  Licensing ............................................... 118
+  Authors, contacts ....................................... 126
+  Copyright ............................................... 132
 
 
 Description
@@ -28,6 +28,16 @@ The project is primarily developed in Delphi 7 Personal and Lazarus 1.4.4 and
 therefore can be compiled by those development tools. But it should be also
 possible to compile it in newer versions of mentioned tools/compilers.
 All main parts can be compiled into both 32bit and 64bit binaries.
+
+WARNING - Current versions of ETS2 and ATS are no longer storing their saves as
+          plaintext, but rather in undisclosed binary format. This library can
+          still decrypt such files, but result will be, as mentioned, in binary,
+          meaning manually almost uneditable.
+          If you want to edit your saves, you have to change settings of the
+          game and force it to use text saves again. You can do it by editing
+          file config.cfg stored in your user folder
+          (eg. documents/Euro Truck Simulator 2/) - change value of
+          g_save_format to 2.
 
 
 
@@ -50,7 +60,7 @@ a dynamically loaded library (DLL) or as console program.
   a processed file as a first command line parameter. You can also specify
   destination file (file where the decrypted result will be stored) as a second
   parameter, but this is optional. If you do not select destination file, the
-  result will be stored back in the source file. Note that destination file does 
+  result will be stored back in the source file. Note that destination file does
   not need to exist, but the folder where it will be stored must exists.
   You can use exit code of the program to check processing for errors. The
   result codes are the same as for functions exported by DLL version of this
