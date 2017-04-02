@@ -7,6 +7,8 @@
 -------------------------------------------------------------------------------}
 unit SII_Decrypt_Program;
 
+{$INCLUDE '..\Source\SII_Decrypt_defs.inc'}
+
 interface
 
 procedure Main;
@@ -15,17 +17,17 @@ implementation
 
 uses
   SysUtils, Decryptor
-  {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701)}
+{$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazUTF8
-  {$IFEND};
+{$ENDIF};
 
 procedure Main;
 begin
 try
-  WriteLn('*******************************');
-  WriteLn('*     SII Decrypt Program     *');
-  WriteLn('*   (c) 2016 Frantisek Milt   *');
-  WriteLn('*******************************');
+  WriteLn('************************************');
+  WriteLn('*       SII Decrypt Program        *');
+  WriteLn('*   (c) 2016-2017 Frantisek Milt   *');
+  WriteLn('************************************');
   WriteLn;
   If ParamCount <= 0 then
     begin
@@ -43,7 +45,7 @@ try
       with TSIIDecryptor.Create do
       try
         If ParamCount >= 2 then
-      {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701)}
+      {$IFDEF FPC_NonUnicode_NoUTF8RTL}
           ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(2))))
         else
           ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(1))));
@@ -51,7 +53,7 @@ try
           ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(2)))
         else
           ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(1)));
-      {$IFEND}
+      {$ENDIF}
       finally
         Free;
       end;

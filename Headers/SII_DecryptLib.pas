@@ -125,7 +125,7 @@ DecryptMemory
 
   Decrypts memory block given by the Input parameter and stores decrypted data
   to a memory given by Output parameter.
-  To property use this function, do following:
+  To properly use this function, do following:
 
     - call this function with parameter Output set to nil (null/0), variable
       pointed to by OutSize pointer can contain any value

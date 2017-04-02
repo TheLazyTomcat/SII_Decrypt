@@ -7,12 +7,17 @@
 -------------------------------------------------------------------------------}
 unit LibExport;
 
+{$INCLUDE '..\Source\SII_Decrypt_defs.inc'}
+
 interface
 
 implementation
 
 uses
-  AuxTypes, Decryptor{$IF Defined(FPC) and not Defined(Unicode)}, LazUTF8{$IFEND};
+  AuxTypes, Decryptor
+{$IFDEF FPC_NonUnicode}
+  , LazUTF8
+{$ENDIF};
 
 //==============================================================================
 
@@ -32,11 +37,11 @@ Function Exp_IsEncryptedFile(FileName: PAnsiChar): UInt32; stdcall;
 begin
 with TSIIDecryptor.Create do
 try
-{$IF Defined(FPC) and not Defined(Unicode)}
+{$IFDEF FPC_NonUnicode}
   Result := Ord(IsEncryptedFile(WinCPToUTF8(FileName)));
 {$ELSE}
   Result := Ord(IsEncryptedFile(FileName));
-{$IFEND}
+{$ENDIF}
 finally
   Free;
 end;
@@ -61,11 +66,11 @@ Function Exp_DecryptFile(InputFile: PAnsiChar; OutputFile: PAnsiChar): UInt32; s
 begin
 with TSIIDecryptor.Create do
 try
-{$IF Defined(FPC) and not Defined(Unicode)}
+{$IFDEF FPC_NonUnicode}
   Result := Ord(DecryptFile(WinCPToUTF8(InputFile),WinCPToUTF8(OutputFile)));
 {$ELSE}
   Result := Ord(DecryptFile(InputFile,OutputFile));
-{$IFEND}
+{$ENDIF}
 finally
   Free;
 end;
@@ -77,11 +82,11 @@ Function Exp_DecryptFile2(FileName: PAnsiChar): UInt32; stdcall;
 begin
 with TSIIDecryptor.Create do
 try
-{$IF Defined(FPC) and not Defined(Unicode)}
+{$IFDEF FPC_NonUnicode}
   Result := Ord(DecryptFile(WinCPToUTF8(FileName),WinCPToUTF8(FileName)));
 {$ELSE}
   Result := Ord(DecryptFile(FileName,FileName));
-{$IFEND}
+{$ENDIF}
 finally
   Free;
 end;

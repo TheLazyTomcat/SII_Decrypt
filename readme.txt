@@ -1,4 +1,4 @@
-﻿================================================================================
+================================================================================
 
                               SII Decrypt library
 
@@ -11,12 +11,12 @@ Index
 
   Index ...................................................   9
   Description .............................................  22
-  Parts of the library ....................................  44
-  Library files ...........................................  71
-  Repositories ............................................ 105
-  Licensing ............................................... 118
-  Authors, contacts ....................................... 126
-  Copyright ............................................... 132
+  Parts of the library ....................................  46
+  Library files ...........................................  73
+  Repositories ............................................ 107
+  Licensing ............................................... 120
+  Authors, contacts ....................................... 128
+  Copyright ............................................... 134
 
 
 Description
@@ -24,9 +24,10 @@ Description
 This library is designed to decrypt SII files that are used as a primary mean of
 storing save data in truck games developed by SCS Software. It was tested on
 saves from Euro Truck Simulator 2 and American Truck Simulator.
-The project is primarily developed in Delphi 7 Personal and Lazarus 1.4.4 and
-therefore can be compiled by those development tools. But it should be also
-possible to compile it in newer versions of mentioned tools/compilers.
+The project is primarily developed in Delphi 7 Personal and Lazarus 1.6.x
+(FPC 3.x) and therefore can be compiled by those development tools. But it
+should be also possible to compile it in newer versions of mentioned
+tools/compilers.
 All main parts can be compiled into both 32bit and 64bit binaries.
 
 WARNING - Current versions of ETS2 and ATS are no longer storing their saves as
@@ -37,7 +38,8 @@ WARNING - Current versions of ETS2 and ATS are no longer storing their saves as
           game and force it to use text saves again. You can do it by editing
           file config.cfg stored in your user folder
           (eg. documents/Euro Truck Simulator 2/) - change value of
-          g_save_format to 2.
+          g_save_format to 2 - and then re-save the game (load the save you want
+          to decrypt and save it again with new settings).
 
 
 
@@ -61,7 +63,7 @@ a dynamically loaded library (DLL) or as console program.
   destination file (file where the decrypted result will be stored) as a second
   parameter, but this is optional. If you do not select destination file, the
   result will be stored back in the source file. Note that destination file does
-  not need to exist, but the folder where it will be stored must exists.
+  not need to exist, but the folder where it will be stored must exist.
   You can use exit code of the program to check processing for errors. The
   result codes are the same as for functions exported by DLL version of this
   library - so refer to DLL headers for details.
@@ -131,4 +133,4 @@ František Milt, frantisek.milt@gmail.com
 
 Copyright
 ----------------------------------------
-©2016 František Milt, all rights reserved
+©2016-2017 František Milt, all rights reserved

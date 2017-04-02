@@ -15,9 +15,9 @@ implementation
 
 uses
   SII_DecryptLib
-  {$IF Defined(FPC) and (FPC_FULLVERSION >= 20701)}
+{$IF Defined(FPC) and (FPC_FULLVERSION >= 20701)}
   ,LazUTF8
-  {$IFEND};
+{$IFEND};
 
 const
 {$IF not Declared(FPC_FULLVERSION)}
@@ -45,7 +45,7 @@ try
   If ParamCount > 0 then
 {$IFDEF Unicode}
   {$IFDEF FPC}
-    WriteLn(Ord(DecryptFile(PAnsiChar(UTF8ToWinCP(AnsiString(ParamStr(1)))),PAnsiChar(UTF8ToWinCP(AnsiString(ParamStr(1)))))));
+    WriteLn(Ord(DecryptFile(PAnsiChar(UTF8ToWinCP(AnsiString(ParamStr(1)))),UTF8ToWinCP(UTF8ToSys(AnsiString(ParamStr(1)))))));
   {$ELSE}
     WriteLn(Ord(DecryptFile(PAnsiChar(AnsiString(ParamStr(1))),PAnsiChar(AnsiString(ParamStr(1))))));
   {$ENDIF}

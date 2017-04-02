@@ -10,9 +10,9 @@
 
   Auxiliary types
 
-  ©František Milt 2016-01-05
+  ©František Milt 2016-07-30
 
-  Version 1.0.3
+  Version 1.0.4
 
 ===============================================================================}
 unit AuxTypes;
@@ -58,6 +58,12 @@ type
   PUInt64 = ^UInt64;
 
   QuadWord  = UInt64;     PQuadWord = ^QuadWord;
+
+//-- Half-byte -----------------------------------------------------------------
+
+  TNibble = 0..15;        PNibble = ^TNibble;
+
+  Nibble = TNibble;
 
 //-- Pointer related -----------------------------------------------------------
 
