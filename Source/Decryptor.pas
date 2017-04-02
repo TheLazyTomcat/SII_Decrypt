@@ -7,9 +7,7 @@
 -------------------------------------------------------------------------------}
 unit Decryptor;
 
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$INCLUDE '.\SII_Decrypt_defs.inc'}
 
 interface
 
@@ -58,6 +56,8 @@ type
   TSIIDecryptor = class(TAESCipher)
   private
     fReraiseExceptions: Boolean;
+  protected
+    class Function CreateFileStream(const FileName: String; Mode: Word): TFileStream; virtual;
   public
     constructor Create; override;
     Function IsEncryptedMemory(Mem: Pointer; Size: TMemSize): TSIIResult; virtual;
@@ -73,19 +73,27 @@ type
 implementation
 
 uses
-  SysUtils
-  {$IFDEF FPC}
-    , PasZLib
-    {$IF not Defined(Unicode)}
-      , LazUTF8
-    {$IFEND}
-  {$ELSE}
-    , ZLib
-  {$ENDIF};
+  SysUtils{$IFDEF FPC}, PasZLib{$ELSE}, ZLib{$ENDIF}
+{$IFDEF FPC_NonUnicode}
+  , LazUTF8, LazFileUtils
+{$ENDIF};
 
 {==============================================================================}
 {   TSIIDecryptor - initialization                                             }
 {==============================================================================}
+
+{------------------------------------------------------------------------------}
+{   TSIIDecryptor - protected methods                                          }
+{------------------------------------------------------------------------------}
+
+class Function TSIIDecryptor.CreateFileStream(const FileName: String; Mode: Word): TFileStream;
+begin
+{$IFDEF FPC_NonUnicode}
+Result := TFileStream.Create(UTF8ToSys(FileName),Mode);
+{$ELSE}
+Result := TFileStream.Create(FileName,Mode);
+{$ENDIF}
+end;
 
 {------------------------------------------------------------------------------}
 {   TSIIDecryptor - public methods                                             }
@@ -148,11 +156,7 @@ var
   FileStream: TFileStream;
 begin
 try
-{$IF Defined(FPC) and not Defined(Unicode)}
-  FileStream := TFileStream.Create(UTF8ToSys(FileName),fmOpenRead or fmShareDenyWrite);
-{$ELSE}
-  FileStream := TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
-{$IFEND}
+  FileStream := CreateFileStream(FileName,fmOpenRead or fmShareDenyWrite);
   try
     Result := IsEncryptedStream(FileStream);
   finally
@@ -180,38 +184,40 @@ begin
 try
   Result := IsEncryptedMemory(Input,InputSize);
   If Result = rSuccess then
-    If Assigned(Output) then
-      begin
-        Header := PSIIHeader(Input)^;
-        Init(SII_Key,Header.InitVector,r256bit,cmDecrypt);
-        ModeOfOperation := moCBC;
-        GetMem(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)));
-        try
-          ProcessBytes({%H-}Pointer({%H-}PtrUInt(Input) + PtrUInt(SizeOf(TSIIHeader)))^,InputSize - TMemSize(SizeOf(TSIIHeader)),Decrypted^);
-        {$IFDEF FPC}
-          OutSize := LongWord(Header.DataSize);
-          GetMem(OutData,Header.DataSize);
+    begin
+      If Assigned(Output) then
+        begin
+          Header := PSIIHeader(Input)^;
+          Init(SII_Key,Header.InitVector,r256bit,cmDecrypt);
+          ModeOfOperation := moCBC;
+          GetMem(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)));
           try
-            If Uncompress(OutData,OutSize,Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader))) <> Z_OK then
-              raise Exception.Create('Decompression error.');
-        {$ELSE}
-          DecompressBuf(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)),PSIIHeader(Input)^.DataSize,OutData,OutSize);
-          try
-        {$ENDIF}
-            If OutputSize >= TMemSize(OutSize) then
-              begin
-                Move(OutData^,Output^,OutSize);
-                OutputSize := TMemSize(OutSize);
-              end
-            else Result := rBufferTooSmall;
+            ProcessBytes({%H-}Pointer({%H-}PtrUInt(Input) + PtrUInt(SizeOf(TSIIHeader)))^,InputSize - TMemSize(SizeOf(TSIIHeader)),Decrypted^);
+          {$IFDEF FPC}
+            OutSize := LongWord(Header.DataSize);
+            GetMem(OutData,Header.DataSize);
+            try
+              If Uncompress(OutData,OutSize,Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader))) <> Z_OK then
+                raise Exception.Create('Decompression error.');
+          {$ELSE}
+            DecompressBuf(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)),PSIIHeader(Input)^.DataSize,OutData,OutSize);
+            try
+          {$ENDIF}
+              If OutputSize >= TMemSize(OutSize) then
+                begin
+                  Move(OutData^,Output^,OutSize);
+                  OutputSize := TMemSize(OutSize);
+                end
+              else Result := rBufferTooSmall;
+            finally
+              FreeMem(OutData,Header.DataSize);
+            end;
           finally
-            FreeMem(OutData,Header.DataSize);
+            FreeMem(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)));
           end;
-        finally
-          FreeMem(Decrypted,InputSize - TMemSize(SizeOf(TSIIHeader)));
-        end;
-      end
-    else OutputSize := TMemSize(PSIIHeader(Input)^.DataSize);
+        end
+      else OutputSize := TMemSize(PSIIHeader(Input)^.DataSize);
+    end;
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
@@ -284,13 +290,13 @@ var
   OutputStream: TFileStream;
 begin
 try
-  If AnsiSameText(Input,Output) then
+{$IFDEF FPC_NonUnicode_NoUTF8RTL}
+  If AnsiSameText(ExpandFileNameUTF8(Input),ExpandFileNameUTF8(Output)) then
+{$ELSE}
+  If AnsiSameText(ExpandFileName(Input),ExpandFileName(Output)) then
+{$ENDIF}
     begin
-    {$IF Defined(FPC) and not Defined(Unicode)}
-      InputStream := TFileStream.Create(UTF8ToSys(Input),fmOpenReadWrite or fmShareExclusive);
-    {$ELSE}
-      InputStream := TFileStream.Create(Input,fmOpenReadWrite or fmShareExclusive);
-    {$IFEND}
+      InputStream := CreateFileStream(Input,fmOpenReadWrite or fmShareExclusive);
       try
         Result := DecryptStream(InputStream,InputStream);
       finally
@@ -299,17 +305,9 @@ try
     end
   else
     begin
-    {$IF Defined(FPC) and not Defined(Unicode)}
-      InputStream := TFileStream.Create(UTF8ToSys(Input),fmOpenRead or fmShareDenyWrite);
-    {$ELSE}
-      InputStream := TFileStream.Create(Input,fmOpenRead or fmShareDenyWrite);
-    {$IFEND}
+      InputStream := CreateFileStream(Input,fmOpenRead or fmShareDenyWrite);
       try
-      {$IF Defined(FPC) and not Defined(Unicode)}
-        OutputStream := TFileStream.Create(UTF8ToSys(Output),fmCreate or fmShareExclusive);
-      {$ELSE}
-        OutputStream := TFileStream.Create(Output,fmCreate or fmShareExclusive);
-      {$IFEND}
+        OutputStream := CreateFileStream(Output,fmCreate or fmShareExclusive);
         try
           Result := DecryptStream(InputStream,OutputStream);
         finally

@@ -9,12 +9,15 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2016-03-01
+  ©František Milt 2016-08-06
 
-  Version 1.0.2
+  Version 1.0.3
 
   All combinations of allowed key and block sizes are implemented and should be
   compatible with reference Rijndael cipher.
+
+  Dependencies:
+    AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
 
 ===============================================================================}
 unit AES;
@@ -29,6 +32,8 @@ unit AES;
 
 {$IFDEF FPC}
   {$MODE Delphi}
+  // Activate symbol BARE_FPC if you want to compile this unit outside of Lazarus.
+  {.$DEFINE BARE_FPC}
 {$ENDIF}
 
 interface
@@ -207,7 +212,7 @@ implementation
 
 uses
   SysUtils, Math
-  {$IF Defined(FPC) and not Defined(Unicode)}
+  {$IF Defined(FPC) and not Defined(Unicode) and not Defined(BARE_FPC)}
   (*
     If compiler throws error that LazUTF8 unit cannot be found, you have to
     add LazUtils to required packages (Project > Project Inspector).
@@ -405,11 +410,12 @@ var
   i:        Integer;
   WorkPtr:  Pointer;
 begin
-For i := 0 to Pred(Size div fBlockBytes) do
-  begin
-    WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
-    Update(WorkPtr^,WorkPtr^);
-  end;
+If Size >= fBlockBytes then
+  For i := 0 to Pred(Size div fBlockBytes) do
+    begin
+      WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
+      Update(WorkPtr^,WorkPtr^);
+    end;
 If (Size mod fBlockBytes) <> 0 then
   begin
     WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt((Size div fBlockBytes) * fBlockBytes));
@@ -689,13 +695,13 @@ If AnsiSameText(InputFileName,OutputFileName) then
   ProcessFile(InputFileName)
 else
   begin
-  {$IF Defined(FPC) and not Defined(Unicode)}
+  {$IF Defined(FPC) and not Defined(Unicode) and not Defined(BARE_FPC)}
     InputStream := TFileStream.Create(UTF8ToSys(InputFileName),fmOpenRead or fmShareDenyWrite);
   {$ELSE}
     InputStream := TFileStream.Create(InputFileName,fmOpenRead or fmShareDenyWrite);
   {$IFEND}
     try
-    {$IF Defined(FPC) and not Defined(Unicode)}
+    {$IF Defined(FPC) and not Defined(Unicode) and not Defined(BARE_FPC)}
       OutputStream := TFileStream.Create(UTF8ToSys(OutputFileName),fmCreate or fmShareExclusive);
     {$ELSE}
       OutputStream := TFileStream.Create(OutputFileName,fmCreate or fmShareExclusive);
@@ -717,7 +723,7 @@ procedure TBlockCipher.ProcessFile(const FileName: String);
 var
   FileStream: TFileStream;
 begin
-{$IF Defined(FPC) and not Defined(Unicode)}
+{$IF Defined(FPC) and not Defined(Unicode) and not Defined(BARE_FPC)}
 FileStream := TFileStream.Create(UTF8ToSys(FileName),fmOpenReadWrite or fmShareExclusive);
 {$ELSE}
 FileStream := TFileStream.Create(FileName,fmOpenReadWrite or fmShareExclusive);
