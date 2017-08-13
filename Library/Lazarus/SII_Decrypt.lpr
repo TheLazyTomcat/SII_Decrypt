@@ -10,8 +10,14 @@ library SII_Decrypt;
 {$mode objfpc}{$H+}
 
 uses
-  Decryptor,
-  LibExport;
+  SII_Decrypt_Library,
+  SII_Decrypt_Header,
+
+  SII_Decrypt_Decryptor,
+
+  SII_Decode_Common,
+  SII_Decode_Nodes,
+  SII_Decode_Decoder;
 
 {$R *.res}
 

@@ -10,8 +10,9 @@ program SII_Decrypt_Tester;
 {$APPTYPE CONSOLE}
 
 uses
-  SII_DecryptLib in '..\..\Headers\SII_DecryptLib.pas',
-  SII_Decrypt_Tester_Main in '..\SII_Decrypt_Tester_Main.pas';
+  SII_Decrypt_Tester_Main in '..\SII_Decrypt_Tester_Main.pas',
+
+  SII_Decrypt_Header in '..\..\Headers\SII_Decrypt_Header.pas';
 
 begin
   SII_Decrypt_Tester_Main.Main;

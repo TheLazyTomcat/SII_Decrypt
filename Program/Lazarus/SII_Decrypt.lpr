@@ -10,9 +10,15 @@ program SII_Decrypt;
 {$mode objfpc}{$H+}
 
 uses
-  Decryptor, SII_Decrypt_Program;
+  SII_Decrypt_Program,
+
+  SII_Decrypt_Decryptor,
+
+  SII_Decode_Common,
+  SII_Decode_Nodes,
+	SII_Decode_Decoder;
 
 begin
-SII_Decrypt_Program.Main;
+  SII_Decrypt_Program.Main;
 end.
 

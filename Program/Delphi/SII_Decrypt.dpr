@@ -10,9 +10,14 @@ program SII_Decrypt;
 {$APPTYPE CONSOLE}
 
 uses
-  Decryptor           in '..\..\Source\Decryptor.pas',
-  SII_Decrypt_Program in '..\SII_Decrypt_Program.pas';
+  SII_Decrypt_Program in '..\SII_Decrypt_Program.pas',
+
+  SII_Decrypt_Decryptor in '..\..\Source\SII_Decrypt_Decryptor.pas',
+
+  SII_Decode_Common  in '..\..\Source\SII_Decode_Common.pas',
+  SII_Decode_Nodes   in '..\..\Source\SII_Decode_Nodes.pas',
+  SII_Decode_Decoder in '..\..\Source\SII_Decode_Decoder.pas';
 
 begin
-SII_Decrypt_Program.Main;
+  SII_Decrypt_Program.Main;
 end.

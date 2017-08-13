@@ -8,8 +8,14 @@
 library SII_Decrypt;
 
 uses
-  Decryptor in '..\..\Source\Decryptor.pas',
-  LibExport in '..\LibExport.pas';
+  SII_Decrypt_Library in '..\SII_Decrypt_Library.pas',
+  SII_Decrypt_Header  in '..\..\Headers\SII_Decrypt_Header.pas',
+
+  SII_Decrypt_Decryptor in '..\..\Source\SII_Decrypt_Decryptor.pas',
+
+  SII_Decode_Common  in '..\..\Source\SII_Decode_Common.pas',
+  SII_Decode_Nodes   in '..\..\Source\SII_Decode_Nodes.pas',
+  SII_Decode_Decoder in '..\..\Source\SII_Decode_Decoder.pas';
 
 {$R *.res}
 
