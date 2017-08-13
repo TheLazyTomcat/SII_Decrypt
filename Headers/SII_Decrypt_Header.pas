@@ -198,6 +198,58 @@ DecryptFile2
     SIIDEC_TOO_FEW_DATA     - file is too small to contain complete encrypted
                               SII file header
     SIIDEC_BUFFER_TOO_SMALL - not returned by this function
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ DecryptAndDecodeFile
+
+  Decrypts and/or, if necessary, decodes file given by a path in Input parameter
+  and stores decrypted result in a file give by a path in Output parameter.
+  It is recommended to pass full file paths, but relative paths are acceptable.
+  Folder, where the destination file will be stored, must exists prior of
+  calling this function, otherwise it fails with SIIDEC_GENERIC_ERROR.
+
+  Parameters:
+
+    Input  - path to the source file (encrypted SII file)
+    Output - path to the destination file (where decrypted result should be
+             stored)
+
+  Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
+    SIIDEC_SUCCESS          - input file was successfully decrypted and result
+                              stored in output file
+    SIIDEC_NOT_ENCRYPTED    - input file contains not encrypted SII file
+    SIIDEC_BINARY_FORMAT    - not returned by this function
+    SIIDEC_UNKNOWN_FORMAT   - input file contains data of unknown format
+    SIIDEC_TOO_FEW_DATA     - input file is too small to contain complete
+                              encrypted SII file header
+    SIIDEC_BUFFER_TOO_SMALL - not returned by this function
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ DecryptAndDecodeFile2
+
+  Decrypts and/or, if necessary, decodes file given by a path in FileName
+  parameter and stores decrypted result back in the same file.
+  It is recommended to pass full file path, but relative path is acceptable.
+
+  Parameters:
+
+    FileName  - path to a file to be processed (encrypted SII file)
+
+  Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
+    SIIDEC_SUCCESS          - file was successfully decrypted and result
+                              stored
+    SIIDEC_NOT_ENCRYPTED    - file contains not encrypted SII file
+    SIIDEC_BINARY_FORMAT    - not returned by this function
+    SIIDEC_UNKNOWN_FORMAT   - file contains data of unknown format
+    SIIDEC_TOO_FEW_DATA     - file is too small to contain complete encrypted
+                              SII file header
+    SIIDEC_BUFFER_TOO_SMALL - not returned by this function
 }
 
 var

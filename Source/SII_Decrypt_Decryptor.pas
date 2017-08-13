@@ -272,7 +272,6 @@ try
             Decoder.LoadFromStream(Input);
             TextResult := TStringList.Create;
             try
-              WriteLn(Decoder.DataBlockCount);
               Decoder.Convert(TextResult);
               Output.Seek(0,soBeginning);
               TextResult.SaveToStream(Output);
