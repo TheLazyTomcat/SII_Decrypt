@@ -10,7 +10,7 @@ program SII_Decrypt;
 {$mode objfpc}{$H+}
 
 uses
-  Decryptor, SII_Decrypt_Program;
+  SII_Decrypt_Decryptor, SII_Decrypt_Program;
 
 begin
 SII_Decrypt_Program.Main;
