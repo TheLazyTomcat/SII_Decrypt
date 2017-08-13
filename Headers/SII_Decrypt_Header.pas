@@ -5,20 +5,11 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------}
-unit SII_DecryptLib;
+unit SII_Decrypt_Header;
 
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
-
-{
-  When AutoLoad symbol is defined, all imports are resolved automatically at
-  the program initialization.
-  When not defined, you have to call procedure Load_SII_Decrypt before using
-  any library function. You also have to call Unload_SII_Decrypt when you stop
-  using the library.
-}
-{.$DEFINE AutoLoad}
 
 interface
 
@@ -46,12 +37,13 @@ const
   If any function returns value that is not listed here, you should take it as
   if it returned SIIDEC_GENERIC_ERROR.
 }
+  SIIDEC_GENERIC_ERROR    = -1;
   SIIDEC_SUCCESS          = 0;
   SIIDEC_NOT_ENCRYPTED    = 1;
-  SIIDEC_UNKNOWN_FORMAT   = 2;
-  SIIDEC_TOO_SMALL        = 3;
-  SIIDEC_BUFFER_TOO_SMALL = 4;
-  SIIDEC_GENERIC_ERROR    = 5;
+  SIIDEC_BINARY_FORMAT    = 2;
+  SIIDEC_UNKNOWN_FORMAT   = 3;
+  SIIDEC_TOO_FEW_DATA     = 4;
+  SIIDEC_BUFFER_TOO_SMALL = 5;
 
 {
   Default file name of the dynamically loaded library (DLL).
@@ -74,19 +66,15 @@ IsEncryptedMemory
     Size - Size of the memory block in bytes
 
   Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
     SIIDEC_SUCCESS          - passed memory contains encrypted SII file
-                              (size >= size of encrypted SII header, first four
-                              bytes are equal to 0x43736353)
     SIIDEC_NOT_ENCRYPTED    - passed memory contains not encrypted SII file
-                              (size >= size of encrypted SII header, first four
-                              bytes are equal to 0x4e696953)
+    SIIDEC_BINARY_FORMAT    - passed memory contains unencrypted binary SII file
     SIIDEC_UNKNOWN_FORMAT   - passed memory contains data of unknown format
-                              (size >= size of encrypted SII header, first four
-                              bytes are not equal to 0x43736353 or 0x4e696953)
-    SIIDEC_TOO_SMALL        - passed memory block is too small to contain
+    SIIDEC_TOO_FEW_DATA     - passed memory block is too small to contain
                               encrypted SII file header
     SIIDEC_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_GENERIC_ERROR    - unhandled exception occured
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -104,20 +92,15 @@ IsEncryptedFile
     FileName - path to the file that should be checked
 
   Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
     SIIDEC_SUCCESS          - file contains encrypted SII file
-                              (size of the file >= size of encrypted SII header,
-                              first four bytes are equal to 0x43736353)
     SIIDEC_NOT_ENCRYPTED    - file contains not encrypted SII file
-                              (size of the file >= size of encrypted SII header,
-                              first four bytes are equal to 0x4e696953)
+    SIIDEC_BINARY_FORMAT    - file contains unencrypted binary SII file
     SIIDEC_UNKNOWN_FORMAT   - file contains data of unknown format
-                              (size of the file >= size of encrypted SII header,
-                              first four bytes are not equal to 0x43736353 or
-                              0x4e696953)
-    SIIDEC_TOO_SMALL        - file is too small to contain complete encrypted
+    SIIDEC_TOO_FEW_DATA     - file is too small to contain complete encrypted
                               SII file header
     SIIDEC_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_GENERIC_ERROR    - unhandled exception occured
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -151,15 +134,18 @@ DecryptMemory
     OutSize - pointer to a variable holding size of the output buffer, holds
               true size of the decryted data on return (in bytes)
 
+  Returns:
+  
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
     SIIDEC_SUCCESS          - input data were successfully decrypted and result
                               stored in output buffer
     SIIDEC_NOT_ENCRYPTED    - input data contains not encrypted SII file
+    SIIDEC_BINARY_FORMAT    - input data contains unencrypted binary SII file
     SIIDEC_UNKNOWN_FORMAT   - input data contains data of unknown format
-    SIIDEC_TOO_SMALL        - input data are too small to contain complete
+    SIIDEC_TOO_FEW_DATA     - input data are too small to contain complete
                               encrypted SII file header
     SIIDEC_BUFFER_TOO_SMALL - size of the output buffer given in OutSize is too
                               small to store decrypted data
-    SIIDEC_GENERIC_ERROR    - unhandled exception occured
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -178,14 +164,16 @@ DecryptFile
              stored)
 
   Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
     SIIDEC_SUCCESS          - input file was successfully decrypted and result
                               stored in output file
     SIIDEC_NOT_ENCRYPTED    - input file contains not encrypted SII file
+    SIIDEC_BINARY_FORMAT    - input file contains unencrypted binary SII file
     SIIDEC_UNKNOWN_FORMAT   - input file contains data of unknown format
-    SIIDEC_TOO_SMALL        - input file is too small to contain complete
+    SIIDEC_TOO_FEW_DATA     - input file is too small to contain complete
                               encrypted SII file header
-    SIIDEC_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_GENERIC_ERROR    - unhandled exception occured
+    SIIDEC_BUFFER_TOO_SMALL - not returned by this function  
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -200,34 +188,28 @@ DecryptFile2
     FileName  - path to a file to be processed (encrypted SII file)
 
   Returns:
+
+    SIIDEC_GENERIC_ERROR    - unhandled exception occured
     SIIDEC_SUCCESS          - file was successfully decrypted and result
                               stored
     SIIDEC_NOT_ENCRYPTED    - file contains not encrypted SII file
+    SIIDEC_BINARY_FORMAT    - file contains unencrypted binary SII file
     SIIDEC_UNKNOWN_FORMAT   - file contains data of unknown format
-    SIIDEC_TOO_SMALL        - file is too small to contain complete encrypted
+    SIIDEC_TOO_FEW_DATA     - file is too small to contain complete encrypted
                               SII file header
     SIIDEC_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_GENERIC_ERROR    - unhandled exception occured
 }
 
-{$IFDEF AutoLoad}
-
-Function IsEncryptedMemory(Mem: Pointer; Size: TMemSize): UInt32; stdcall; external SIIDecrypt_LibFileName;
-Function IsEncryptedFile(FileName: PAnsiChar): UInt32; stdcall; external SIIDecrypt_LibFileName;
-
-Function DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): UInt32; stdcall; external SIIDecrypt_LibFileName;
-Function DecryptFile(InputFile: PAnsiChar; OutputFile: PAnsiChar): UInt32; stdcall; external SIIDecrypt_LibFileName;
-Function DecryptFile2(FileName: PAnsiChar): UInt32; stdcall; external SIIDecrypt_LibFileName;
-
-{$ELSE AutoLoad}
-
 var
-  IsEncryptedMemory: Function(Mem: Pointer; Size: TMemSize): UInt32; stdcall;
-  IsEncryptedFile:   Function (FileName: PAnsiChar): UInt32; stdcall;
+  IsEncryptedMemory:      Function(Mem: Pointer; Size: TMemSize): Int32; stdcall;
+  IsEncryptedFile:        Function (FileName: PAnsiChar): Int32; stdcall;
 
-  DecryptMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): UInt32; stdcall;
-  DecryptFile:   Function(InputFile: PAnsiChar; OutputFile: PAnsiChar): UInt32; stdcall;
-  DecryptFile2:  Function(FileName: PAnsiChar): UInt32; stdcall;
+  DecryptMemory:          Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  DecryptFile:            Function(InputFile: PAnsiChar; OutputFile: PAnsiChar): Int32; stdcall;
+  DecryptFile2:           Function(FileName: PAnsiChar): Int32; stdcall;
+
+  DecryptAndDecodeFile:   Function(InputFile: PAnsiChar; OutputFile: PAnsiChar): Int32; stdcall;
+  DecryptAndDecodeFile2:  Function(FileName: PAnsiChar): Int32; stdcall;
 
 //------------------------------------------------------------------------------
 
@@ -237,12 +219,8 @@ procedure Load_SII_Decrypt(const LibraryFile: String = 'SII_Decrypt.dll');
 // Call this routine to free (unload) the dynamic library.
 procedure Unload_SII_Decrypt;
 
-{$ENDIF AutoLoad}
-
 implementation
       
-{$IFNDEF AutoLoad}
-
 uses
   SysUtils, Windows;
 
@@ -256,11 +234,13 @@ If LibHandle = 0 then
     LibHandle := LoadLibrary(PChar(LibraryFile));
     If LibHandle <> 0 then
       begin
-        IsEncryptedMemory := GetProcAddress(LibHandle,'IsEncryptedMemory');
-        IsEncryptedFile   := GetProcAddress(LibHandle,'IsEncryptedFile');
-        DecryptMemory     := GetProcAddress(LibHandle,'DecryptMemory');
-        DecryptFile       := GetProcAddress(LibHandle,'DecryptFile');
-        DecryptFile2      := GetProcAddress(LibHandle,'DecryptFile2');
+        IsEncryptedMemory     := GetProcAddress(LibHandle,'IsEncryptedMemory');
+        IsEncryptedFile       := GetProcAddress(LibHandle,'IsEncryptedFile');
+        DecryptMemory         := GetProcAddress(LibHandle,'DecryptMemory');
+        DecryptFile           := GetProcAddress(LibHandle,'DecryptFile');
+        DecryptFile2          := GetProcAddress(LibHandle,'DecryptFile2');
+        DecryptAndDecodeFile  := GetProcAddress(LibHandle,'DecryptAndDecodeFile');
+        DecryptAndDecodeFile2 := GetProcAddress(LibHandle,'DecryptAndDecodeFile2');
       end
     else raise Exception.CreateFmt('Unable to load library %s.',[LibraryFile]);
   end;
@@ -271,10 +251,10 @@ end;
 procedure Unload_SII_Decrypt;
 begin
 If LibHandle <> 0 then
-  FreeLibrary(LibHandle);
-LibHandle := 0;
+  begin
+    FreeLibrary(LibHandle);
+    LibHandle := 0;
+  end;
 end;
-
-{$ENDIF AutoLoad}
 
 end.

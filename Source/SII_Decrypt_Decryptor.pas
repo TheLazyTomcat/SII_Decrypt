@@ -43,8 +43,9 @@ type
   end;
   PSIIHeader = ^TSIIHeader;
 
-  TSIIResult = (rSuccess = 0,rNotEncrypted,rBinaryFormat,rUnknownFormat,
-                rTooFewData,rBufferTooSmall,rGenericError);
+  TSIIResult = (rGenericError = -1, rSuccess = 0, rNotEncrypted = 1,
+                rBinaryFormat = 2, rUnknownFormat = 3,rTooFewData = 4,
+                rBufferTooSmall = 5);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
