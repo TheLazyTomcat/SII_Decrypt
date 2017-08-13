@@ -2,7 +2,7 @@
 
                               SII Decrypt library
 
-                                 version 1.0.X
+                                 version 1.1.X
 
 ================================================================================
 
@@ -11,35 +11,28 @@ Index
 
   Index ...................................................   9
   Description .............................................  22
-  Parts of the library ....................................  46
-  Library files ...........................................  73
-  Repositories ............................................ 107
-  Licensing ............................................... 120
-  Authors, contacts ....................................... 128
-  Copyright ............................................... 134
+  Parts of the library ....................................  39
+  Library files ...........................................  66
+  Repositories ............................................ 100
+  Licensing ............................................... 113
+  Authors, contacts ....................................... 121
+  Copyright ............................................... 131
 
 
 Description
 ------------------------------
-This library is designed to decrypt SII files that are used as a primary mean of
-storing save data in truck games developed by SCS Software. It was tested on
+This library is primarily designed to decrypt SII files that are used as a mean 
+of storing save data in truck games developed by SCS Software. It was tested on
 saves from Euro Truck Simulator 2 and American Truck Simulator.
+
+It can also decode binary format normally used in these saves into its textual 
+form. This decoding is done automatically when binary format is encountered.
+ 
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.6.x
 (FPC 3.x) and therefore can be compiled by those development tools. But it
 should be also possible to compile it in newer versions of mentioned
 tools/compilers.
 All main parts can be compiled into both 32bit and 64bit binaries.
-
-WARNING - Current versions of ETS2 and ATS are no longer storing their saves as
-          plaintext, but rather in undisclosed binary format. This library can
-          still decrypt such files, but result will be, as mentioned, in binary,
-          meaning manually almost uneditable.
-          If you want to edit your saves, you have to change settings of the
-          game and force it to use text saves again. You can do it by editing
-          file config.cfg stored in your user folder
-          (eg. documents/Euro Truck Simulator 2/) - change value of
-          g_save_format to 2 - and then re-save the game (load the save you want
-          to decrypt and save it again with new settings).
 
 
 
@@ -125,9 +118,13 @@ this license in file license.txt or on web page https://www.mozilla.org/MPL/2.0/
 
 
 
-Authors, contacts
+Authors, contacts, links
 ----------------------------------------
 František Milt, frantisek.milt@gmail.com
+
+If you find this project useful and don't know what to do with your money ;), 
+consider making a small donation using the following link:
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
 
 

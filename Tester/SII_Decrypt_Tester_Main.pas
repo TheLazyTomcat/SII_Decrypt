@@ -14,16 +14,9 @@ procedure Main;
 implementation
 
 uses
-  SII_DecryptLib
-{$IF Defined(FPC) and (FPC_FULLVERSION >= 20701)}
-  ,LazUTF8
-{$IFEND};
+  SysUtils, Classes, AuxTypes, StrRect, SII_Decrypt_Header;
 
 const
-{$IF not Declared(FPC_FULLVERSION)}
-  {%H-}FPC_FULLVERSION = Integer(0);
-{$IFEND}
-
 {$IFDEF FPC}
   PathPrefix = '..\..\..\';
 {$ELSE}
@@ -31,6 +24,10 @@ const
 {$ENDIF}
 
 procedure Main;
+var
+  MemStream:  TMemoryStream;
+  OutBuff:    Pointer;
+  OutSize:    TMemSize;
 begin
 {$IF SizeOf(Pointer) = 8}
 Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x64\SII_Decrypt.dll');
@@ -42,23 +39,46 @@ Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x86\SII_Decrypt.dll');
 {$ENDIF}
 {$IFEND}
 try
+try
   If ParamCount > 0 then
-{$IFDEF Unicode}
-  {$IFDEF FPC}
-    WriteLn(Ord(DecryptFile(PAnsiChar(UTF8ToWinCP(AnsiString(ParamStr(1)))),UTF8ToWinCP(UTF8ToSys(AnsiString(ParamStr(1)))))));
-  {$ELSE}
-    WriteLn(Ord(DecryptFile(PAnsiChar(AnsiString(ParamStr(1))),PAnsiChar(AnsiString(ParamStr(1))))));
-  {$ENDIF}
-{$ELSE}
-  {$IF not Defined(FPC) or (FPC_FULLVERSION < 20701)}
-    WriteLn(Ord(DecryptFile(PAnsiChar(ParamStr(1)),PAnsiChar(ParamStr(1) + '.out'))));
-  {$ELSE}
-    WriteLn(Ord(DecryptFile(PAnsiChar(UTF8ToWinCP(ParamStr(1))),PAnsiChar(UTF8ToWinCP(ParamStr(1) + '.out')))));
-  {$IFEND}
-{$ENDIF}
+    begin
+      MemStream := TMemoryStream.Create;
+      try
+        MemStream.LoadFromFile(ParamStr(1));
+        MemStream.SaveToFile(ParamStr(1) + '.f2out');
+        MemStream.SaveToFile(ParamStr(1) + '.fd2out');
+        WriteLn(DecryptFile(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)))),PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
+        WriteLn(DecryptFile2(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
+
+        WriteLn(DecryptAndDecodeFile(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)))),PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
+        WriteLn(DecryptAndDecodeFile2(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fd2out'))));
+
+        If DecryptMemory(MemStream.Memory,MemStream.Size,nil,@OutSize) = 0 then
+          begin
+            GetMem(OutBuff,OutSize);
+            try
+              WriteLn(DecryptMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
+              MemStream.Seek(0,soBeginning);
+              MemStream.WriteBuffer(OutBuff^,OutSize);
+              MemStream.Size := OutSize;
+              MemStream.SaveToFile(ParamStr(1) + '.mout');
+            finally
+              FreeMem(OutBuff,OutSize);
+            end;
+          end;
+      finally
+        MemStream.Free;
+      end;
+    end;
   Write('Press enter to continue...'); ReadLn;
 finally
   Unload_SII_Decrypt;
+end;
+except
+  on E: Exception do
+    begin
+      Write('Error ',E.Message); ReadLn;
+    end;
 end;
 end;
 

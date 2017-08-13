@@ -16,10 +16,7 @@ procedure Main;
 implementation
 
 uses
-  SysUtils, Decryptor
-{$IFDEF FPC_NonUnicode_NoUTF8RTL}
-  , LazUTF8
-{$ENDIF};
+  SysUtils, SII_Decrypt_Decryptor, StrRect;
 
 procedure Main;
 begin
@@ -35,25 +32,19 @@ try
       WriteLn;
       WriteLn('  SII_Decrypt.exe InputFile [OutputFile]');
       WriteLn;
-      WriteLn('    InputFile - file that has to be decrypted');
+      WriteLn('    InputFile             - file that has to be decrypted');
       WriteLn('    OutputFile (optional) - target file where to store the decrypted result');
       WriteLn;
       Write('Press enter to continue...'); ReadLn;
     end
   else
     begin
-      with TSIIDecryptor.Create do
+      with TSII_Decryptor.Create(True) do
       try
         If ParamCount >= 2 then
-      {$IFDEF FPC_NonUnicode_NoUTF8RTL}
-          ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(2))))
+          ExitCode := Ord(DecryptAndDecodeFile(RTLToStr(ParamStr(1)),RTLToStr(ParamStr(2))))
         else
-          ExitCode := Ord(DecryptFile(SysToUTF8(ParamStr(1)),SysToUTF8(ParamStr(1))));
-      {$ELSE}
-          ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(2)))
-        else
-          ExitCode := Ord(DecryptFile(ParamStr(1),ParamStr(1)));
-      {$ENDIF}
+          ExitCode := Ord(DecryptAndDecodeFile(RTLToStr(ParamStr(1)),RTLToStr(ParamStr(1))));
       finally
         Free;
       end;
@@ -61,7 +52,9 @@ try
 except
   on E: Exception do
     begin
-      WriteLn(E.Message);
+      WriteLn('An error has occured. Error message:');
+      WriteLn;
+      WriteLn('  ',E.Message);
       ExitCode := -1;
     end;
 end;
