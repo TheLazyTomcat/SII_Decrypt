@@ -11,12 +11,12 @@ Index
 
   Index ...................................................   9
   Description .............................................  22
-  Parts of the library ....................................  39
-  Library files ...........................................  66
-  Repositories ............................................ 100
-  Licensing ............................................... 113
-  Authors, contacts ....................................... 121
-  Copyright ............................................... 131
+  Parts of the library ....................................  41
+  Library files ...........................................  68
+  Repositories ............................................ 102
+  Licensing ............................................... 115
+  Authors, contacts ....................................... 123
+  Copyright ............................................... 133
 
 
 Description
@@ -27,6 +27,8 @@ saves from Euro Truck Simulator 2 and American Truck Simulator.
 
 It can also decode binary format normally used in these saves into its textual 
 form. This decoding is done automatically when binary format is encountered.
+It means you no longer have to manually change format (g_save_format) the game 
+is using while writing the saves.
  
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.6.x
 (FPC 3.x) and therefore can be compiled by those development tools. But it
