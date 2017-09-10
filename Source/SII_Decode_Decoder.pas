@@ -12,7 +12,7 @@ unit SII_Decode_Decoder;
 interface
 
 uses
-  Classes, Contnrs,
+  Classes, Contnrs, ExplicitStringLists,
   SII_Decode_Common, SII_Decode_Nodes;
 
 {==============================================================================}
@@ -48,7 +48,8 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream: TStream); virtual;
     procedure LoadFromFile(const FileName: String); virtual;
-    procedure Convert(Output: TStrings); virtual;
+    procedure Convert(Output: TStrings); overload; virtual;
+    procedure Convert(Output: TAnsiStringList); overload; virtual;
   (*
     todo: streaming conversion (reduced memory use)
 
@@ -283,10 +284,28 @@ Output.Add('SiiNunit');
 Output.Add('{');
 For i := 0 to Pred(fFileDataBlocks.Count) do
   begin
-    Output.Add(TSIIBin_DataBlock(fFileDataBlocks[i]).AsString);
+    Output.Add(AnsiToStr(TSIIBin_DataBlock(fFileDataBlocks[i]).AsString));
     DoProgress(i/fFileDataBlocks.Count,ptConverting);
   end;
 Output.Add('}');
+DoProgress(1.0,ptConverting);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Decoder.Convert(Output: TAnsiStringList);
+var
+  i:  Integer;
+begin
+DoProgress(0.0,ptConverting);
+Output.Add(AnsiString('SiiNunit'));
+Output.Add(AnsiString('{'));
+For i := 0 to Pred(fFileDataBlocks.Count) do
+  begin
+    Output.Add(TSIIBin_DataBlock(fFileDataBlocks[i]).AsString);
+    DoProgress(i/fFileDataBlocks.Count,ptConverting);
+  end;
+Output.Add(AnsiString('}'));
 DoProgress(1.0,ptConverting);
 end;
 

@@ -74,8 +74,8 @@ procedure SIIBin_LoadID(Stream: TStream; var ID: TSIIBin_Value_ID);
 Function SIIBin_DecodeID(EncodedID: UInt64): AnsiString; overload;
 procedure SIIBin_DecodeID(var ID: TSIIBin_Value_ID); overload;
 
-Function SIIBin_SingleToStr(Value: Single): String;
-Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): String;
+Function SIIBin_SingleToStr(Value: Single): AnsiString;
+Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): AnsiString;
 
 Function SIIBin_IsLimitedAlphabet(const Str: AnsiString): Boolean;
 procedure SIIBin_RectifyString(var Str: AnsiString);
@@ -85,7 +85,7 @@ implementation
 
 uses
   SysUtils,
-  BinaryStreaming, FloatHex;
+  BinaryStreaming, FloatHex, StrRect;
 
 {==============================================================================}
 {   Auxiliary functions - implementation                                       }
@@ -152,17 +152,17 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function SIIBin_SingleToStr(Value: Single): String;
+Function SIIBin_SingleToStr(Value: Single): AnsiString;
 begin
 If (Frac(Value) <> 0) or (Value >= 1e7) then
-  Result := '&' + AnsiLowerCase(SingleToHex(Value))
+  Result := StrToAnsi('&' + AnsiLowerCase(SingleToHex(Value)))
 else
-  Result := Format('%.0f',[Value]);
+  Result := StrToAnsi(Format('%.0f',[Value]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): String;
+Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): AnsiString;
 var
   i:    Integer;
 {$IFDEF NamelessID_NewHexStyle}
@@ -170,7 +170,7 @@ var
 {$ENDIF}
 begin
 case ID.Length of
-  $00:  Result := 'null';
+  $00:  Result := StrToAnsi('null');
 {$IFDEF NamelessID_NewHexStyle}
   $FF:  If ID.Parts[0] <> 0 then
           begin
@@ -179,23 +179,22 @@ case ID.Length of
             while Temp <> 0 do
               begin
                 If (Temp and not UInt64($FFFF)) <> 0 then
-                  Result := AnsiLowerCase(Format('.%.4x',[UInt16(Temp)])) + Result
+                  Result := StrToAnsi(AnsiLowerCase(Format('.%.4x',[UInt16(Temp)]))) + Result
                 else
-                  Result := AnsiLowerCase(Format('.%x',[UInt16(Temp)])) + Result;
+                  Result := StrToAnsi(AnsiLowerCase(Format('.%x',[UInt16(Temp)]))) + Result;
                 Temp := Temp shr 16;
               end;
-            Result := '_nameless' + Result;
+            Result := AnsiString('_nameless') + Result;
           end
-        else Result := '_nameless.0';
+        else Result := AnsiString('_nameless.0');
 {$ELSE}
-  $FF:  Result := '_nameless' + AnsiUpperCase(Format('.%.4x.%.4x',
-                                             [Int64Rec(ID.Parts[0]).Words[1],
-                                              Int64Rec(ID.Parts[0]).Words[0]]));
+  $FF:  Result := StrToAnsi('_nameless' + AnsiUpperCase(Format('.%.4x.%.4x',
+                   [Int64Rec(ID.Parts[0]).Words[1],Int64Rec(ID.Parts[0]).Words[0]])));
 {$ENDIF}
 else
   Result := ID.PartsStr[0];
   For i := Succ(Low(ID.Parts)) to High(ID.Parts) do
-    Result := Result + '.' + ID.PartsStr[i];
+    Result := Result + AnsiString('.') + ID.PartsStr[i];
 end;
 end;
 
@@ -240,7 +239,7 @@ If NonASCII then
         If (Ord(Str[i]) < 127) and (Ord(Str[i]) > 31) then
           Temp := Temp + Str[i]
         else
-          Temp := Temp + AnsiLowerCase(Format('\x%.2x',[Ord(Str[i])]));
+          Temp := Temp + StrToAnsi(AnsiLowerCase(Format('\x%.2x',[Ord(Str[i])])));
       end;
     Str := Temp;
   end;
