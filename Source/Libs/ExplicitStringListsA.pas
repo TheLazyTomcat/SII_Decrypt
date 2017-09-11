@@ -28,7 +28,7 @@ unit ExplicitStringListsA;
 interface
 
 uses
-  Classes, ExplicitStringListsBase;
+  Classes, AuxTypes, ExplicitStringListsBase;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ uses
 {$IF not Defined(FPC) and (CompilerVersion >= 20)}(* Delphi2009+ *)
   {$IFDEF Windows} Windows,{$ENDIF} AnsiStrings,
 {$IFEND}
-  SysUtils, AuxTypes, StrRect, ExplicitStringListsParser;
+  SysUtils, StrRect, ExplicitStringListsParser;
 
 {===============================================================================
 --------------------------------------------------------------------------------

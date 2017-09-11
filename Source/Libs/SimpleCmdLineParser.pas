@@ -9,9 +9,9 @@
 
   SimpleCmdLineParser
 
-  ©František Milt 2017-08-31
+  ©František Milt 2017-09-11
 
-  Version 1.0.1
+  Version 1.1.0
 
   Dependencies:
     StrRect - github.com/ncs-sniper/Lib.StrRect
@@ -22,6 +22,8 @@
   In current implementation, three basic objects are parsed from the command
   line - short command, long commad and general object.
   If first parsed object is a general text, it is assumed to be the image path.
+  If you want to have general object after a command (normally it would be
+  parsed as a command argument), add command termination char after the command.
 
 -- Short command ---------------------------------------------------------------
 
@@ -113,6 +115,7 @@ type
     fCommandIntroChar:  Char;
     fQuoteChar:         Char;
     fDelimiterChar:     Char;
+    fCmdTerminateChar:  Char;
     fCommandLine:       String;
     fImagePath:         String;
     fParameters:        TCLPParameters;
@@ -146,6 +149,7 @@ type
     Function GetCommandData(ShortForm: Char; out CommandData: TCLPParameter): Boolean; overload; virtual;
     Function GetCommandData(const LongForm: String; out CommandData: TCLPParameter): Boolean; overload; virtual;
     Function GetCommandData(ShortForm: Char; const LongForm: String; out CommandData: TCLPParameter): Boolean; overload; virtual;
+    Function GetCommandCount: Integer; virtual;
     procedure Clear; virtual;
     procedure Parse(const CommandLine: String); virtual;
     procedure ReParse; virtual;
@@ -154,6 +158,7 @@ type
     property CommandIntroChar: Char read fCommandIntroChar write fCommandIntroChar;
     property QuoteChar: Char read fQuoteChar write fQuoteChar;
     property DelimiterChar: Char read fDelimiterChar write fDelimiterChar;
+    property CommandTerminateChar: Char read fCmdTerminateChar write fCmdTerminateChar;
     property Count: Integer read fParameters.Count;
     property CommandLine: String read fCommandLine;
     property ImagePath: String read fImagePath;
@@ -195,6 +200,7 @@ const
   def_CommandIntroChar = '-';
   def_QuoteChar        = '"';
   def_DelimiterChar    = ',';
+  def_CmdTerminateChar = ';';
 
   CHARS_SHORTCOMMAND = ['a'..'z','A'..'Z'];
   CHARS_LONGCOMMAND  = ['a'..'z','A'..'Z','0'..'9','_','-'];
@@ -207,7 +213,7 @@ const
 ===============================================================================}
 
 type
-  TCLPLexerTokenType = (ttShortCommand,ttLongCommand,ttDelimiter,ttGeneral);
+  TCLPLexerTokenType = (ttShortCommand,ttLongCommand,ttDelimiter,ttTerminator,ttGeneral);
 
   TCLPLexerToken = record
     TokenType:  TCLPLexerTokenType;
@@ -220,7 +226,7 @@ type
     Count:  Integer;
   end;
 
-  TCLPLexerCharType = (lctWhiteSpace,lctCommandIntro,lctQuote,lctDelimiter,lctOther);
+  TCLPLexerCharType = (lctWhiteSpace,lctCommandIntro,lctQuote,lctDelimiter,lctTerminator,lctOther);
   TCLPLexerState    = (lsStart,lsTraverse,lsText,lsQuoted,lsShortCommand,lsLongCommand);
 
 {===============================================================================
@@ -232,6 +238,7 @@ type
     fCommandIntroChar:  Char;
     fQuoteChar:         Char;
     fDelimiterChar:     Char;
+    fCmdTerminateChar:  Char;
     fCommandLine:       String;
     fTokens:            TCLPLexerTokens;
     // tokenization variables
@@ -262,6 +269,7 @@ type
     property CommandIntroChar: Char read fCommandIntroChar write fCommandIntroChar;
     property QuoteChar: Char read fQuoteChar write fQuoteChar;
     property DelimiterChar: Char read fDelimiterChar write fDelimiterChar;
+    property CommandTerminateChar: Char read fCmdTerminateChar write fCmdTerminateChar;
     property CommandLine: String read fCommandLine;
     property Count: Integer read fTokens.Count;
   end;
@@ -351,6 +359,8 @@ else If fCommandLine[fPosition] = fQuoteChar then
   Result := lctQuote
 else If fCommandLine[fPosition] = fDelimiterChar then
   Result := lctDelimiter
+else If fCommandLine[fPosition] = fCmdTerminateChar then
+  Result := lctTerminator
 else
   Result := lctOther;
 end;
@@ -390,6 +400,12 @@ case CurrCharType of
                       AddToken(ttDelimiter,fCommandLine[fPosition],fPosition);
                       fState := lsTraverse;
                     end;
+  lctTerminator:    begin
+                      If fTokenLength > 0 then
+                        AddToken(TokenType,Copy(fCommandLine,fTokenStart,fTokenLength),fTokenStart);
+                      AddToken(ttTerminator,fCommandLine[fPosition],fPosition);
+                      fState := lsTraverse;
+                    end;
 end;
 end;
 
@@ -425,6 +441,7 @@ case CurrCharType of
                       fTokenLength := 0;
                     end;
   lctDelimiter:     AddToken(ttDelimiter,fCommandLine[fPosition],fPosition);
+  lctTerminator:    AddToken(ttTerminator,fCommandLine[fPosition],fPosition);
   lctOther:         begin
                       fState := lsText;
                       fTokenStart := fPosition;
@@ -512,6 +529,7 @@ inherited;
 fCommandIntroChar := def_CommandIntroChar;
 fQuoteChar := def_QuoteChar;
 fDelimiterChar := def_DelimiterChar;
+fCmdTerminateChar := def_CmdTerminateChar;
 SetLength(fTokens.Arr,0);
 fTokens.Count := 0;
 fCommandLine := '';
@@ -629,7 +647,8 @@ case TCLPLexer(fLexer)[fTokenIndex].TokenType of
                     SetLength(fCurrentParam.Arguments,0);
                     fState := psCommand;
                   end;
-  ttDelimiter:    fState := psGeneral;
+  ttDelimiter,
+  ttTerminator:   fState := psGeneral;
   ttGeneral:      begin
                     fImagePath := TCLPLexer(fLexer)[fTokenIndex].Str;
                     AddParam(ptGeneral,TCLPLexer(fLexer)[fTokenIndex].Str);
@@ -658,6 +677,10 @@ case TCLPLexer(fLexer)[fTokenIndex].TokenType of
                     fState := psCommand;
                   end;
   ttDelimiter:    fState := psGeneral;
+  ttTerminator:   begin
+                    AddParam(fCurrentParam);
+                    fState := psGeneral;
+                  end;
   ttGeneral:      begin
                     SetLength(fCurrentParam.Arguments,Length(fCurrentParam.Arguments) + 1);
                     fCurrentParam.Arguments[High(fCurrentParam.Arguments)] := TCLPLexer(fLexer)[fTokenIndex].Str;
@@ -686,6 +709,10 @@ case TCLPLexer(fLexer)[fTokenIndex].TokenType of
                     fState := psCommand;
                   end;
   ttDelimiter:    fState := psCommand;
+  ttTerminator:   begin
+                    AddParam(fCurrentParam);
+                    fState := psGeneral;
+                  end;
   ttGeneral:      begin
                     AddParam(fCurrentParam);
                     AddParam(ptGeneral,TCLPLexer(fLexer)[fTokenIndex].Str);
@@ -711,7 +738,8 @@ case TCLPLexer(fLexer)[fTokenIndex].TokenType of
                     SetLength(fCurrentParam.Arguments,0);
                     fState := psCommand;
                   end;
-  ttDelimiter:    fState := psGeneral;
+  ttDelimiter,
+  ttTerminator:   fState := psGeneral;
   ttGeneral:      begin
                     AddParam(ptGeneral,TCLPLexer(fLexer)[fTokenIndex].Str);
                     fState := psGeneral;
@@ -729,6 +757,7 @@ inherited;
 fCommandIntroChar := def_CommandIntroChar;
 fQuoteChar := def_QuoteChar;
 fDelimiterChar := def_DelimiterChar;
+fCmdTerminateChar := def_CmdTerminateChar;
 fCommandLine := '';
 fImagePath := '';
 SetLength(fParameters.Arr,0);
@@ -891,6 +920,18 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function TCLPParser.GetCommandCount: Integer;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := LowIndex to HighIndex do
+  If fParameters.Arr[i].ParamType in [ptShortCommand,ptLongCommand] then
+    Inc(Result);
+end;
+
+//------------------------------------------------------------------------------
+
 procedure TCLPParser.Clear;
 begin
 fCommandLine := '';
@@ -917,6 +958,7 @@ fParameters.Count := 0;
 TCLPLexer(fLexer).CommandIntroChar := fCommandIntroChar;
 TCLPLexer(fLexer).QuoteChar := fQuoteChar;
 TCLPLexer(fLexer).DelimiterChar := fDelimiterChar;
+TCLPLexer(fLexer).CommandTerminateChar := fCmdTerminateChar;
 TCLPLexer(fLexer).Analyze(fCommandLine);
 fTokenIndex := 0;
 while fTokenIndex <= Pred(TCLPLexer(fLexer).Count) do

@@ -41,6 +41,7 @@
     Function CompareStrings(const Str1, Str2: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
     Function CompareItems(Index1,Index2: Integer): Integer; override;
     Function IndexForSortedAddition(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
+    Function GetWriteSize: UInt64; override;
     procedure WriteItemToStream(Stream: TStream; Index: Integer; {%H-}Endianness: TStringEndianness); override;
     procedure WriteLineBreakToStream(Stream: TStream; {%H-}Endianness: TStringEndianness); override;
     procedure WriteBOMToStream({%H-}Stream: TStream; {%H-}Endianness: TStringEndianness); override;
@@ -666,6 +667,21 @@ If fSorted then
     else Result := 0;
   end
 else Result := -1;
+end;
+
+//------------------------------------------------------------------------------
+
+Function {$I 'ESL_inc\ESL_ListType.inc'}.GetWriteSize: UInt64;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := LowIndex to HighIndex do
+  begin
+    Inc(Result,Length(fStrings[i]));
+    If (i < HighIndex) or fTrailingLineBreak then
+      Inc(Result,Length(fLineBreak)); 
+  end;
 end;
 
 //------------------------------------------------------------------------------

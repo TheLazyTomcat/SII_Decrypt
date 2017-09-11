@@ -78,6 +78,7 @@ type
     class procedure WideSwapEndian(Data: PWideChar; Count: TStrSize); virtual;
     procedure SetUpdateState({%H-}Updating: Boolean); virtual;
     Function CompareItems(Index1,Index2: Integer): Integer; virtual; abstract;
+    Function GetWriteSize: UInt64; virtual; abstract;
     procedure WriteItemToStream(Stream: TStream; Index: Integer; Endianness: TStringEndianness); virtual; abstract;
     procedure WriteLineBreakToStream(Stream: TStream; Endianness: TStringEndianness); virtual; abstract;
     procedure WriteBOMToStream(Stream: TStream; Endianness: TStringEndianness); virtual; abstract;
@@ -329,10 +330,22 @@ end;
 
 procedure TExplicitStringList.SaveToStream(Stream: TStream; WriteBOM: Boolean = True; Endianness: TStringEndianness = seSystem);
 var
-  i:  Integer;
+  WriteSize:  UInt64;
+  OldPos:     Int64;
+  i:          Integer;
 begin
 If WriteBOM then
   WriteBOMToStream(Stream,Endianness);
+WriteSize := GetWriteSize;
+If Stream.Size < (Stream.Position + WriteSize) then
+  begin
+    OldPos := Stream.Position;
+    try
+      Stream.Size := Stream.Position + WriteSize;
+    finally
+      Stream.Position := OldPos;
+    end;
+  end;
 For i := LowIndex to HighIndex do
   begin
     WriteItemToStream(Stream,i,Endianness);
