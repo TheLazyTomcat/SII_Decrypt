@@ -304,7 +304,8 @@ try
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
     Result := DecryptStream(MemoryStream,MemoryStream);
-    MemoryStream.SaveToFile(StrToRTL(Output));
+    If Result = rSuccess then
+      MemoryStream.SaveToFile(StrToRTL(Output));
   finally
     MemoryStream.Free;
   end;
@@ -399,7 +400,8 @@ try
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
     Result := DecodeStream(MemoryStream,MemoryStream);
-    MemoryStream.SaveToFile(StrToRTL(Output));
+    If Result = rSuccess then
+      MemoryStream.SaveToFile(StrToRTL(Output));
   finally
     MemoryStream.Free;
   end;
@@ -510,7 +512,8 @@ try
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
     Result := DecryptAndDecodeStream(MemoryStream,MemoryStream);
-    MemoryStream.SaveToFile(StrToRTL(Output));
+    If Result = rSuccess then
+      MemoryStream.SaveToFile(StrToRTL(Output));
   finally
     MemoryStream.Free;
   end;

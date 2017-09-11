@@ -7,3 +7,5 @@
 {$ELSE}
   {$UNDEF FPC_NonUnicode_NoUTF8RTL}
 {$IFEND}
+
+{$TYPEINFO ON}
