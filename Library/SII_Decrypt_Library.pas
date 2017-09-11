@@ -173,6 +173,23 @@ end;
 //==============================================================================
 
 exports
+{
+  GetFormatMemory
+  GetFormatFile
+  IsEncryptedMemory
+  IsEncryptedFile
+  IsEncodedMemory
+  IsEncodedFile
+  DecryptMemory
+  DecryptFile
+  DecodeMemory
+  DecodeMemoryHelper
+  DecodeFile
+  DecryptAndDecodeMemory
+  DecryptAndDecodeMemoryHelper
+  DecryptAndDecodeFile
+  FreeHelper
+}
   Exp_IsEncryptedMemory       name 'IsEncryptedMemory',
   Exp_IsEncryptedFile         name 'IsEncryptedFile',
   Exp_DecryptMemory           name 'DecryptMemory',

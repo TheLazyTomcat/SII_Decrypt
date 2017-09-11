@@ -76,9 +76,8 @@ try
           WriteLn('    Commands:');
           WriteLn;
           WriteLn('      --no_decode  - decryption only, no decoding will be attempted');
-          WriteLn('      --sw_aes     - AES decryption will be done only in software, acceleration');
-          WriteLn('                     using AES-NI instructions will be disabled');
-          WriteLn('      --in_mem     - processing of files is done entirely in-memory');
+          WriteLn('      --sw_aes     - AES decryption will be done only in software');
+          WriteLn('      --on_file    - processing of files is done directly on them');
           WriteLn('      --wait       - program will wait for user input after processing');
         end;
 
@@ -99,7 +98,7 @@ try
                 InFileName := CMDParser.Last.Str;
                 OutFileName := InFileName
               end;
-            ExitCode := Ord(Decryptor.DecryptAndDecodeFile(InFileName,OutFileName));
+            ExitCode := Ord(Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName));
             WriteLn;
             WriteLn(Format('Result: %s (%d)',[GetResultText(ExitCode),ExitCode]));
           finally
@@ -133,17 +132,17 @@ try
             else OutFileName := InFileName;
             If CMDParser.CommandPresent('no_decode') then
               begin
-                If CMDParser.CommandPresent('in_mem') then
-                  ExitCode := Ord(Decryptor.DecryptFileInMemory(InFileName,OutFileName))
+                If CMDParser.CommandPresent('on_file') then
+                  ExitCode := Ord(Decryptor.DecryptFile(InFileName,OutFileName))
                 else
-                  ExitCode := Ord(Decryptor.DecryptFile(InFileName,OutFileName));
+                  ExitCode := Ord(Decryptor.DecryptFileInMemory(InFileName,OutFileName));
               end
             else
               begin
-                If CMDParser.CommandPresent('in_mem') then
-                  ExitCode := Ord(Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName))
+                If CMDParser.CommandPresent('on_file') then
+                  ExitCode := Ord(Decryptor.DecryptAndDecodeFile(InFileName,OutFileName))
                 else
-                  ExitCode := Ord(Decryptor.DecryptAndDecodeFile(InFileName,OutFileName));
+                  ExitCode := Ord(Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName));
               end;
             WriteLn;
             WriteLn(Format('Result: %s (%d)',[GetResultText(ExitCode),ExitCode]));
