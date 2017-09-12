@@ -155,14 +155,20 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSII_Decryptor.GetStreamFormat(Stream: TSTream): TSIIResult;
+Function TSII_Decryptor.GetStreamFormat(Stream: TStream): TSIIResult;
 begin
 try
   If (Stream.Size - Stream.Position) >= SizeOf(UInt32) then
     case Stream_ReadUInt32(Stream,False) of
-      SII_Signature_Encrypted:  Result := rSuccess;
+      SII_Signature_Encrypted:  If (Stream.Size - Stream.Position) >= SizeOf(TSIIHeader) then
+                                  Result := rSuccess
+                                else
+                                  Result := rTooFewData;
       SII_Signature_Normal:     Result := rNotEncrypted;
-      SII_Signature_Binary:     Result := rBinaryFormat;
+      SII_Signature_Binary:     If (Stream.Size - Stream.Position) >= SIIBIN_MIN_SIZE then
+                                  Result := rBinaryFormat
+                                else
+                                  Result := rTooFewData;
     else
       Result := rUnknownFormat;
     end

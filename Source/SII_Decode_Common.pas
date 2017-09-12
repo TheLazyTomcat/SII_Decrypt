@@ -53,7 +53,7 @@ type
   end;
 
   TSIIBin_Value_ID = record
-    Length: UInt8;
+    Length:   UInt8;
     Parts:    array of UInt64;
     PartsStr: array of AnsiString;
   end;

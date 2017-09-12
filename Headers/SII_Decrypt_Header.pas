@@ -37,13 +37,13 @@ const
   If any function returns value that is not listed here, you should take it as
   if it returned SIIDEC_GENERIC_ERROR.
 }
-  SIIDEC_GENERIC_ERROR    = -1;
-  SIIDEC_SUCCESS          = 0;
-  SIIDEC_NOT_ENCRYPTED    = 1;
-  SIIDEC_BINARY_FORMAT    = 2;
-  SIIDEC_UNKNOWN_FORMAT   = 3;
-  SIIDEC_TOO_FEW_DATA     = 4;
-  SIIDEC_BUFFER_TOO_SMALL = 5;
+  SIIDEC_RESULT_GENERIC_ERROR    = -1;
+  SIIDEC_RESULT_SUCCESS          = 0;
+  SIIDEC_RESULT_NOT_ENCRYPTED    = 1;
+  SIIDEC_RESULT_BINARY_FORMAT    = 2;
+  SIIDEC_RESULT_UNKNOWN_FORMAT   = 3;
+  SIIDEC_RESULT_TOO_FEW_DATA     = 4;
+  SIIDEC_RESULT_BUFFER_TOO_SMALL = 5;
 
 {
   Default file name of the dynamically loaded library (DLL).

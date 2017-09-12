@@ -20,6 +20,17 @@ uses
 {                               TSIIBin_Decoder                                }
 {------------------------------------------------------------------------------}
 {==============================================================================}
+const
+{
+  (8 bytes) header
+    (4 bytes) signature
+    (4 bytes) unknown (2)
+  (5 bytes) an empty structure
+    (4 bytes) structure index (0)
+    (1 byte ) unknown (0))
+}
+  SIIBIN_MIN_SIZE = 13;
+
 type
   TSIIBin_ProgressType = (ptLoading,ptConverting,ptStreaming);
 
@@ -184,7 +195,7 @@ end;
 
 class Function TSIIBin_Decoder.IsBinarySIIStream(Stream: TStream): Boolean;
 begin
-If (Stream.Size - Stream.Position) >= 14 then
+If (Stream.Size - Stream.Position) >= SIIBIN_MIN_SIZE then
   Result := Stream_ReadUInt32(Stream,False) = SIIBin_Signature_Bin
 else
   Result := False;
@@ -229,7 +240,7 @@ var
   Continue:       Boolean;
 begin
 InitialPos := Stream.Position;
-If (Stream.Size - InitialPos) >= 14 then
+If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
   begin
     DoProgress(0.0,ptLoading);
     Initialize;
