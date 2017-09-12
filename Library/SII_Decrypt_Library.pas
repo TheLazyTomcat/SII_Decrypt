@@ -11,10 +11,33 @@ unit SII_Decrypt_Library;
 
 interface
 
+uses
+  AuxTypes;
+
+Function Exp_GetMemoryFormat(Mem: Pointer; Size: TMemSize): Int32; stdcall;
+Function Exp_GetFileFormat(FileName: PUTF8Char): Int32; stdcall;
+Function Exp_IsEncryptedMemory(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_IsEncryptedFile(FileName: PUTF8Char): LongBool; stdcall;
+Function Exp_IsEncodedMemory(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_IsEncodedFile(FileName: PUTF8Char): LongBool; stdcall;
+
+Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_DecryptFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+Function Exp_DecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
+Function Exp_DecodeMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_DecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+Function Exp_DecryptAndDecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
+Function Exp_DecryptAndDecodeMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_DecryptAndDecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+procedure Exp_FreeHelper(Helper: PPointer); stdcall;
+
 implementation
 
 uses
-  SysUtils, Classes, AuxTypes, StrRect, StaticMemoryStream,
+  SysUtils, Classes, StrRect, StaticMemoryStream,
   SII_Decrypt_Decryptor, SII_Decrypt_Header;
 
 Function StrConv(Str: PUTF8Char): String;
@@ -233,8 +256,8 @@ try
               HelperStream := TMemoryStream.Create;
               try
                 Result := Ord(DecodeStream(InMemStream,HelperStream,True));
-                OutSize^ := TMemSize(HelperStream.Size);
-                Result := SIIDEC_RESULT_SUCCESS;
+                If Result = SIIDEC_RESULT_SUCCESS then
+                  OutSize^ := TMemSize(HelperStream.Size);
               finally
                 If Assigned(Helper) then
                   Helper^ := Pointer(HelperStream)
@@ -290,52 +313,137 @@ end;
 
 //==============================================================================
 
+Function Exp_DecryptAndDecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
+var
+  InMemStream:  TStaticMemoryStream;
+  OutMemStream: TWritableStaticMemoryStream;
+  HelperStream: TMemoryStream;
+begin
+try
+  with TSII_Decryptor.Create do
+  try
+    ReraiseExceptions := False;
+    InMemStream := TStaticMemoryStream.Create(Input,InSize);
+    try
+      Result := Ord(GetStreamFormat(InMemStream));
+      If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT] then
+        begin
+          If Assigned(Output) then
+            begin
+              If Assigned(Helper) then
+                begin
+                  HelperStream := TMemoryStream(Helper^);
+                  try
+                    If OutSize^ >= HelperStream.Size then
+                      begin
+                        Move(HelperStream.Memory^,Output^,HelperStream.Size);
+                        OutSize^ := TMemSize(HelperStream.Size);
+                        Result := SIIDEC_RESULT_SUCCESS;
+                      end
+                    else Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
+                  finally
+                    HelperStream.Free;
+                    Helper^ := nil;
+                  end;
+                end
+              else
+                begin
+                  OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
+                  try
+                    Result := Ord(DecryptAndDecodeStream(InMemStream,OutMemStream,False));
+                    If Result = SIIDEC_RESULT_SUCCESS then
+                      OutSize^ := TMemSize(OutMemStream.Position);
+                  finally
+                    OutMemStream.Free;
+                  end;
+                end;
+            end
+          else
+            begin
+              HelperStream := TMemoryStream.Create;
+              try
+                Result := Ord(DecryptAndDecodeStream(InMemStream,HelperStream,True));
+                If Result = SIIDEC_RESULT_SUCCESS then
+                  OutSize^ := TMemSize(HelperStream.Size);
+              finally
+                If Assigned(Helper) then
+                  Helper^ := Pointer(HelperStream)
+                else
+                  HelperStream.Free;
+              end;
+            end;
+        end;
+    finally
+      InMemStream.Free;
+    end;
+  finally
+    Free;
+  end;
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function Exp_DecryptAndDecodeMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+begin
+try
+  Result := Exp_DecryptAndDecodeMemoryHelper(Input,InSize,Output,OutSize,nil);
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function Exp_DecryptAndDecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+begin
+try
+  with TSII_Decryptor.Create do
+  try
+    ReraiseExceptions := False;
+    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT] then
+      Result := Ord(DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
+  finally
+    Free;
+  end;
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
 //==============================================================================
 
-procedure FreeHelper(Helper: PPointer); stdcall;
+procedure Exp_FreeHelper(Helper: PPointer); stdcall;
 begin
 try
   If Assigned(Helper) then
     FreeAndNil(TMemoryStream(Helper^));
 except
-  // do nothing;
+  // do nothing
 end;
 end;
-(*
-
-//------------------------------------------------------------------------------
-
-  DecryptAndDecodeMemoryHelper
-  DecryptAndDecodeMemory
-  DecryptAndDecodeFile
 
 //==============================================================================
 
-//exports
-{
-  GetMemoryFormat
-  GetFileFormat
-  IsEncryptedMemory
-  IsEncryptedFile
-  IsEncodedMemory
-  IsEncodedFile
-  DecryptMemory
-  DecryptFile
-  DecodeMemory
-  DecodeMemoryHelper
-  DecodeFile
-  DecryptAndDecodeMemory
-  DecryptAndDecodeMemoryHelper
-  DecryptAndDecodeFile
-  FreeHelper
-}
-(*
-  Exp_IsEncryptedMemory       name 'IsEncryptedMemory',
-  Exp_IsEncryptedFile         name 'IsEncryptedFile',
-  Exp_DecryptMemory           name 'DecryptMemory',
-  Exp_DecryptFile             name 'DecryptFile',
-  Exp_DecryptFile2            name 'DecryptFile2',
-  Exp_DecryptAndDecodeFile    name 'DecryptAndDecodeFile',
-  Exp_DecryptAndDecodeFile2   name 'DecryptAndDecodeFile2';
-*)
+exports
+
+  Exp_GetMemoryFormat              name 'GetMemoryFormat',
+  Exp_GetFileFormat                name 'GetFileFormat',
+  Exp_IsEncryptedMemory            name 'IsEncryptedMemory',
+  Exp_IsEncryptedFile              name 'IsEncryptedFile',
+  Exp_IsEncodedMemory              name 'IsEncodedMemory',
+  Exp_IsEncodedFile                name 'IsEncodedFile',
+  Exp_DecryptMemory                name 'DecryptMemory',
+  Exp_DecryptFile                  name 'DecryptFile',
+  Exp_DecodeMemory                 name 'DecodeMemory',
+  Exp_DecodeMemoryHelper           name 'DecodeMemoryHelper',
+  Exp_DecodeFile                   name 'DecodeFile',
+  Exp_DecryptAndDecodeMemory       name 'DecryptAndDecodeMemory',
+  Exp_DecryptAndDecodeMemoryHelper name 'DecryptAndDecodeMemoryHelper',
+  Exp_DecryptAndDecodeFile         name 'DecryptAndDecodeFile',
+  Exp_FreeHelper                   name 'FreeHelper';
+
 end.
