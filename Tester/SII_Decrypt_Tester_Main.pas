@@ -44,20 +44,17 @@ try
     begin
       MemStream := TMemoryStream.Create;
       try
+        WriteLn(DecryptFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
+        WriteLn(DecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
+        WriteLn(DecryptAndDecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
+
         MemStream.LoadFromFile(ParamStr(1));
-        MemStream.SaveToFile(ParamStr(1) + '.f2out');
-        MemStream.SaveToFile(ParamStr(1) + '.fd2out');
-        WriteLn(DecryptFile(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)))),PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
-        WriteLn(DecryptFile2(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
-
-        WriteLn(DecryptAndDecodeFile(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)))),PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
-        WriteLn(DecryptAndDecodeFile2(PAnsiChar(StrToUTF8(RTLToStr(ParamStr(1)) + '.fd2out'))));
-
-        If DecryptMemory(MemStream.Memory,MemStream.Size,nil,@OutSize) = 0 then
+        If DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,nil,@OutSize) = SIIDEC_RESULT_SUCCESS then
           begin
             GetMem(OutBuff,OutSize);
             try
-              WriteLn(DecryptMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
+              MemStream.Position := 0;
+              WriteLn(DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
               MemStream.Seek(0,soBeginning);
               MemStream.WriteBuffer(OutBuff^,OutSize);
               MemStream.Size := OutSize;
