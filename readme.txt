@@ -1,8 +1,8 @@
 ================================================================================
 
-                              SII Decrypt library
+                               SII Decrypt project
 
-                                 version 1.1.X
+                                 version 1.2.X
 
 ================================================================================
 
@@ -11,8 +11,8 @@ Index
 
   Index ...................................................   9
   Description .............................................  22
-  Parts of the library ....................................  41
-  Library files ...........................................  68
+  Parts of the project ....................................  41
+  Project files ...........................................  68
   Repositories ............................................ 102
   Licensing ............................................... 115
   Authors, contacts ....................................... 123
@@ -21,7 +21,7 @@ Index
 
 Description
 ------------------------------
-This library is primarily designed to decrypt SII files that are used as a mean 
+This project is primarily designed to decrypt SII files that are used as a mean 
 of storing save data in truck games developed by SCS Software. It was tested on
 saves from Euro Truck Simulator 2 and American Truck Simulator.
 
@@ -38,21 +38,22 @@ All main parts can be compiled into both 32bit and 64bit binaries.
 
 
 
-Parts of the library
+Parts of the project
 ------------------------------
-The library can be principally used in three ways - directly as a code, as
+The project can be principally used in three ways - directly as a code, as
 a dynamically loaded library (DLL) or as console program.
 
-  If you want to use it directly, simply include .\Source\Decryptor.pas file in
-  your project and use classes provided in this unit. Also make sure you add
-  folder .\Source\Libs to project's search paths, as decryptor requires units
-  that are stored there.
+  If you want to use it directly, simply include files from .\Source folder in
+  your project and use provided classes. Also make sure you add folder 
+  .\Source\Libs to project's search paths, as decryptor requires units that are 
+  stored there.
 
-  To use this library as DLL, include header file .\Headers\SII_DecryptLib.pas
-  to your project and use functions and constants provided by this unit.
-  Don't forget to add compiled DLL to your program.
+  To use this project as a library (DLL), include header file 
+  .\Headers\SII_Decrypt_Header.pas to your project and use functions and 
+  constants provided by this unit. Don't forget to add compiled DLL to your 
+  program.
 
-  If you want to use this library in form of console program, you can do it as
+  If you want to use this project in form of console program, you can do it as
   with almost all other console utilities. Invoke the EXE and pass path to
   a processed file as a first command line parameter. You can also specify
   destination file (file where the decrypted result will be stored) as a second
@@ -61,11 +62,11 @@ a dynamically loaded library (DLL) or as console program.
   not need to exist, but the folder where it will be stored must exist.
   You can use exit code of the program to check processing for errors. The
   result codes are the same as for functions exported by DLL version of this
-  library - so refer to DLL headers for details.
+  project - so refer to DLL headers for details.
 
 
 
-Library files
+Project files
 ------------------------------
 List of folders with description of their content:
 
@@ -74,24 +75,28 @@ List of folders with description of their content:
 
   .\Headers
 
-    Header files for DLL part of the library.
+    Header files for DLL part of the project.
 
   .\Source
 
-    Source code of library's core. Also contains other units used throughout the
+    Source code of project's core. Also contains other units used throughout the
     whole project.
 
   .\Library
 
-    DLL part of the library.
+    Library (DLL) part of the project.
 
   .\Program
 
-    Console program part of the library.
+    Console program part of the project.
 
   .\Tester
 
-    Small utility used to test DLL part of the library.
+    Small utility used to test library part of the project.
+    
+  .\TesterDirect
+
+    Utility used to directly test implementation of library part.
 
   .\Scripts
 
@@ -101,7 +106,7 @@ List of folders with description of their content:
 
 Repositories
 ----------------------------------------
-You can get actual copies of SII Decrypt library on either of these git
+You can get actual copies of SII Decrypt project on either of these git
 repositories:
 
 https://github.com/ncs-sniper/SII_Decrypt
