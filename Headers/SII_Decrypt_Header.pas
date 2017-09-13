@@ -48,11 +48,6 @@ const
   SIIDEC_RESULT_TOO_FEW_DATA     = 4;
   SIIDEC_RESULT_BUFFER_TOO_SMALL = 5;
 
-{
-  Default file name of the dynamically loaded library (DLL).
-}
-  SIIDecrypt_LibFileName = 'SII_Decrypt.dll';
-
 //==============================================================================
 
 var
@@ -238,11 +233,12 @@ var
 
   DecryptFile
 
-  Decrypts file given by a path in Input parameter and stores decrypted result
-  in a file given by a path in Output parameter.
+  Decrypts file given by a path in InputFile parameter and stores decrypted
+  result in a file given by a path in OutputFile parameter.
   It is recommended to pass full file paths, but relative paths are acceptable.
   Folder, where the destination file will be stored, must exists prior of
   calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
+  It is allowed to pass the same file as input and output.
 
   Parameters:
 
@@ -381,11 +377,12 @@ var
 
   DecodeFile
 
-  Decodes file given by a path in Input parameter and stores decoded result in
-  a file given by a path in Output parameter.
+  Decodes file given by a path in InputFile parameter and stores decoded result
+  in a file given by a path in OutputFile parameter.
   It is recommended to pass full file paths, but relative paths are acceptable.
   Folder, where the destination file will be stored, must exists prior of
   calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
+  It is allowed to pass the same file as input and output.
 
   Parameters:
 
@@ -408,11 +405,116 @@ var
 }
   DecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
+{-------------------------------------------------------------------------------
+
+  DecryptAndDecodeMemoryHelper
+
+  Decrypts and, if needed, decodes memory block given by the Input parameter and
+  stores decoded data to a memory given by Output parameter.
+  Use is exactly the same as in function DecodeMemoryHelper, refer there for
+  details about how to proprly use this function
+
+  Parameters:
+
+    Input   - pointer to a memory block containing input data (encrypted or
+              binary SII file) (must not be nil)
+    InSize  - size of the input data in bytes
+    Output  - pointer to a buffer that will receive decrypted and decoded data
+    OutSize - pointer to a variable holding size of the output buffer, on return
+              receives true size of the decrypted and decoded data (in bytes)
+    Helper  - pointer to a variable that will receive or contains helper
+
+  Returns:
+
+    SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
+    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted and
+                                     decoded and result stored in the output
+                                     buffer
+    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+                                     (does not need decryption or decoding)
+    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
+    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format
+    SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
+                                     encrypted or binary SII file
+    SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
+                                     is too small to store all decrypted and
+                                     decoded data
+}
   DecryptAndDecodeMemoryHelper: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  DecryptAndDecodeMemory
+
+  Decrypts and, if needed, decodes memory block given by the Input parameter and
+  stores decoded data to a memory given by Output parameter.
+  Use is exactly the same as in function DecodeMemory, refer there for details
+  about how to proprly use this function
+
+  Parameters:
+
+    Input   - pointer to a memory block containing input data (encrypted or
+              binary SII file) (must not be nil)
+    InSize  - size of the input data in bytes
+    Output  - pointer to a buffer that will receive decrypted and decoded data
+    OutSize - pointer to a variable holding size of the output buffer, on return
+              receives true size of the decrypted and decoded data (in bytes)
+
+  Returns:
+
+    SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
+    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted and
+                                     decoded and result stored in the output
+                                     buffer
+    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+                                     (does not need decryption or decoding)
+    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
+    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format
+    SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
+                                     encrypted or binary SII file
+    SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
+                                     is too small to store all decrypted and
+                                     decoded data
+}
   DecryptAndDecodeMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  DecryptAndDecodeFile
+
+  Decrypts and, if needed, decodes file given by a path in InputFile parameter
+  and stores the result in a file given by a path in OutputFile parameter.
+  It is recommended to pass full file paths, but relative paths are acceptable.
+  Folder, where the destination file will be stored, must exists prior of
+  calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
+  It is allowed to pass the same file as input and output.
+
+  Parameters:
+
+    Input  - path to the source file (ecrypted or binary SII file)
+    Output - path to the destination file (where decrypted and decoded result
+             will be stored)
+
+  Returns:
+
+    SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
+    SIIDEC_RESULT_SUCCESS          - input file was successfully decrypted and
+                                     decoded and result stored in the output file
+    SIIDEC_RESULT_NOT_ENCRYPTED    - input file contains plain-text SII file
+                                     (does not need decryption or decoding)
+    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
+    SIIDEC_RESULT_UNKNOWN_FORMAT   - input file is of an uknown format
+    SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain a valid
+                                     encrypted or binary SII file
+    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+}
   DecryptAndDecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 //==============================================================================
+
+const
+  // Default file name of the dynamically loaded library (DLL).
+  SIIDecrypt_LibFileName = 'SII_Decrypt.dll';
 
 // Call this routine to initialize (load) the dynamic library.
 procedure Load_SII_Decrypt(const LibraryFile: String = 'SII_Decrypt.dll');
@@ -425,10 +527,12 @@ implementation
 uses
   SysUtils, Windows;
 
+//==============================================================================
+
 var
   LibHandle:  HMODULE;
 
-procedure Load_SII_Decrypt(const LibraryFile: String = 'SII_Decrypt.dll');
+procedure Load_SII_Decrypt(const LibraryFile: String = SIIDecrypt_LibFileName);
 begin
 If LibHandle = 0 then
   begin
