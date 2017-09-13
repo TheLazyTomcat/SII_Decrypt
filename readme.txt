@@ -21,15 +21,15 @@ Index
 
 Description
 ------------------------------
-This project is primarily designed to decrypt SII files that are used as a mean 
+This project is primarily designed to decrypt SII files that are used as a mean
 of storing save data in truck games developed by SCS Software. It was tested on
 saves from Euro Truck Simulator 2 and American Truck Simulator.
 
-It can also decode binary format normally used in these saves into its textual 
+It can also decode binary format normally used in these saves into its textual
 form. This decoding is done automatically when binary format is encountered.
-It means you no longer have to manually change format (g_save_format) the game 
+It means you no longer have to manually change format (g_save_format) the game
 is using while writing the saves.
- 
+
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.6.x
 (FPC 3.x) and therefore can be compiled by those development tools. But it
 should be also possible to compile it in newer versions of mentioned
@@ -44,13 +44,13 @@ The project can be principally used in three ways - directly as a code, as
 a dynamically loaded library (DLL) or as console program.
 
   If you want to use it directly, simply include files from .\Source folder in
-  your project and use provided classes. Also make sure you add folder 
-  .\Source\Libs to project's search paths, as decryptor requires units that are 
+  your project and use provided classes. Also make sure you add folder
+  .\Source\Libs to project's search paths, as decryptor requires units that are
   stored there.
 
-  To use this project as a library (DLL), include header file 
-  .\Headers\SII_Decrypt_Header.pas to your project and use functions and 
-  constants provided by this unit. Don't forget to add compiled DLL to your 
+  To use this project as a library (DLL), include header file
+  .\Headers\SII_Decrypt_Header.pas to your project and use functions and
+  constants provided by this unit. Don't forget to add compiled DLL to your
   program.
 
   If you want to use this project in form of console program, you can do it as
@@ -93,7 +93,7 @@ List of folders with description of their content:
   .\Tester
 
     Small utility used to test library part of the project.
-    
+
   .\TesterDirect
 
     Utility used to directly test implementation of library part.
@@ -129,7 +129,7 @@ Authors, contacts, links
 ----------------------------------------
 František Milt, frantisek.milt@gmail.com
 
-If you find this project useful and don't know what to do with your money ;), 
+If you find this project useful and don't know what to do with your money ;),
 consider making a small donation using the following link:
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
