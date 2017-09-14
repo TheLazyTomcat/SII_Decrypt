@@ -3,3 +3,5 @@
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
+
+{$TYPEINFO ON}

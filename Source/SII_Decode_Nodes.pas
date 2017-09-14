@@ -35,8 +35,8 @@ type
   public
     constructor Create(const Name: AnsiString; Stream: TStream);
     destructor Destroy; override;
-    Function AsString: String; virtual;
-    Function AsLine(IndentCount: Integer = 0): String; virtual;
+    Function AsString: AnsiString; virtual;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; virtual;
   published
     property ValueType: TSIIBin_ValueType read GetValueType;
     property Name: AnsiString read fName;
@@ -58,7 +58,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -77,8 +77,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -98,7 +98,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -118,8 +118,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -137,7 +137,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -155,8 +155,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -174,7 +174,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -192,7 +192,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -210,8 +210,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -229,8 +229,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -249,7 +249,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 
@@ -269,8 +269,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -288,7 +288,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -306,8 +306,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -325,7 +325,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -343,8 +343,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -362,7 +362,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -380,8 +380,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -399,7 +399,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -417,7 +417,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -435,8 +435,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -454,7 +454,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -472,8 +472,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -492,7 +492,7 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
+    Function AsString: AnsiString; override;
   end;
 
 {==============================================================================}
@@ -511,8 +511,8 @@ type
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
   public
-    Function AsString: String; override;
-    Function AsLine(IndentCount: Integer = 0): String; override;
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
   end;
 
 {==============================================================================}
@@ -535,7 +535,7 @@ type
     constructor Create(Structure: TSIIBin_Structure);
     destructor Destroy; override;
     procedure Load(Stream: TStream); virtual;
-    Function AsString: String; virtual;
+    Function AsString: AnsiString; virtual;
     property BlockID: TSIIBin_Value_ID read fBlockID;
     property Fields[Index: Integer]: TSIIBin_Value read GetField;
   published
@@ -547,7 +547,10 @@ implementation
 
 uses
   SysUtils,
-  BinaryStreaming;
+  BinaryStreaming, StrRect, ExplicitStringLists;
+
+const
+  LARGE_ARRAY_OPTIMIZE_THRESHOLD = 16;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -602,16 +605,16 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value.AsString: String;
+Function TSIIBin_Value.AsString: AnsiString;
 begin
 Result := '';
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value.AsLine(IndentCount: Integer = 0): AnsiString;
 begin
-Result := StringOfChar(' ',IndentCount) + fName + ': ' + AsString;
+Result := StrToAnsi(StringOfChar(' ',IndentCount)) + fName + AnsiString(': ') + AsString;
 end;
 
 
@@ -650,12 +653,12 @@ end;
 {   TSIIBin_Value_00000001 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000001.AsString: String;
+Function TSIIBin_Value_00000001.AsString: AnsiString;
 begin
 If SIIBin_IsLimitedAlphabet(fValue) and (Length(fValue) > 0) then
-  Result := Format('%s',[fValue])
+  Result := StrToAnsi(Format('%s',[fValue]))
 else
-  Result := Format('"%s"',[fValue])
+  Result := StrToAnsi(Format('"%s"',[fValue]));
 end;
 
 
@@ -701,25 +704,44 @@ end;
 {   TSIIBin_Value_00000002 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000002.AsString: String;
+Function TSIIBin_Value_00000002.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000002.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000002.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  If SIIBin_IsLimitedAlphabet(fValue[i]) and (Length(fValue[i]) > 0) then
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: %s',[fName,i,fValue[i]])
-  else
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: "%s"',[fName,i,fValue[i]]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        If SIIBin_IsLimitedAlphabet(fValue[i]) and (Length(fValue[i]) > 0) then
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,fValue[i]]))
+        else
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: "%s"',[fName,i,fValue[i]]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      If SIIBin_IsLimitedAlphabet(fValue[i]) and (Length(fValue[i]) > 0) then
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: %s',[fName,i,fValue[i]]))
+      else
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: "%s"',[fName,i,fValue[i]]));
+  end;
 end;
 
 
@@ -758,10 +780,10 @@ end;
 {   TSIIBin_Value_00000003 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000003.AsString: String;
+Function TSIIBin_Value_00000003.AsString: AnsiString;
 begin
 If fValue <> 0 then
-  Result := self.fValueStr
+  Result := fValueStr
 else
   Result := '""';
 end;
@@ -810,25 +832,44 @@ end;
 {   TSIIBin_Value_00000004 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000004.AsString: String;
+Function TSIIBin_Value_00000004.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000004.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000004.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  If fValue[i] <> 0 then
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: %s',[fName,i,fValueStr[i]])
-  else
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: ""',[fName,i])
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        If fValue[i] <> 0 then
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,fValueStr[i]]))
+        else
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: ""',[fName,i]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      If fValue[i] <> 0 then
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: %s',[fName,i,fValueStr[i]]))
+      else
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: ""',[fName,i]));
+  end;
 end;
 
 
@@ -860,7 +901,7 @@ end;
 {   TSIIBin_Value_00000005 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000005.AsString: String;
+Function TSIIBin_Value_00000005.AsString: AnsiString;
 begin
 Result := SIIBin_SingleToStr(fValue);
 end;
@@ -898,21 +939,37 @@ end;
 {   TSIIBin_Value_00000006 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000006.AsString: String;
+Function TSIIBin_Value_00000006.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000006.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000006.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-            Format('%s[%d]: %s',[fName,i,SIIBin_SingleToStr(fValue[i])]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,SIIBin_SingleToStr(fValue[i])]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                Format('%s[%d]: %s',[fName,i,SIIBin_SingleToStr(fValue[i])]));
+  end;
 end;
 
 
@@ -944,11 +1001,11 @@ end;
 {   TSIIBin_Value_00000009 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000009.AsString: String;
+Function TSIIBin_Value_00000009.AsString: AnsiString;
 begin
-Result := Format('(%s, %s, %s)',[SIIBin_SingleToStr(fValue[0]),
-                                 SIIBin_SingleToStr(fValue[1]),
-                                 SIIBin_SingleToStr(fValue[2])]);
+Result := StrToAnsi(Format('(%s, %s, %s)',[SIIBin_SingleToStr(fValue[0]),
+                                           SIIBin_SingleToStr(fValue[1]),
+                                           SIIBin_SingleToStr(fValue[2])]));;
 end;
 
 
@@ -980,9 +1037,9 @@ end;
 {   TSIIBin_Value_00000011 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000011.AsString: String;
+Function TSIIBin_Value_00000011.AsString: AnsiString;
 begin
-Result := Format('(%d, %d, %d)',[fValue[0],fValue[1],fValue[2]]);
+Result := StrToAnsi(Format('(%d, %d, %d)',[fValue[0],fValue[1],fValue[2]]));
 end;
 
 
@@ -1018,21 +1075,37 @@ end;
 {   TSIIBin_Value_00000012 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000012.AsString: String;
+Function TSIIBin_Value_00000012.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000012.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000012.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-    Format('%s[%d]: (%d, %d, %d)',[fName,i,fValue[i][0],fValue[i][1],fValue[i][2]]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: (%d, %d, %d)',[fName,i,fValue[i][0],fValue[i][1],fValue[i][2]]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+        Format('%s[%d]: (%d, %d, %d)',[fName,i,fValue[i][0],fValue[i][1],fValue[i][2]]));
+  end;
 end;
 
 
@@ -1068,24 +1141,44 @@ end;
 {   TSIIBin_Value_00000018 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000018.AsString: String;
+Function TSIIBin_Value_00000018.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000018.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000018.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-    Format('%s[%d]: (%s; %s, %s, %s)',[fName,i,SIIBin_SingleToStr(fValue[i][0]),
-                                               SIIBin_SingleToStr(fValue[i][1]),
-                                               SIIBin_SingleToStr(fValue[i][2]),
-                                               SIIBin_SingleToStr(fValue[i][3])]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) +
+               Format('%s[%d]: (%s; %s, %s, %s)',[fName,i,SIIBin_SingleToStr(fValue[i][0]),
+                                                          SIIBin_SingleToStr(fValue[i][1]),
+                                                          SIIBin_SingleToStr(fValue[i][2]),
+                                                          SIIBin_SingleToStr(fValue[i][3])]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+        Format('%s[%d]: (%s; %s, %s, %s)',[fName,i,SIIBin_SingleToStr(fValue[i][0]),
+                                                   SIIBin_SingleToStr(fValue[i][1]),
+                                                   SIIBin_SingleToStr(fValue[i][2]),
+                                                   SIIBin_SingleToStr(fValue[i][3])]));
+  end;
 end;
 
 
@@ -1128,13 +1221,13 @@ end;
 {   TSIIBin_Value_00000019 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000019.AsString: String;
+Function TSIIBin_Value_00000019.AsString: AnsiString;
 begin
-Result := Format('(%s, %s, %s) (%s; %s, %s, %s)',
-                 [SIIBin_SingleToStr(fValue[0]),SIIBin_SingleToStr(fValue[1]),
-                  SIIBin_SingleToStr(fValue[2]),SIIBin_SingleToStr(fValue[4]),
-                  SIIBin_SingleToStr(fValue[5]),SIIBin_SingleToStr(fValue[6]),
-                  SIIBin_SingleToStr(fValue[7])]);
+Result := StrToAnsi(Format('(%s, %s, %s) (%s; %s, %s, %s)',
+                    [SIIBin_SingleToStr(fValue[0]),SIIBin_SingleToStr(fValue[1]),
+                     SIIBin_SingleToStr(fValue[2]),SIIBin_SingleToStr(fValue[4]),
+                     SIIBin_SingleToStr(fValue[5]),SIIBin_SingleToStr(fValue[6]),
+                     SIIBin_SingleToStr(fValue[7])]));
 end;
 
 
@@ -1185,23 +1278,42 @@ end;
 {   TSIIBin_Value_0000001A - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_0000001A.AsString: String;
+Function TSIIBin_Value_0000001A.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_0000001A.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_0000001A.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) + Format('%s[%d]: (%s, %s, %s) (%s; %s, %s, %s)',
-              [fName,i,SIIBin_SingleToStr(fValue[i][0]),SIIBin_SingleToStr(fValue[i][1]),SIIBin_SingleToStr(fValue[i][2]),
-               SIIBin_SingleToStr(fValue[i][4]),SIIBin_SingleToStr(fValue[i][5]),
-               SIIBin_SingleToStr(fValue[i][6]),SIIBin_SingleToStr(fValue[i][7])]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: (%s, %s, %s) (%s; %s, %s, %s)',
+                  [fName,i,SIIBin_SingleToStr(fValue[i][0]),SIIBin_SingleToStr(fValue[i][1]),SIIBin_SingleToStr(fValue[i][2]),
+                   SIIBin_SingleToStr(fValue[i][4]),SIIBin_SingleToStr(fValue[i][5]),
+                   SIIBin_SingleToStr(fValue[i][6]),SIIBin_SingleToStr(fValue[i][7])]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) + Format('%s[%d]: (%s, %s, %s) (%s; %s, %s, %s)',
+                  [fName,i,SIIBin_SingleToStr(fValue[i][0]),SIIBin_SingleToStr(fValue[i][1]),SIIBin_SingleToStr(fValue[i][2]),
+                   SIIBin_SingleToStr(fValue[i][4]),SIIBin_SingleToStr(fValue[i][5]),
+                   SIIBin_SingleToStr(fValue[i][6]),SIIBin_SingleToStr(fValue[i][7])]));
+  end;
 end;
 
 
@@ -1234,9 +1346,9 @@ end;
 {   TSIIBin_Value_00000025 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000025.AsString: String;
+Function TSIIBin_Value_00000025.AsString: AnsiString;
 begin
-Result := Format('%d',[fValue]);
+Result := StrToAnsi(Format('%d',[fValue]));
 end;
 
 
@@ -1272,21 +1384,37 @@ end;
 {   TSIIBin_Value_00000026 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000026.AsString: String;
+Function TSIIBin_Value_00000026.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000026.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000026.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-            Format('%s[%d]: %d',[fName,i,fValue[i]]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %d',[fName,i,fValue[i]]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                Format('%s[%d]: %d',[fName,i,fValue[i]]));
+  end;
 end;
 
 
@@ -1318,12 +1446,12 @@ end;
 {   TSIIBin_Value_00000027 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000027.AsString: String;
+Function TSIIBin_Value_00000027.AsString: AnsiString;
 begin
 If fValue <> $FFFFFFFF then
-  Result := Format('%u',[fValue])
+  Result := StrToAnsi(Format('%u',[fValue]))
 else
-  Result := 'nil';
+  Result := AnsiString('nil');
 end;
 
 
@@ -1359,25 +1487,45 @@ end;
 {   TSIIBin_Value_00000028 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000028.AsString: String;
+Function TSIIBin_Value_00000028.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000028.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000028.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
   begin
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount);
-    If fValue[i] <> $FFFFFFFF then
-      Result := Result + Format('%s[%d]: %u',[fName,i,fValue[i]])
-    else
-      Result := Result + Format('%s[%d]: nil',[fName,i]);
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        If fValue[i] <> $FFFFFFFF then
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %u',[fName,i,fValue[i]]))
+        else
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: nil',[fName,i]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      begin
+        If fValue[i] <> $FFFFFFFF then
+          Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                             Format('%s[%d]: %u',[fName,i,fValue[i]]))
+        else
+          Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                             Format('%s[%d]: nil',[fName,i]));
+      end;
   end;
 end;
 
@@ -1410,12 +1558,12 @@ end;
 {   TSIIBin_Value_0000002B - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_0000002B.AsString: String;
+Function TSIIBin_Value_0000002B.AsString: AnsiString;
 begin
 If fValue <> $FFFF then
-  Result := Format('%u',[fValue])
+  Result := StrToAnsi(Format('%u',[fValue]))
 else
-  Result := 'nil';
+  Result := AnsiString('nil');
 end;
 
 
@@ -1451,25 +1599,44 @@ end;
 {   TSIIBin_Value_0000002C - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_0000002C.AsString: String;
+Function TSIIBin_Value_0000002C.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_0000002C.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_0000002C.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  If fValue[i] <> $FFFF then
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: %u',[fName,i,fValue[i]])
-  else
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: nil',[fName,i])
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        If fValue[i] <> $FFFF then
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %u',[fName,i,fValue[i]]))
+        else
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: nil',[fName,i]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      If fValue[i] <> $FFFF then
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: %u',[fName,i,fValue[i]]))
+      else
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: nil',[fName,i]));
+end;
 end;
 
 
@@ -1501,9 +1668,9 @@ end;
 {   TSIIBin_Value_00000031 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000031.AsString: String;
+Function TSIIBin_Value_00000031.AsString: AnsiString;
 begin
-Result := Format('%d',[fValue])
+Result := StrToAnsi(Format('%d',[fValue]));
 end;
 
 
@@ -1535,12 +1702,12 @@ end;
 {   TSIIBin_Value_00000033 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000033.AsString: String;
+Function TSIIBin_Value_00000033.AsString: AnsiString;
 begin
 If (Int64Rec(fValue).Lo <> $FFFFFFFF) and (Int64Rec(fValue).Hi <> $FFFFFFFF) then
-  Result := Format('%u',[fValue])
+  Result := StrToAnsi(Format('%u',[fValue]))
 else
-  Result := 'nil';
+  Result := AnsiString('nil');
 end;
 
 
@@ -1576,25 +1743,44 @@ end;
 {   TSIIBin_Value_00000034 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000034.AsString: String;
+Function TSIIBin_Value_00000034.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000034.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000034.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  If (Int64Rec(fValue[i]).Lo <> $FFFFFFFF) and (Int64Rec(fValue[i]).Hi <> $FFFFFFFF) then
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: %u',[fName,i,fValue[i]])
-  else
-    Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-              Format('%s[%d]: nil',[fName,i])
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        If (Int64Rec(fValue[i]).Lo <> $FFFFFFFF) and (Int64Rec(fValue[i]).Hi <> $FFFFFFFF) then
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %u',[fName,i,fValue[i]]))
+        else
+          AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: nil',[fName,i]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      If (Int64Rec(fValue[i]).Lo <> $FFFFFFFF) and (Int64Rec(fValue[i]).Hi <> $FFFFFFFF) then
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: %u',[fName,i,fValue[i]]))
+      else
+        Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                  Format('%s[%d]: nil',[fName,i]));
+  end;
 end;
 
 
@@ -1626,9 +1812,9 @@ end;
 {   TSIIBin_Value_00000035 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000035.AsString: String;
+Function TSIIBin_Value_00000035.AsString: AnsiString;
 begin
-Result := AnsiLowerCase(BoolToStr(fValue,True));
+Result := StrToAnsi(AnsiLowerCase(BoolToStr(fValue,True)));
 end;
 
 
@@ -1664,21 +1850,37 @@ end;
 {   TSIIBin_Value_00000036 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000036.AsString: String;
+Function TSIIBin_Value_00000036.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_00000036.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_00000036.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-    Format('%s[%d]: ',[fName,i]) + AnsiLowerCase(BoolToStr(fValue[i],True));
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: ',[fName,i]) + AnsiLowerCase(BoolToStr(fValue[i],True)));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+        Format('%s[%d]: ',[fName,i]) + AnsiLowerCase(BoolToStr(fValue[i],True)));
+  end;
 end;
 
 
@@ -1718,7 +1920,7 @@ end;
 {   TSIIBin_Value_00000039 - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_00000039.AsString: String;
+Function TSIIBin_Value_00000039.AsString: AnsiString;
 begin
 Result := SIIBin_IDToStr(fValue);
 end;
@@ -1767,21 +1969,37 @@ end;
 {   TSIIBin_Value_0000003A - public methods                                    }
 {------------------------------------------------------------------------------}
 
-Function TSIIBin_Value_0000003A.AsString: String;
+Function TSIIBin_Value_0000003A.AsString: AnsiString;
 begin
-Result := Format('%d',[Length(fValue)]);
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Value_0000003A.AsLine(IndentCount: Integer = 0): String;
+Function TSIIBin_Value_0000003A.AsLine(IndentCount: Integer = 0): AnsiString;
 var
   i:  Integer;
 begin
-Result := StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]);
-For i := Low(fValue) to High(fValue) do
-  Result := Result + sLineBreak + StringOfChar(' ',IndentCount) +
-            Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i])]);
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i])]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
+                Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i])]));
+  end;
 end;
 
 
@@ -1882,16 +2100,16 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_DataBlock.AsString: String;
+Function TSIIBin_DataBlock.AsString: AnsiString;
 var
   i:  Integer;
 begin
-with TStringList.Create do
+with TAnsiStringList.Create do
 try
-  Add(Format('%s : %s {',[fName,SIIBin_IDToStr(fBlockID)]));
+  AddDef(Format('%s : %s {',[fName,SIIBin_IDToStr(fBlockID)]));
   For i := 0 to Pred(fFields.Count) do
     Add(TSIIBin_Value(fFields[i]).AsLine(1));
-  Add('}');
+  AddDef('}');
   Result := Text;
 finally
   Free;
