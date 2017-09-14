@@ -118,7 +118,7 @@ Authors, contacts, links
 ----------------------------------------
 František Milt, frantisek.milt@gmail.com
 
-Forum thread: <<to_do>>
+Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
 
 If you find this program useful and don't know what to do with your money ;),
 consider making a small donation using the following link:
