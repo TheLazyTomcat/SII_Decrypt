@@ -1,0 +1,197 @@
+================================================================================
+
+                                 >> WARNING <<<
+
+This document does not describe complete process of conversion from binary SII
+file into its textual form. It merely describes the file format.
+Binary SII format is not officially documented, so every information provided
+here is only an educated gues and comes from observation of data patterns.
+Nomenclature is also completely arbitrary and should not be referenced as being
+official (or even right).
+
+================================================================================
+
+Notes on basic types:
+
+  - all binary values are stored with little endianness
+  - floating point numbers are conformant with IEEE 754
+  - strings seems to have UTF8 encoding, char is 8bit wide, they are NOT
+    null-terminated
+  - vectors, arrays and other structured types do not have any padding or
+    alignment, be it explicit or implicit
+  - all strings and arrays are stored as a pair of 32bit (unsigned) length
+    followed by an actual array of items/characters, empty arrays are stored
+    only as a length of zero
+
+
+General file structure
+----------------------------------------
+Binary SII files are a serialization of structures the game uses internally,
+but they are not just plain dump of the memory.
+Each file starts with an 8byte header, followed by one or more blocks.
+Currently, only two kind of blocks are recognized - layout block and data block.
+Layout block defines structure of one or more data blocks - so it denotes how
+the data block should be read and parsed. To this moment, all examined files had
+all layout blocks at the beginning (before any data block), followed by a stream
+of data blocks. But in theory, layout block might appear anywhere in the file,
+only necessary rule is that layout block must precede data block whose structure
+it defines.
+Stream of blocks is terminated by an invalid layout block (see further).
+
+
+Header
+----------------------------------------
+Structure of the header:
+
+  begin
+    UInt32 (4B)   - file signature, 0x49495342 ("BSII" when read as text)
+    UInt32 (4B)   - version of format used in the file
+                    (must be 2 for current implementation)
+  end
+
+WARNING - This documentation and also the decoder are both written only for
+          format version 2! There are other versions around, but they differ in
+          details and current decoder cannot work with them. I was not able to
+          obtain sufficient data to reverse-engineer those versions.
+
+
+Blocks
+----------------------------------------
+Every block has this structure:
+
+  begin
+    UInt32 (4B)             - block type
+    []     (variable size)  - payload
+  end
+
+If block type is zero, the block is considered to be a layout block.
+When it is any other number, it is considered to be a data block of structure
+given by this number (see further for details).
+
+
+Layout block
+----------------------------------------
+Layout block is denoted by a block type of 0.
+Payload of the layout block consists of an 8bit value whose use is currently
+unknown, layout ID, layout name and an array of value type and value name
+pairs. This array is terminated by a value type of zero (NOT followed by a value
+name).
+When the unknown 8bit value is zero, the block is considered to be invalid and
+marks end of the file.
+Layout ID must not be 0 and must be unique (ID equal to 0 or non-unique ID is
+treated as an error).
+
+Structure of payload:
+
+  begin
+    UInt8   (1B)            - unknown value
+    UInt32  (4B)            - layout ID
+    String  (variable size) - layout name
+    array of ...
+    begin
+      UInt32  (4B)            - value type
+      String  (variable size) - value name
+    end
+    UInt32  (4B)            - invalid value type (0)
+  end
+
+Layout ID is used to identify actual structure of any data block.
+Layout name is just an identifier, no deeper meaning is known at this moment.
+Value type number marks type of the stored data (integer, string, array, ...).
+You can find description of individual types in a file "Binary SII - Types.txt".
+Value name is a string identifier of the field. It is used in textual form of
+SII files as an identifier.
+
+
+Data block
+----------------------------------------
+Data block is denoted by a block type other than 0.
+Payload of the data block consists of block ID (which is a complex structure -
+for details see documentation of types) and a stream of data fields. Individual
+fields are not separated by any padding or any other data.
+Number and type of individual fields is given by actual block type. You take
+block type number and find a layout block that has the same layout ID as is this
+number. This layout block then defines these fields (items in an array of value
+type and name pairs).
+
+
+Example BSII file
+----------------------------------------
+Let's have the following binary SII file (here shown as a hex stream):
+
+  42 53 49 49  02 00 00 00  00 00 00 00  01 01 00 00  00 0F 00 00  00 66 69 72
+  73 74 5F 73  74 72 75 63  74 75 72 65  25 00 00 00  0B 00 00 00  69 6E 74 33
+  32 5F 66 69  65 6C 64 36  00 00 00 14  00 00 00 62  79 74 65 62  6F 6F 6C 5F
+  61 72 72 61  79 5F 66 69  65 6C 64 34  00 00 00 18  00 00 00 65  6D 70 74 79
+  5F 75 69 6E  74 36 34 5F  61 72 72 61  79 5F 66 69  65 6C 64 00  00 00 00 00
+  00 00 00 01  02 00 00 00  04 00 00 00  6C 61 73 74  05 00 00 00  0C 00 00 00
+  73 69 6E 67  6C 65 5F 66  69 65 6C 64  00 00 00 00  01 00 00 00  FF 01 02 03
+  04 05 06 07  08 FF FF FF  FF 03 00 00  00 00 01 00  00 00 00 00  02 00 00 00
+  FF F8 F9 FA  FB FC FD FE  FF 00 00 80  3F 00 00 00  00 00
+
+
+It should be read and parsed this way:
+
+  42534949                                          - file signature ("BSII")
+  02000000                                          - format version (2)
+
+  00000000                                          - block type 0 -> layout block
+  01                                                - unknown
+  01000000                                          - layout ID (1)
+  0F000000                                          - length of following string (15)
+  66697273745F737472756374757265                    - layout name (string) -> "first_structure"
+  25000000                                          - value type 37 -> Int32
+  0B000000                                          - length of following string (11)
+  696E7433325F6669656C64                            - value name (string) -> "int32_field"
+  36000000                                          - value type 54 -> array of ByteBool
+  14000000                                          - length of following string (20)
+  62797465626F6F6C5F61727261795F6669656C64          - value name (string) -> "bytebool_array_field"
+  34000000                                          - value type 52 -> array of UInt64
+  18000000                                          - length of following string (24)
+  656D7074795F75696E7436345F61727261795F6669656C64  - value name (string) -> "empty_uint64_array_field"
+  00000000                                          - value type 0 -> end of the layout block
+
+  00000000                                          - block type 0 -> layout block
+  01                                                - unknown
+  02000000                                          - layout ID (2)
+  04000000                                          - length of following string (4)
+  6C617374                                          - layout name (string) -> "last"
+  05000000                                          - value type 5 -> Single
+  0C000000                                          - length of following string (12)
+  73696E676C655F6669656C64                          - value name (string) -> "single_field"
+  00000000                                          - value type 0 -> end of the layout block
+
+  01000000                                          - block type 1 -> data block (structure defined in layout with ID 1)
+  FF0102030405060708                                - block ID
+  FFFFFFFF                                          - Int32 value (-1)
+  03000000                                          - length of the following array (3)
+  000100                                            - array of ByteBool ([false,true,false])
+  00000000                                          - length of the following array (0)
+                                                    - since length of the array is 0, no data are here
+
+  02000000                                          - block type 2 -> data block (structure defined in layout with ID 2)
+  FFF8F9FAFBFCFDFEFF                                - block ID
+  0000803F                                          - single value (1.0)
+
+  00000000                                          - block type 0 -> layout block
+  00                                                - invalid layout block -> end of file
+
+
+When converted into textual form, it looks like this:
+
+SiiNunit
+{
+first_structure : _nameless.807.0605.0403.0201 {
+ int32_field: -1
+ bytebool_array_field: 3
+ bytebool_array_field[0]: false
+ bytebool_array_field[1]: true
+ bytebool_array_field[2]: false
+ empty_uint64_array_field: 0
+}
+
+last : _nameless.fffe.fdfc.fbfa.f9f8 {
+ single_field: 1
+}
+
+}

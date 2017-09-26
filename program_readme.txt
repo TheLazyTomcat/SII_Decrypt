@@ -16,7 +16,7 @@ Index
   Repositories ............................................  96
   Licensing ............................................... 109
   Authors, contacts ....................................... 117
-  Copyright ............................................... 129
+  Copyright ............................................... 130
 
 
 Description
@@ -121,8 +121,9 @@ František Milt, frantisek.milt@gmail.com
 Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
 
 If you find this program useful and don't know what to do with your money ;),
-consider making a small donation using the following link:
+consider making a small donation using one of the following links:
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
+https://www.paypal.me/FMilt
 
 
 

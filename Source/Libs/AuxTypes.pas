@@ -10,15 +10,26 @@
 
   Auxiliary types
 
-  ©František Milt 2017-06-06
+  ©František Milt 2017-09-25
 
-  Version 1.0.6
+  Version 1.0.8
 
 ===============================================================================}
 unit AuxTypes;
 
 interface
 {$ENDIF Included}
+
+{$UNDEF UInt64_NotNative}
+{$IF (Defined(DCC) or Declared(CompilerVersion)) and not Defined(FPC)}
+  // assumes Delphi (DCC symbol is not defined in older Delphi than XE2)
+  {$IF (CompilerVersion <= 17)}
+    {$DEFINE UInt64_NotNative}
+  {$IFEND}
+{$IFEND}
+
+const
+  NativeUInt64 = {$IFDEF UInt64_NotNative}False{$ELSE}True{$ENDIF};
 
 type
 //== Integers ==================================================================
@@ -46,12 +57,9 @@ type
 {$IFEND}
   PInt32 = ^Int32;        PUInt32 = ^UInt32;
 
-{$IF (defined(DCC) or declared(CompilerVersion)) and not defined(FPC)}
-  // assumes Delphi (DCC symbol is not defined in older Delphi than XE2)
-  {$IF (CompilerVersion <= 17)}
-  UInt64 = Int64;   
-  {$IFEND}
-{$IFEND}
+{$IFDEF UInt64_NotNative}
+  UInt64 = Int64;
+{$ENDIF}
 {$IF (SizeOf(Int64) <> 8) or (SizeOf(UInt64) <> 8)}
   {$MESSAGE FATAL 'Wrong size of 64bit integers'}
 {$IFEND}
@@ -137,4 +145,3 @@ implementation
 end.
 {$ENDIF Included}
 {$WARNINGS ON}
-
