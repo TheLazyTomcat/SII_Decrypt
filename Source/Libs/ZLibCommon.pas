@@ -143,9 +143,9 @@ type
   internal_state = record end;
 
   z_stream_s = record
-	  next_in:    PByte;      (* next input byte *)
-	  avail_in:   uInt;       (* number of bytes available at next_in *)
-	  total_in:   uLong;      (* total number of input bytes read so far *)
+    next_in:    PByte;      (* next input byte *)
+    avail_in:   uInt;       (* number of bytes available at next_in *)
+    total_in:   uLong;      (* total number of input bytes read so far *)
 
     next_out:   PByte;      (* next output byte will go here *)
     avail_out:  uInt;       (* remaining free space at next_out *)

@@ -9,9 +9,9 @@
 
   Binary streaming
 
-  ©František Milt 2017-07-17
+  ©František Milt 2017-09-14
 
-  Version 1.3.2
+  Version 1.4
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -77,6 +77,20 @@ Function Ptr_WriteFloat64(Dest: Pointer; Value: Float64): TMemSize; overload;
 
 //------------------------------------------------------------------------------
 
+Function Ptr_WriteAnsiChar(var Dest: Pointer; Value: AnsiChar; Advance: Boolean): TMemSize; overload;
+Function Ptr_WriteAnsiChar(Dest: Pointer; Value: AnsiChar): TMemSize; overload;
+
+Function Ptr_WriteUTF8Char(var Dest: Pointer; Value: UTF8Char; Advance: Boolean): TMemSize; overload;
+Function Ptr_WriteUTF8Char(Dest: Pointer; Value: UTF8Char): TMemSize; overload;
+
+Function Ptr_WriteWideChar(var Dest: Pointer; Value: WideChar; Advance: Boolean): TMemSize; overload;
+Function Ptr_WriteWideChar(Dest: Pointer; Value: WideChar): TMemSize; overload;
+
+Function Ptr_WriteChar(var Dest: Pointer; Value: Char; Advance: Boolean): TMemSize; overload;
+Function Ptr_WriteChar(Dest: Pointer; Value: Char): TMemSize; overload;
+
+//------------------------------------------------------------------------------
+
 Function Ptr_WriteShortString(var Dest: Pointer; const Str: ShortString; Advance: Boolean): TMemSize; overload;
 Function Ptr_WriteShortString(Dest: Pointer; const Str: ShortString): TMemSize; overload;
 
@@ -99,6 +113,11 @@ Function Ptr_WriteString(Dest: Pointer; const Str: String): TMemSize; overload;
 
 Function Ptr_WriteBuffer(var Dest: Pointer; const Buffer; Size: TMemSize; Advance: Boolean): TMemSize; overload;
 Function Ptr_WriteBuffer(Dest: Pointer; const Buffer; Size: TMemSize): TMemSize; overload;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_WriteBytes(var Dest: Pointer; const Value: array of UInt8; Advance: Boolean): TMemSize; overload;
+Function Ptr_WriteBytes(Dest: Pointer; const Value: array of UInt8): TMemSize; overload;
 
 //------------------------------------------------------------------------------
 
@@ -175,6 +194,28 @@ Function Ptr_ReadFloat64(Src: Pointer): Float64; overload;
 
 //------------------------------------------------------------------------------
 
+Function Ptr_ReadAnsiChar(var Src: Pointer; out Value: AnsiChar; Advance: Boolean): TMemSize; overload;
+Function Ptr_ReadAnsiChar(Src: Pointer; out Value: AnsiChar): TMemSize; overload;
+Function Ptr_ReadAnsiChar(var Src: Pointer; Advance: Boolean): AnsiChar; overload;
+Function Ptr_ReadAnsiChar(Src: Pointer): AnsiChar; overload;
+
+Function Ptr_ReadUTF8Char(var Src: Pointer; out Value: UTF8Char; Advance: Boolean): TMemSize; overload;
+Function Ptr_ReadUTF8Char(Src: Pointer; out Value: UTF8Char): TMemSize; overload;
+Function Ptr_ReadUTF8Char(var Src: Pointer; Advance: Boolean): UTF8Char; overload;
+Function Ptr_ReadUTF8Char(Src: Pointer): UTF8Char; overload;
+
+Function Ptr_ReadWideChar(var Src: Pointer; out Value: WideChar; Advance: Boolean): TMemSize; overload;
+Function Ptr_ReadWideChar(Src: Pointer; out Value: WideChar): TMemSize; overload;
+Function Ptr_ReadWideChar(var Src: Pointer; Advance: Boolean): WideChar; overload;
+Function Ptr_ReadWideChar(Src: Pointer): WideChar; overload;
+
+Function Ptr_ReadChar(var Src: Pointer; out Value: Char; Advance: Boolean): TMemSize; overload;
+Function Ptr_ReadChar(Src: Pointer; out Value: Char): TMemSize; overload;
+Function Ptr_ReadChar(var Src: Pointer; Advance: Boolean): Char; overload;
+Function Ptr_ReadChar(Src: Pointer): Char; overload;
+
+//------------------------------------------------------------------------------
+
 Function Ptr_ReadShortString(var Src: Pointer; out Str: ShortString; Advance: Boolean): TMemSize; overload;
 Function Ptr_ReadShortString(Src: Pointer; out Str: ShortString): TMemSize; overload;
 Function Ptr_ReadShortString(var Src: Pointer; Advance: Boolean): ShortString; overload;
@@ -246,6 +287,16 @@ Function Stream_WriteFloat64(Stream: TStream; Value: Float64; Advance: Boolean =
 
 //------------------------------------------------------------------------------
 
+Function Stream_WriteAnsiChar(Stream: TStream; Value: AnsiChar; Advance: Boolean = True): TMemSize;
+
+Function Stream_WriteUTF8Char(Stream: TStream; Value: UTF8Char; Advance: Boolean = True): TMemSize;
+
+Function Stream_WriteWideChar(Stream: TStream; Value: WideChar; Advance: Boolean = True): TMemSize;
+
+Function Stream_WriteChar(Stream: TStream; Value: Char; Advance: Boolean = True): TMemSize;
+
+//------------------------------------------------------------------------------
+
 Function Stream_WriteShortString(Stream: TStream; const Str: ShortString; Advance: Boolean = True): TMemSize;
 
 Function Stream_WriteAnsiString(Stream: TStream; const Str: AnsiString; Advance: Boolean = True): TMemSize;
@@ -261,6 +312,10 @@ Function Stream_WriteString(Stream: TStream; const Str: String; Advance: Boolean
 //------------------------------------------------------------------------------
 
 Function Stream_WriteBuffer(Stream: TStream; const Buffer; Size: TMemSize; Advance: Boolean = True): TMemSize;
+
+//------------------------------------------------------------------------------
+
+Function Stream_WriteBytes(Stream: TStream; const Value: array of UInt8; Advance: Boolean = True): TMemSize;
 
 //------------------------------------------------------------------------------
 
@@ -310,6 +365,20 @@ Function Stream_ReadFloat32(Stream: TStream; Advance: Boolean = True): Float32; 
 
 Function Stream_ReadFloat64(Stream: TStream; out Value: Float64; Advance: Boolean = True): TMemSize; overload;
 Function Stream_ReadFloat64(Stream: TStream; Advance: Boolean = True): Float64; overload;
+
+//------------------------------------------------------------------------------
+
+Function Stream_ReadAnsiChar(Stream: TStream; out Value: AnsiChar; Advance: Boolean = True): TMemSize; overload;
+Function Stream_ReadAnsiChar(Stream: TStream; Advance: Boolean = True): AnsiChar; overload;
+
+Function Stream_ReadUTF8Char(Stream: TStream; out Value: UTF8Char; Advance: Boolean = True): TMemSize; overload;
+Function Stream_ReadUTF8Char(Stream: TStream; Advance: Boolean = True): UTF8Char; overload;
+
+Function Stream_ReadWideChar(Stream: TStream; out Value: WideChar; Advance: Boolean = True): TMemSize; overload;
+Function Stream_ReadWideChar(Stream: TStream; Advance: Boolean = True): WideChar; overload;
+
+Function Stream_ReadChar(Stream: TStream; out Value: Char; Advance: Boolean = True): TMemSize; overload;
+Function Stream_ReadChar(Stream: TStream; Advance: Boolean = True): Char; overload;
 
 //------------------------------------------------------------------------------
 
@@ -381,6 +450,10 @@ type
     Function WriteUInt64(Value: UInt64; Advance: Boolean = True): TMemSize; virtual;
     Function WriteFloat32(Value: Float32; Advance: Boolean = True): TMemSize; virtual;
     Function WriteFloat64(Value: Float64; Advance: Boolean = True): TMemSize; virtual;
+    Function WriteAnsiChar(Value: AnsiChar; Advance: Boolean = True): TMemSize; virtual;
+    Function WriteUTF8Char(Value: UTF8Char; Advance: Boolean = True): TMemSize; virtual;
+    Function WriteWideChar(Value: WideChar; Advance: Boolean = True): TMemSize; virtual;
+    Function WriteChar(Value: Char; Advance: Boolean = True): TMemSize; virtual;
     Function WriteShortString(const Value: ShortString; Advance: Boolean = True): TMemSize; virtual;
     Function WriteAnsiString(const Value: AnsiString; Advance: Boolean = True): TMemSize; virtual;
     Function WriteUnicodeString(const Value: UnicodeString; Advance: Boolean = True): TMemSize; virtual;
@@ -388,6 +461,7 @@ type
     Function WriteUTF8String(const Value: UTF8String; Advance: Boolean = True): TMemSize; virtual;
     Function WriteString(const Value: String; Advance: Boolean = True): TMemSize; virtual;
     Function WriteBuffer(const Buffer; Size: TMemSize; Advance: Boolean = True): TMemSize; virtual;
+    Function WriteBytes(const Value: array of UInt8; Advance: Boolean = True): TMemSize; virtual;
     Function FillBytes(Count: TMemSize; Value: UInt8; Advance: Boolean = True): TMemSize; virtual;
     Function ReadBool(out Value: ByteBool; Advance: Boolean = True): TMemSize; overload; virtual;
     Function ReadBool(Advance: Boolean = True): ByteBool; overload; virtual;
@@ -412,6 +486,14 @@ type
     Function ReadFloat32(Advance: Boolean = True): Float32; overload; virtual;
     Function ReadFloat64(out Value: Float64; Advance: Boolean = True): TMemSize; overload; virtual;
     Function ReadFloat64(Advance: Boolean = True): Float64; overload; virtual;
+    Function ReadAnsiChar(out Value: AnsiChar; Advance: Boolean = True): TMemSize; overload; virtual;
+    Function ReadAnsiChar(Advance: Boolean = True): AnsiChar; overload; virtual;
+    Function ReadUTF8Char(out Value: UTF8Char; Advance: Boolean = True): TMemSize; overload; virtual;
+    Function ReadUTF8Char(Advance: Boolean = True): UTF8Char; overload; virtual;
+    Function ReadWideChar(out Value: WideChar; Advance: Boolean = True): TMemSize; overload; virtual;
+    Function ReadWideChar(Advance: Boolean = True): WideChar; overload; virtual;
+    Function ReadChar(out Value: Char; Advance: Boolean = True): TMemSize; overload; virtual;
+    Function ReadChar(Advance: Boolean = True): Char; overload; virtual;
     Function ReadShortString(out Value: ShortString; Advance: Boolean = True): TMemSize; overload; virtual;
     Function ReadShortString(Advance: Boolean = True): ShortString; overload; virtual;
     Function ReadAnsiString(out Value: AnsiString; Advance: Boolean = True): TMemSize; overload; virtual;
@@ -844,6 +926,76 @@ end;
 
 //==============================================================================
 
+Function Ptr_WriteAnsiChar(var Dest: Pointer; Value: AnsiChar; Advance: Boolean): TMemSize;
+begin
+AnsiChar(Dest^) := Value;
+Result := SizeOf(Value);
+If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_WriteAnsiChar(Dest: Pointer; Value: AnsiChar): TMemSize;
+begin
+Result := Ptr_WriteAnsiChar({%H-}Dest,Value,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_WriteUTF8Char(var Dest: Pointer; Value: UTF8Char; Advance: Boolean): TMemSize;
+begin
+UTF8Char(Dest^) := Value;
+Result := SizeOf(Value);
+If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_WriteUTF8Char(Dest: Pointer; Value: UTF8Char): TMemSize;
+begin
+Result := Ptr_WriteUTF8Char({%H-}Dest,Value,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_WriteWideChar(var Dest: Pointer; Value: WideChar; Advance: Boolean): TMemSize;
+begin
+{$IFDEF ENDIAN_BIG}
+WideChar(Dest^) := WideChar(SwapEndian(UInt16(Value)));
+{$ELSE}
+WideChar(Dest^) := Value;
+{$ENDIF}
+Result := SizeOf(Value);
+If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_WriteWideChar(Dest: Pointer; Value: WideChar): TMemSize;
+begin
+Result := Ptr_WriteWideChar({%H-}Dest,Value,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_WriteChar(var Dest: Pointer; Value: Char; Advance: Boolean): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := Ptr_WriteWideChar(Dest,Value,Advance);
+{$ELSE}
+Result := Ptr_WriteAnsiChar(Dest,Value,Advance);
+{$ENDIF}
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_WriteChar(Dest: Pointer; Value: Char): TMemSize;
+begin
+Result := Ptr_WriteChar({%H-}Dest,Value,False);
+end;
+
+//==============================================================================
+
 Function Ptr_WriteShortString(var Dest: Pointer; const Str: ShortString; Advance: Boolean): TMemSize;
 begin
 If Assigned(Dest) then
@@ -991,6 +1143,25 @@ end;
 Function Ptr_WriteBuffer(Dest: Pointer; const Buffer; Size: TMemSize): TMemSize;
 begin
 Result := Ptr_WriteBuffer({%H-}Dest,Buffer,Size,False);
+end;
+
+//==============================================================================
+
+Function Ptr_WriteBytes(var Dest: Pointer; const Value: array of UInt8; Advance: Boolean): TMemSize;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := Low(Value) to High(Value) do
+  Inc(Result,Ptr_WriteUInt8(Dest,Value[i],True));
+If not Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) - Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_WriteBytes(Dest: Pointer; const Value: array of UInt8): TMemSize;
+begin
+Result := Ptr_WriteBytes({%H-}Dest,Value,False);
 end;
 
 //==============================================================================
@@ -1394,6 +1565,132 @@ end;
 
 //==============================================================================
 
+Function Ptr_ReadAnsiChar(var Src: Pointer; out Value: AnsiChar; Advance: Boolean): TMemSize;
+begin
+Value := AnsiChar(Src^);
+Result := SizeOf(Value);
+If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadAnsiChar(Src: Pointer; out Value: AnsiChar): TMemSize;
+begin
+Result := Ptr_ReadAnsiChar({%H-}Src,Value,False);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadAnsiChar(var Src: Pointer; Advance: Boolean): AnsiChar;
+begin
+Ptr_ReadAnsiChar(Src,Result,Advance);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadAnsiChar(Src: Pointer): AnsiChar;
+begin
+Ptr_ReadAnsiChar({%H-}Src,Result,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_ReadUTF8Char(var Src: Pointer; out Value: UTF8Char; Advance: Boolean): TMemSize;
+begin
+Value := UTF8Char(Src^);
+Result := SizeOf(Value);
+If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadUTF8Char(Src: Pointer; out Value: UTF8Char): TMemSize;
+begin
+Result := Ptr_ReadUTF8Char({%H-}Src,Value,False);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadUTF8Char(var Src: Pointer; Advance: Boolean): UTF8Char;
+begin
+Ptr_ReadUTF8Char(Src,Result,Advance);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadUTF8Char(Src: Pointer): UTF8Char;
+begin
+Ptr_ReadUTF8Char({%H-}Src,Result,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_ReadWideChar(var Src: Pointer; out Value: WideChar; Advance: Boolean): TMemSize;
+begin
+{$IFDEF ENDIAN_BIG}
+Value := WideChar(SwapEndian(UInt16(Src^)));
+{$ELSE}
+Value := WideChar(Src^);
+{$ENDIF}
+Result := SizeOf(Value);
+If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadWideChar(Src: Pointer; out Value: WideChar): TMemSize;
+begin
+Result := Ptr_ReadWideChar({%H-}Src,Value,False);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadWideChar(var Src: Pointer; Advance: Boolean): WideChar;
+begin
+Ptr_ReadWideChar(Src,Result,Advance);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadWideChar(Src: Pointer): WideChar;
+begin
+Ptr_ReadWideChar({%H-}Src,Result,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Ptr_ReadChar(var Src: Pointer; out Value: Char; Advance: Boolean): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := Ptr_ReadWideChar(Src,Value,Advance);
+{$ELSE}
+Result := Ptr_ReadAnsiChar(Src,Value,Advance);
+{$ENDIF}
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadChar(Src: Pointer; out Value: Char): TMemSize;
+begin
+Result := Ptr_ReadChar({%H-}Src,Value,False);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadChar(var Src: Pointer; Advance: Boolean): Char;
+begin
+Ptr_ReadChar(Src,Result,Advance);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Ptr_ReadChar(Src: Pointer): Char;
+begin
+Ptr_ReadChar({%H-}Src,Result,False);
+end;
+
+//==============================================================================
+
 Function Ptr_ReadShortString(var Src: Pointer; out Str: ShortString; Advance: Boolean): TMemSize;
 var
   StrLength:  UInt8;
@@ -1747,6 +2044,44 @@ end;
 
 //==============================================================================
 
+Function Stream_WriteAnsiChar(Stream: TStream; Value: AnsiChar; Advance: Boolean = True): TMemSize;
+begin
+Result := Stream.Write(Value,SizeOf(Value));
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Stream_WriteUTF8Char(Stream: TStream; Value: UTF8Char; Advance: Boolean = True): TMemSize;
+begin
+Result := Stream.Write(Value,SizeOf(Value));
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Stream_WriteWideChar(Stream: TStream; Value: WideChar; Advance: Boolean = True): TMemSize;
+begin
+{$IFDEF ENDIAN_BIG}
+Value := WideChar(SwapEndian(UInt16(Value)));
+{$ENDIF}
+Result := Stream.Write(Value,SizeOf(Value));
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Stream_WriteChar(Stream: TStream; Value: Char; Advance: Boolean = True): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := Stream_WriteWideChar(Stream,Value,Advance);
+{$ELSE}
+Result := Stream_WriteAnsiChar(Stream,Value,Advance);
+{$ENDIF}
+end;
+
+//==============================================================================
+
 Function Stream_WriteShortString(Stream: TStream; const Str: ShortString; Advance: Boolean = True): TMemSize;
 begin
 Result := Stream_WriteBuffer(Stream,{%H-}Pointer({%H-}PtrUInt(Addr(Str[1])) - 1)^,Length(Str) + 1, Advance);
@@ -1809,6 +2144,18 @@ end;
 Function Stream_WriteBuffer(Stream: TStream; const Buffer; Size: TMemSize; Advance: Boolean = True): TMemSize;
 begin
 Result := Stream.Write(Buffer,Size);
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+
+//==============================================================================
+
+Function Stream_WriteBytes(Stream: TStream; const Value: array of UInt8; Advance: Boolean = True): TMemSize;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := Low(Value) to High(Value) do
+  Inc(Result,Stream_WriteUInt8(Stream,Value[i],True));
 If not Advance then Stream.Seek(-Int64(Result),soCurrent);
 end;
 
@@ -2039,6 +2386,75 @@ end;
 Function Stream_ReadFloat64(Stream: TStream; Advance: Boolean = True): Float64;
 begin
 Stream_ReadFloat64(Stream,Result,Advance);
+end;
+
+//==============================================================================
+
+Function Stream_ReadAnsiChar(Stream: TStream; out Value: AnsiChar; Advance: Boolean = True): TMemSize;
+begin
+Value := AnsiChar(0);
+Result := Stream.Read(Value,SizeOf(Value));
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Stream_ReadAnsiChar(Stream: TStream; Advance: Boolean = True): AnsiChar;
+begin
+Stream_ReadAnsiChar(Stream,Result,Advance);
+end;
+
+//------------------------------------------------------------------------------
+
+Function Stream_ReadUTF8Char(Stream: TStream; out Value: UTF8Char; Advance: Boolean = True): TMemSize;
+begin
+Value := UTF8Char(0);
+Result := Stream.Read(Value,SizeOf(Value));
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+ 
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Stream_ReadUTF8Char(Stream: TStream; Advance: Boolean = True): UTF8Char;
+begin
+Stream_ReadUTF8Char(Stream,Result,Advance);
+end;
+ 
+//------------------------------------------------------------------------------
+
+Function Stream_ReadWideChar(Stream: TStream; out Value: WideChar; Advance: Boolean = True): TMemSize;
+begin
+Value := WideChar(0);
+Result := Stream.Read(Value,SizeOf(Value));
+{$IFDEF ENDIAN_BIG}
+Value := WideChar(SwapEndian(UInt16(Value)));
+{$ENDIF}
+If not Advance then Stream.Seek(-Int64(Result),soCurrent);
+end;
+ 
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Stream_ReadWideChar(Stream: TStream; Advance: Boolean = True): WideChar;
+begin
+Stream_ReadWideChar(Stream,Result,Advance);
+end;
+ 
+//------------------------------------------------------------------------------
+
+Function Stream_ReadChar(Stream: TStream; out Value: Char; Advance: Boolean = True): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := Stream_ReadWideChar(Stream,Value,Advance);
+{$ELSE}
+Result := Stream_ReadAnsiChar(Stream,Value,Advance);
+{$ENDIF}
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function Stream_ReadChar(Stream: TStream; Advance: Boolean = True): Char;
+begin
+Stream_ReadChar(Stream,Result,Advance);
 end;
 
 //==============================================================================
@@ -2390,6 +2806,38 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function TCustomStreamer.WriteAnsiChar(Value: AnsiChar; Advance: Boolean = True): TMemSize;
+begin
+Result := WriteValue(@Value,Advance,SizeOf(Value));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.WriteUTF8Char(Value: UTF8Char; Advance: Boolean = True): TMemSize;
+begin
+Result := WriteValue(@Value,Advance,SizeOf(Value));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.WriteWideChar(Value: WideChar; Advance: Boolean = True): TMemSize;
+begin
+Result := WriteValue(@Value,Advance,SizeOf(Value));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.WriteChar(Value: Char; Advance: Boolean = True): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := WriteWideChar(Value,Advance);
+{$ELSE}
+Result := WriteAnsiChar(Value,Advance);
+{$ENDIF}
+end;
+
+//------------------------------------------------------------------------------
+
 Function TCustomStreamer.WriteShortString(const Value: ShortString; Advance: Boolean = True): TMemSize;
 begin
 Result := WriteValue(@Value,Advance,0,PARAM_SHORTSTRING);
@@ -2439,6 +2887,20 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function TCustomStreamer.WriteBytes(const Value: array of UInt8; Advance: Boolean = True): TMemSize;
+var
+  i:      Integer;
+  OldPos: UInt64;
+begin
+OldPos := CurrentPosition;
+Result := 0;
+For i := Low(Value) to High(Value) do
+  WriteUInt8(Value[i],True);
+If not Advance then CurrentPosition := OldPos;
+end;
+
+//------------------------------------------------------------------------------
+
 Function TCustomStreamer.FillBytes(Count: TMemSize; Value: UInt8; Advance: Boolean = True): TMemSize;
 begin
 Result := WriteValue(@Value,Advance,Count,PARAM_FILLBYTES);
@@ -2451,7 +2913,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadBool(Advance: Boolean = True): ByteBool;
 begin
@@ -2475,7 +2937,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadInt8(Advance: Boolean = True): Int8;
 begin
@@ -2489,7 +2951,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUInt8(Advance: Boolean = True): UInt8;
 begin
@@ -2503,7 +2965,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadInt16(Advance: Boolean = True): Int16;
 begin
@@ -2517,7 +2979,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUInt16(Advance: Boolean = True): UInt16;
 begin
@@ -2531,7 +2993,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadInt32(Advance: Boolean = True): Int32;
 begin
@@ -2545,7 +3007,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUInt32(Advance: Boolean = True): UInt32;
 begin
@@ -2559,7 +3021,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadInt64(Advance: Boolean = True): Int64;
 begin
@@ -2573,7 +3035,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUInt64(Advance: Boolean = True): UInt64;
 begin
@@ -2587,7 +3049,7 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadFloat32(Advance: Boolean = True): Float32;
 begin
@@ -2601,11 +3063,75 @@ begin
 Result := ReadValue(@Value,Advance,SizeOf(Value));
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadFloat64(Advance: Boolean = True): Float64;
 begin
 ReadValue(@Result,Advance,SizeOf(Result));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.ReadAnsiChar(out Value: AnsiChar; Advance: Boolean = True): TMemSize;
+begin
+Result := ReadValue(@Value,Advance,SizeOf(Value));
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function TCustomStreamer.ReadAnsiChar(Advance: Boolean = True): AnsiChar;
+begin
+ReadValue(@Result,Advance,SizeOf(Result));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.ReadUTF8Char(out Value: UTF8Char; Advance: Boolean = True): TMemSize;
+begin
+Result := ReadValue(@Value,Advance,SizeOf(Value));
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function TCustomStreamer.ReadUTF8Char(Advance: Boolean = True): UTF8Char;
+begin
+ReadValue(@Result,Advance,SizeOf(Result));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.ReadWideChar(out Value: WideChar; Advance: Boolean = True): TMemSize;
+begin
+Result := ReadValue(@Value,Advance,SizeOf(Value));
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function TCustomStreamer.ReadWideChar(Advance: Boolean = True): WideChar;
+begin
+ReadValue(@Result,Advance,SizeOf(Result));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TCustomStreamer.ReadChar(out Value: Char; Advance: Boolean = True): TMemSize;
+begin
+{$IFDEF Unicode}
+Result := ReadWideChar(Value,Advance);
+{$ELSE}
+Result := ReadAnsiChar(Value,Advance);
+{$ENDIF}
+end;
+
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+
+Function TCustomStreamer.ReadChar(Advance: Boolean = True): Char;
+begin
+{$IFDEF Unicode}
+Result := ReadWideChar(Advance);
+{$ELSE}
+Result := ReadAnsiChar(Advance);
+{$ENDIF}
 end;
 
 //------------------------------------------------------------------------------
@@ -2615,7 +3141,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_SHORTSTRING);
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadShortString(Advance: Boolean = True): ShortString;
 begin
@@ -2629,7 +3155,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_ANSISTRING);
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadAnsiString(Advance: Boolean = True): AnsiString;
 begin
@@ -2643,7 +3169,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_UNICODESTRING);
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUnicodeString(Advance: Boolean = True): UnicodeString;
 begin
@@ -2657,7 +3183,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_WIDESTRING);
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadWideString(Advance: Boolean = True): WideString;
 begin
@@ -2671,7 +3197,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_UTF8STRING);
 end;
  
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadUTF8String(Advance: Boolean = True): UTF8String;
 begin
@@ -2685,7 +3211,7 @@ begin
 Result := ReadValue(@Value,Advance,0,PARAM_STRING);
 end;
 
-//------------------------------------------------------------------------------
+//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function TCustomStreamer.ReadString(Advance: Boolean = True): String;
 begin

@@ -13,10 +13,10 @@ Index
   Description .............................................  22
   Parts of the project ....................................  41
   Project files ...........................................  68
-  Repositories ............................................ 102
-  Licensing ............................................... 115
-  Authors, contacts ....................................... 123
-  Copyright ............................................... 133
+  Repositories ............................................ 112
+  Licensing ............................................... 125
+  Authors, contacts ....................................... 133
+  Copyright ............................................... 143
 
 
 Description
@@ -71,7 +71,12 @@ Project files
 List of folders with description of their content:
 
   .\
+  
     Root folder. Contains license and readme files.
+    
+  .\Documents
+  
+    Documentation of binary SII file format.
 
   .\Headers
 
@@ -130,8 +135,9 @@ Authors, contacts, links
 František Milt, frantisek.milt@gmail.com
 
 If you find this project useful and don't know what to do with your money ;),
-consider making a small donation using the following link:
+consider making a small donation using one of the following links:
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
+https://www.paypal.me/FMilt
 
 
 
