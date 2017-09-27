@@ -2,7 +2,7 @@
 
                       SII Decrypt project - console program
 
-                                   version 1.2
+                                  version 1.2.1
 
 ================================================================================
 
@@ -12,11 +12,12 @@ Index
   Index ...................................................   9
   Description .............................................  22
   Use of the program ......................................  38
-  Known problems and limitations ..........................  85
-  Repositories ............................................  96
-  Licensing ............................................... 109
-  Authors, contacts ....................................... 117
-  Copyright ............................................... 130
+  Changelog ...............................................  85
+  Known problems and limitations ..........................  96
+  Repositories ............................................ 107
+  Licensing ............................................... 120
+  Authors, contacts ....................................... 128
+  Copyright ............................................... 141
 
 
 Description
@@ -79,6 +80,16 @@ Extended scheme
     --wait          Program will not close the console when processing is done
                     and will wait for user input. Can be used when you want to
                     see possible error code.
+
+
+
+Changelog
+----------------------------------------
+List of changes between individual versions of this program.
+
+SII Decrypt program 1.2 -> SII Decrypt program 1.2.1
+  - small optimizations
+  - internal and implementation changes  
 
 
 
