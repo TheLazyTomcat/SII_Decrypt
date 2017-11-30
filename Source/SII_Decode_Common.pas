@@ -39,6 +39,7 @@ type
   TSIIBin_NamedValue = record
     ValueType:  TSIIBin_ValueType;
     ValueName:  AnsiString;
+    ValueData:  TObject;
   end;
 
   TSIIBin_Layout = record

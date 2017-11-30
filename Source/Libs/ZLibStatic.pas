@@ -1611,59 +1611,59 @@ end;
 
 {$IFDEF x64}
   {$IFDEF GZIP_Support}
-    {$LINK 'win64\gzclose.o'}
-    {$LINK 'win64\gzwrite.o'}
-    {$LINK 'win64\gzread.o'}
-    {$LINK 'win64\gzlib.o'}
+    {$LINK 'zlib_win64\gzclose.o'}
+    {$LINK 'zlib_win64\gzwrite.o'}
+    {$LINK 'zlib_win64\gzread.o'}
+    {$LINK 'zlib_win64\gzlib.o'}
   {$ENDIF GZIP_Support}
-    {$LINK 'win64\uncompr.o'}
-    {$LINK 'win64\compress.o'}
-    {$LINK 'win64\deflate.o'}
-    {$LINK 'win64\inflate.o'}
-    {$LINK 'win64\infback.o'}
-    {$LINK 'win64\inftrees.o'}
-    {$LINK 'win64\inffast.o'}
-    {$LINK 'win64\trees.o'}
-    {$LINK 'win64\crc32.o'}
-    {$LINK 'win64\adler32.o'}
-    {$LINK 'win64\zutil.o'}
+    {$LINK 'zlib_win64\uncompr.o'}
+    {$LINK 'zlib_win64\compress.o'}
+    {$LINK 'zlib_win64\deflate.o'}
+    {$LINK 'zlib_win64\inflate.o'}
+    {$LINK 'zlib_win64\infback.o'}
+    {$LINK 'zlib_win64\inftrees.o'}
+    {$LINK 'zlib_win64\inffast.o'}
+    {$LINK 'zlib_win64\trees.o'}
+    {$LINK 'zlib_win64\crc32.o'}
+    {$LINK 'zlib_win64\adler32.o'}
+    {$LINK 'zlib_win64\zutil.o'}
 {$ELSE}
 {$IFDEF FPC}
   {$IFDEF GZIP_Support}
-    {$LINK 'win32\gzclose.o'}
-    {$LINK 'win32\gzwrite.o'}
-    {$LINK 'win32\gzread.o'}
-    {$LINK 'win32\gzlib.o'}
+    {$LINK 'zlib_win32\gzclose.o'}
+    {$LINK 'zlib_win32\gzwrite.o'}
+    {$LINK 'zlib_win32\gzread.o'}
+    {$LINK 'zlib_win32\gzlib.o'}
   {$ENDIF GZIP_Support}
-    {$LINK 'win32\uncompr.o'}
-    {$LINK 'win32\compress.o'}
-    {$LINK 'win32\deflate.o'}
-    {$LINK 'win32\inflate.o'}
-    {$LINK 'win32\infback.o'}
-    {$LINK 'win32\inftrees.o'}
-    {$LINK 'win32\inffast.o'}
-    {$LINK 'win32\trees.o'}
-    {$LINK 'win32\crc32.o'}
-    {$LINK 'win32\adler32.o'}
-    {$LINK 'win32\zutil.o'}
+    {$LINK 'zlib_win32\uncompr.o'}
+    {$LINK 'zlib_win32\compress.o'}
+    {$LINK 'zlib_win32\deflate.o'}
+    {$LINK 'zlib_win32\inflate.o'}
+    {$LINK 'zlib_win32\infback.o'}
+    {$LINK 'zlib_win32\inftrees.o'}
+    {$LINK 'zlib_win32\inffast.o'}
+    {$LINK 'zlib_win32\trees.o'}
+    {$LINK 'zlib_win32\crc32.o'}
+    {$LINK 'zlib_win32\adler32.o'}
+    {$LINK 'zlib_win32\zutil.o'}
 {$ELSE}
   {$IFDEF GZIP_Support}
-    {$LINK 'win32\gzclose.obj'}
-    {$LINK 'win32\gzwrite.obj'}
-    {$LINK 'win32\gzread.obj'}
-    {$LINK 'win32\gzlib.obj'}
+    {$LINK 'zlib_win32\gzclose.obj'}
+    {$LINK 'zlib_win32\gzwrite.obj'}
+    {$LINK 'zlib_win32\gzread.obj'}
+    {$LINK 'zlib_win32\gzlib.obj'}
   {$ENDIF GZIP_Support}
-    {$LINK 'win32\uncompr.obj'}
-    {$LINK 'win32\compress.obj'}
-    {$LINK 'win32\deflate.obj'}
-    {$LINK 'win32\inflate.obj'}
-    {$LINK 'win32\infback.obj'}
-    {$LINK 'win32\inftrees.obj'}
-    {$LINK 'win32\inffast.obj'}
-    {$LINK 'win32\trees.obj'}
-    {$LINK 'win32\crc32.obj'}
-    {$LINK 'win32\adler32.obj'}
-    {$LINK 'win32\zutil.obj'}
+    {$LINK 'zlib_win32\uncompr.obj'}
+    {$LINK 'zlib_win32\compress.obj'}
+    {$LINK 'zlib_win32\deflate.obj'}
+    {$LINK 'zlib_win32\inflate.obj'}
+    {$LINK 'zlib_win32\infback.obj'}
+    {$LINK 'zlib_win32\inftrees.obj'}
+    {$LINK 'zlib_win32\inffast.obj'}
+    {$LINK 'zlib_win32\trees.obj'}
+    {$LINK 'zlib_win32\crc32.obj'}
+    {$LINK 'zlib_win32\adler32.obj'}
+    {$LINK 'zlib_win32\zutil.obj'}
 {$ENDIF}
 {$ENDIF}
 

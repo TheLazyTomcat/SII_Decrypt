@@ -73,9 +73,9 @@ Layout block
 ----------------------------------------
 Layout block is denoted by a block type of 0.
 Payload of the layout block consists of an 8bit value whose use is currently
-unknown, layout ID, layout name and an array of value type and value name
-pairs. This array is terminated by a value type of zero (NOT followed by a value
-name).
+unknown, layout ID, layout name and an array of value information (type, name
+and type-specific data). This array is terminated by a value type of zero
+(NOT followed by a value name or data).
 When the unknown 8bit value is zero, the block is considered to be invalid and
 marks end of the file.
 Layout ID must not be 0 and must be unique (ID equal to 0 or non-unique ID is
@@ -91,6 +91,7 @@ Structure of payload:
     begin
       UInt32  (4B)            - value type
       String  (variable size) - value name
+      Data    (variable size) - data specific to the value type
     end
     UInt32  (4B)            - invalid value type (0)
   end
@@ -101,6 +102,9 @@ Value type number marks type of the stored data (integer, string, array, ...).
 You can find description of individual types in a file "Binary SII - Types.txt".
 Value name is a string identifier of the field. It is used in textual form of
 SII files as an identifier.
+Data are value type-specific and can contain any data bound to that type in
+current layout. For example data for type 0x37 contains an array of
+integer-string pairs.
 
 
 Data block

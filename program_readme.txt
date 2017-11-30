@@ -10,14 +10,14 @@ Index
 ------------------------------
 
   Index ...................................................   9
-  Description .............................................  22
-  Use of the program ......................................  38
-  Changelog ...............................................  85
-  Known problems and limitations ..........................  96
-  Repositories ............................................ 107
-  Licensing ............................................... 120
-  Authors, contacts ....................................... 128
-  Copyright ............................................... 141
+  Description .............................................  23
+  Use of the program ......................................  39
+  Changelog ...............................................  86
+  Known problems and limitations .......................... 101
+  Repositories ............................................ 112
+  Licensing ............................................... 125
+  Authors, contacts ....................................... 133
+  Copyright ............................................... 146
 
 
 Description
@@ -86,6 +86,11 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+
+SII Decrypt program 1.2.1 -> SII Decrypt program 1.2.2
+  - added support for new value types 
+
 
 SII Decrypt program 1.2 -> SII Decrypt program 1.2.1
   - small optimizations

@@ -16,6 +16,7 @@ uses
   SII_Decrypt_Decryptor,
 
   SII_Decode_Common,
+  SII_Decode_Helpers,
   SII_Decode_Nodes,
   SII_Decode_Decoder;
 

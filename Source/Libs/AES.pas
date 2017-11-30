@@ -1855,7 +1855,7 @@ For i := 0 to Pred(fNb) do
 
     InvShiftRows(w{a0,a1,a2,a3}) = w{a3,a0,a1,a2}
 
-  So when selecting the word, instead of adding row shift offset, we substract
+  So when selecting the word, instead of adding row shift offset, we subtract
   it.
 
   For example, let's say we have this state:

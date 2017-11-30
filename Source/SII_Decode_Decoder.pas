@@ -48,6 +48,7 @@ type
     Function GetDataBlock(Index: Integer): TSIIBin_DataBlock;
   protected
     procedure Initialize; virtual;
+    procedure ClearLayouts; virtual;
     Function IndexOfLayout(LayoutID: TSIIBin_LayoutID): Integer; virtual;
     Function LoadLayoutBlock(Stream: TStream): Boolean; virtual;
     procedure LoadDataBlock(Stream: TStream; LayoutID: TSIIBin_LayoutID); virtual;
@@ -76,7 +77,8 @@ type
 implementation
 
 uses
-  SysUtils, BinaryStreaming, StrRect;
+  SysUtils, BinaryStreaming, StrRect,
+  SII_Decode_Helpers;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -111,9 +113,22 @@ end;
 
 procedure TSIIBin_Decoder.Initialize;
 begin
+ClearLayouts;
 FillChar(fFileLayout.Header,SizeOf(TSIIBin_Header),0);
 SetLength(fFileLayout.Layouts,0);
 fFileDataBlocks.Clear;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Decoder.ClearLayouts;
+var
+  i,j:  Integer;
+begin
+For i := Low(fFileLayout.Layouts) to High(fFileLayout.Layouts) do
+  For j := Low(fFileLayout.Layouts[i].Fields) to High(fFileLayout.Layouts[i].Fields) do
+    If Assigned(fFileLayout.Layouts[i].Fields[j].ValueData) then
+      FreeAndNil(fFileLayout.Layouts[i].Fields[j].ValueData);
 end;
 
 //------------------------------------------------------------------------------
@@ -153,8 +168,16 @@ If Layout.Unknown <> 0 then
             begin
               If Length(Layout.Fields) <= ValueCount then
                 SetLength(Layout.Fields,Length(Layout.Fields) + 16);
-              Layout.Fields[ValueCount].ValueType := ValueType;
+              If TSIIBin_DataBlock.ValueTypeSupported(ValueType) then
+                Layout.Fields[ValueCount].ValueType := ValueType
+              else
+                raise Exception.CreateFmt('TSIIBin_Decoder.LoadLayoutBlock: Unsupported value type (0x%.8x).',[Ord(ValueType)]);
               SIIBin_LoadString(Stream,Layout.Fields[ValueCount].ValueName);
+              case ValueType of
+                $00000037:  Layout.Fields[ValueCount].ValueData := TSIIBIn_ValueData_Helper_OrdinalStrings.Create(Stream);
+              else
+                Layout.Fields[ValueCount].ValueData := nil;
+              end;
               Inc(ValueCount);
             end;
         until ValueType = 0;
@@ -232,6 +255,7 @@ end;
 destructor TSIIBin_Decoder.Destroy;
 begin
 fFileDataBlocks.Free;
+ClearLayouts;
 inherited;
 end;
 
