@@ -89,7 +89,7 @@ List of changes between individual versions of this program.
 
 
 SII Decrypt program 1.2.1 -> SII Decrypt program 1.2.2
-  - added support for new value types 
+  - added support for new value types (0x37)
 
 
 SII Decrypt program 1.2 -> SII Decrypt program 1.2.1
