@@ -13,7 +13,7 @@ interface
 
 uses
   Classes, Contnrs,
-  AuxTypes, SII_Decode_Common;
+  AuxTypes, SII_Decode_Common, SII_Decode_Helpers;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -26,6 +26,7 @@ uses
 type
   TSIIBin_Value = class(TObject)
   private
+    fInfo:  TSIIBin_NamedValue;
     fName:  AnsiString;
   protected
     Function GetValueType: TSIIBin_ValueType; virtual;
@@ -33,7 +34,7 @@ type
     procedure Initialize; virtual;
     procedure Finalize; virtual;
   public
-    constructor Create(const Name: AnsiString; Stream: TStream);
+    constructor Create(const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
     destructor Destroy; override;
     Function AsString: AnsiString; virtual;
     Function AsLine(IndentCount: Integer = 0): AnsiString; virtual;
@@ -478,6 +479,25 @@ type
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
+{                            TSIIBin_Value_00000037                            }
+{------------------------------------------------------------------------------}
+{==============================================================================}
+{==============================================================================}
+{   TSIIBin_Value_00000037 - declaration                                       }
+{==============================================================================}
+  TSIIBin_Value_00000037 = class(TSIIBin_Value)
+  private
+    fValue: TSIIBIn_ValueData_OrdinalString;
+  protected
+    procedure Initialize; override;
+    Function GetValueType: TSIIBin_ValueType; override;
+    procedure Load(Stream: TStream); override;
+  public
+    Function AsString: AnsiString; override;
+  end;
+
+{==============================================================================}
+{------------------------------------------------------------------------------}
 {                            TSIIBin_Value_00000039                            }
 {------------------------------------------------------------------------------}
 {==============================================================================}
@@ -532,6 +552,7 @@ type
     Function GetFieldCount: Integer;
     Function GetField(Index: Integer): TSIIBin_Value;
   public
+    class Function ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean; virtual;
     constructor Create(Layout: TSIIBin_Layout);
     destructor Destroy; override;
     procedure Load(Stream: TStream); virtual;
@@ -587,10 +608,11 @@ end;
 {   TSIIBin_Value - public methods                                             }
 {------------------------------------------------------------------------------}
 
-constructor TSIIBin_Value.Create(const Name: AnsiString; Stream: TStream);
+constructor TSIIBin_Value.Create(const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
 begin
 inherited Create;
-fName := Name;
+fInfo := NamedValueInfo;
+fName := NamedValueInfo.ValueName;
 Load(Stream);
 Initialize;
 end;
@@ -1886,6 +1908,53 @@ end;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
+{                            TSIIBin_Value_00000037                            }
+{------------------------------------------------------------------------------}
+{==============================================================================}
+{==============================================================================}
+{   TSIIBin_Value_00000037 - implementation                                    }
+{==============================================================================}
+{------------------------------------------------------------------------------}
+{   TSIIBin_Value_00000037 - protected methods                                 }
+{------------------------------------------------------------------------------}
+
+procedure TSIIBin_Value_00000037.Initialize;
+begin
+If fInfo.ValueData is TSIIBIn_ValueData_Helper_OrdinalStrings then
+  fValue.StringValue := TSIIBIn_ValueData_Helper_OrdinalStrings(fInfo.ValueData).GetStringValue(fValue.OrdinalValue)
+else
+  raise Exception.CreateFmt('TSIIBin_Value_00000037.Initialize: Unsupported helper object (%s).',[fInfo.ValueData.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TSIIBin_Value_00000037.GetValueType: TSIIBin_ValueType;
+begin
+Result := $00000037;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Value_00000037.Load(Stream: TStream);
+begin
+fValue.OrdinalValue := Stream_ReadUInt32(Stream);
+end;
+
+{------------------------------------------------------------------------------}
+{   TSIIBin_Value_00000037 - public methods                                    }
+{------------------------------------------------------------------------------}
+
+Function TSIIBin_Value_00000037.AsString: AnsiString;
+begin
+If SIIBin_IsLimitedAlphabet(fValue.StringValue) and (Length(fValue.StringValue) > 0) then
+  Result := StrToAnsi(Format('%s',[fValue.StringValue]))
+else
+  Result := StrToAnsi(Format('"%s"',[fValue.StringValue]));
+end;
+
+
+{==============================================================================}
+{------------------------------------------------------------------------------}
 {                            TSIIBin_Value_00000039                            }
 {------------------------------------------------------------------------------}
 {==============================================================================}
@@ -2034,6 +2103,13 @@ end;
 {   TSIIBin_DataBlock - public methods                                         }
 {------------------------------------------------------------------------------}
 
+class Function TSIIBin_DataBlock.ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean;
+begin
+Result := ValueType in [$01..$06,$09,$11,$12,$18..$1A,$25..$28,$2B,$2C,$31,$33..$37,$39..$3D];
+end;
+
+//------------------------------------------------------------------------------
+
 constructor TSIIBin_DataBlock.Create(Layout: TSIIBin_Layout);
 begin
 inherited Create;
@@ -2062,34 +2138,35 @@ SIIBin_DecodeID(fBlockID);
 For i := Low(fLayout.Fields) to High(fLayout.Fields) do
   begin
     case fLayout.Fields[i].ValueType of
-      $00000001:  FieldObj := TSIIBin_Value_00000001.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000002:  FieldObj := TSIIBin_Value_00000002.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000003:  FieldObj := TSIIBin_Value_00000003.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000004:  FieldObj := TSIIBin_Value_00000004.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000005:  FieldObj := TSIIBin_Value_00000005.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000006:  FieldObj := TSIIBin_Value_00000006.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000009:  FieldObj := TSIIBin_Value_00000009.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000011:  FieldObj := TSIIBin_Value_00000011.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000012:  FieldObj := TSIIBin_Value_00000012.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000018:  FieldObj := TSIIBin_Value_00000018.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000019:  FieldObj := TSIIBin_Value_00000019.Create(fLayout.Fields[i].ValueName,Stream);
-      $0000001A:  FieldObj := TSIIBin_Value_0000001A.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000025:  FieldObj := TSIIBin_Value_00000025.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000026:  FieldObj := TSIIBin_Value_00000026.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000027:  FieldObj := TSIIBin_Value_00000027.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000028:  FieldObj := TSIIBin_Value_00000028.Create(fLayout.Fields[i].ValueName,Stream);
-      $0000002B:  FieldObj := TSIIBin_Value_0000002B.Create(fLayout.Fields[i].ValueName,Stream);
-      $0000002C:  FieldObj := TSIIBin_Value_0000002C.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000031:  FieldObj := TSIIBin_Value_00000031.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000033:  FieldObj := TSIIBin_Value_00000033.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000034:  FieldObj := TSIIBin_Value_00000034.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000035:  FieldObj := TSIIBin_Value_00000035.Create(fLayout.Fields[i].ValueName,Stream);
-      $00000036:  FieldObj := TSIIBin_Value_00000036.Create(fLayout.Fields[i].ValueName,Stream);
+      $00000001:  FieldObj := TSIIBin_Value_00000001.Create(fLayout.Fields[i],Stream);
+      $00000002:  FieldObj := TSIIBin_Value_00000002.Create(fLayout.Fields[i],Stream);
+      $00000003:  FieldObj := TSIIBin_Value_00000003.Create(fLayout.Fields[i],Stream);
+      $00000004:  FieldObj := TSIIBin_Value_00000004.Create(fLayout.Fields[i],Stream);
+      $00000005:  FieldObj := TSIIBin_Value_00000005.Create(fLayout.Fields[i],Stream);
+      $00000006:  FieldObj := TSIIBin_Value_00000006.Create(fLayout.Fields[i],Stream);
+      $00000009:  FieldObj := TSIIBin_Value_00000009.Create(fLayout.Fields[i],Stream);
+      $00000011:  FieldObj := TSIIBin_Value_00000011.Create(fLayout.Fields[i],Stream);
+      $00000012:  FieldObj := TSIIBin_Value_00000012.Create(fLayout.Fields[i],Stream);
+      $00000018:  FieldObj := TSIIBin_Value_00000018.Create(fLayout.Fields[i],Stream);
+      $00000019:  FieldObj := TSIIBin_Value_00000019.Create(fLayout.Fields[i],Stream);
+      $0000001A:  FieldObj := TSIIBin_Value_0000001A.Create(fLayout.Fields[i],Stream);
+      $00000025:  FieldObj := TSIIBin_Value_00000025.Create(fLayout.Fields[i],Stream);
+      $00000026:  FieldObj := TSIIBin_Value_00000026.Create(fLayout.Fields[i],Stream);
+      $00000027:  FieldObj := TSIIBin_Value_00000027.Create(fLayout.Fields[i],Stream);
+      $00000028:  FieldObj := TSIIBin_Value_00000028.Create(fLayout.Fields[i],Stream);
+      $0000002B:  FieldObj := TSIIBin_Value_0000002B.Create(fLayout.Fields[i],Stream);
+      $0000002C:  FieldObj := TSIIBin_Value_0000002C.Create(fLayout.Fields[i],Stream);
+      $00000031:  FieldObj := TSIIBin_Value_00000031.Create(fLayout.Fields[i],Stream);
+      $00000033:  FieldObj := TSIIBin_Value_00000033.Create(fLayout.Fields[i],Stream);
+      $00000034:  FieldObj := TSIIBin_Value_00000034.Create(fLayout.Fields[i],Stream);
+      $00000035:  FieldObj := TSIIBin_Value_00000035.Create(fLayout.Fields[i],Stream);
+      $00000036:  FieldObj := TSIIBin_Value_00000036.Create(fLayout.Fields[i],Stream);
+      $00000037:  FieldObj := TSIIBin_Value_00000037.Create(fLayout.Fields[i],Stream);
       $00000039,
       $0000003B,
-      $0000003D:  FieldObj := TSIIBin_Value_00000039.Create(fLayout.Fields[i].ValueName,Stream);
+      $0000003D:  FieldObj := TSIIBin_Value_00000039.Create(fLayout.Fields[i],Stream);
       $0000003A,
-      $0000003C:  FieldObj := TSIIBin_Value_0000003A.Create(fLayout.Fields[i].ValueName,Stream);
+      $0000003C:  FieldObj := TSIIBin_Value_0000003A.Create(fLayout.Fields[i],Stream);
     else
       raise Exception.CreateFmt('TSIIBin_DataBlock.Load: Unknown value type: %s(%d) at %d.',
             [fLayout.Fields[i].ValueName,fLayout.Fields[i].ValueType,Stream.Position]);

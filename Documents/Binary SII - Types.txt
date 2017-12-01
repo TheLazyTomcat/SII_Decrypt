@@ -44,7 +44,8 @@ to read that file first.
   0x00000034                  array of uint64
   0x00000035                  bytebool
   0x00000036                  array of bytebool
-  0x00000037 - 0x00000038     unknown
+  0x00000037                  ordinal string
+  0x00000038                  unknown (probably array of ordinal strings)
   0x00000039                  ID
   0x0000003A                  array of ID
   0x0000003B                  ID
@@ -331,6 +332,23 @@ Stored as a following structure:
   begin
     UInt32      (4B)             - length of the array
     ByteBool[]  (variable size)  - array of 8bit booleans
+  end
+
+
+Ordinal string                                                        0x00000037
+--------------------------------------------------------------------------------
+In data block stored as one 32bit unsigned integer, but value actually denotes a
+string stored in appropriate layout block for the actual field.
+
+Value type data structure (stored in layout block):
+
+  begin
+    UInt32  (4B)            - length of the following array
+    array of...
+    begin
+      UInt32  (4B)            - ordinal value
+      String  (variable size) - string corresponding to the ordinal value
+    end
   end
 
 
