@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=_game.sii
+RunParams=
 HostApplication=
 Launcher=
 UseLauncher=0

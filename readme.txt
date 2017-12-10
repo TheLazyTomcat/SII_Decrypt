@@ -2,7 +2,7 @@
 
                                SII Decrypt project
 
-                                 version 1.2.X
+                                 version 1.3.X
 
 ================================================================================
 
@@ -30,7 +30,7 @@ form. This decoding is done automatically when binary format is encountered.
 It means you no longer have to manually change format (g_save_format) the game
 is using while writing the saves.
 
-The project is primarily developed in Delphi 7 Personal and Lazarus 1.6.x
+The project is primarily developed in Delphi 7 Personal and Lazarus 1.8.x
 (FPC 3.x) and therefore can be compiled by those development tools. But it
 should be also possible to compile it in newer versions of mentioned
 tools/compilers.
@@ -71,11 +71,11 @@ Project files
 List of folders with description of their content:
 
   .\
-  
+
     Root folder. Contains license and readme files.
-    
+
   .\Documents
-  
+
     Documentation of binary SII file format.
 
   .\Headers
@@ -143,4 +143,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2017 František Milt, all rights reserved
+©2016-2018 František Milt, all rights reserved

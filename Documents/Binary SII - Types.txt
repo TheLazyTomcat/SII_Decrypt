@@ -1,4 +1,4 @@
-This file describes types used in binary SII file of format version 2.
+This file describes types used in binary SII file of format version 1 and 2.
 It is a supplement to file "Binary SII - Format.txt" - you are strongly advised
 to read that file first.
 
@@ -26,8 +26,8 @@ to read that file first.
   0x00000013 - 0x00000016     unknown
   0x00000017                  unknown (probably vec4s)
   0x00000018                  array of vec4s
-  0x00000019                  vec8s
-  0x0000001A                  array of vec8s
+  0x00000019                  vec7s(1), vec8s(2)
+  0x0000001A                  array of vec7s(1), array of vec8s(2)
   0x0000001B - 0x00000024     unknown
   0x00000025                  int32
   0x00000026                  array of int32
@@ -197,8 +197,28 @@ Stored as a following structure:
   end
 
 
-Vec8s                                                                 0x00000019
+Vec7s(1), Vec8s(2)                                                    0x00000019
 --------------------------------------------------------------------------------
+This type differs in format version 1 and 2.
+
+Format version 1 (Vec7s)
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Vector of seven single-precision floating point numbers.
+Stored as a following structure:
+
+  begin
+    Single  (4B)  - first component of the vector
+    Single  (4B)  - second component of the vector
+    Single  (4B)  - third component of the vector
+    Single  (4B)  - fourth component of the vector
+    Single  (4B)  - fifth component of the vector
+    Single  (4B)  - sixth component of the vector
+    Single  (4B)  - seventh component of the vector
+  end
+
+
+Format version 2 (Vec8s)
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Vector of eight single-precision floating point numbers.
 The first and third components are stored biased, that is, shifted by some
 value. Each of the two components may have a different bias value. These values
@@ -236,12 +256,20 @@ WARNING - it is not known whether second component is biased too, but in all
           examined data, it never was.
 
 
-Array of vec8s                                                        0x0000001A
+Array of Vec7s(1), array of Vec8s(2)                                  0x0000001A
 --------------------------------------------------------------------------------
-Array of vectors, where each vector contains eight single-precision floating
-point numbers. For details about the vec8s, refer to documentation of type
-0x00000019.
-Stored as a following structure:
+This type differs in format version 1 and 2.
+Array of vectors, where each vector contains seven (format version 1) or
+eight (format version 2) single-precision floating point numbers. For details
+about the vec7s and/or vec8s, refer to documentation of type 0x00000019.
+Stored as a following structure in format version 1:
+
+  begin
+    UInt32    (4B)             - length of the array
+    Vec7s[]   (variable size)  - array of vectors
+  end
+
+...or, for format version 2:
 
   begin
     UInt32    (4B)             - length of the array

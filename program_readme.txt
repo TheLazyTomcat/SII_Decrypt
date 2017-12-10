@@ -2,7 +2,7 @@
 
                       SII Decrypt project - console program
 
-                                  version 1.2.1
+                                  version 1.3.0
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  39
   Changelog ...............................................  86
-  Known problems and limitations .......................... 101
-  Repositories ............................................ 112
-  Licensing ............................................... 125
-  Authors, contacts ....................................... 133
-  Copyright ............................................... 146
+  Known problems and limitations .......................... 104
+  Repositories ............................................ 115
+  Licensing ............................................... 128
+  Authors, contacts ....................................... 136
+  Copyright ............................................... 149
 
 
 Description
@@ -87,6 +87,10 @@ Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
 
+SII Decrypt program 1.2.2 -> SII Decrypt program 1.3.0
+  - added support BSII file of format version 1
+  - some minor internal changes
+
 
 SII Decrypt program 1.2.1 -> SII Decrypt program 1.2.2
   - added support for new value types (0x37)
@@ -94,7 +98,7 @@ SII Decrypt program 1.2.1 -> SII Decrypt program 1.2.2
 
 SII Decrypt program 1.2 -> SII Decrypt program 1.2.1
   - small optimizations
-  - internal and implementation changes  
+  - internal and implementation changes
 
 
 
@@ -145,4 +149,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2017 František Milt, all rights reserved
+©2016-2018 František Milt, all rights reserved

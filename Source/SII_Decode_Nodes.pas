@@ -26,15 +26,16 @@ uses
 type
   TSIIBin_Value = class(TObject)
   private
-    fInfo:  TSIIBin_NamedValue;
-    fName:  AnsiString;
+    fFormatVersion: UInt32;
+    fInfo:          TSIIBin_NamedValue;
+    fName:          AnsiString;
   protected
     Function GetValueType: TSIIBin_ValueType; virtual;
     procedure Load(Stream: TStream); virtual; abstract;
     procedure Initialize; virtual;
     procedure Finalize; virtual;
   public
-    constructor Create(const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
+    constructor Create(FormatVersion: UInt32; const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
     destructor Destroy; override;
     Function AsString: AnsiString; virtual;
     Function AsLine(IndentCount: Integer = 0): AnsiString; virtual;
@@ -545,15 +546,16 @@ type
 {==============================================================================}
   TSIIBin_DataBlock = class(TObject)
   private
-    fLayout:  TSIIBin_Layout;
-    fName:    AnsiString;
-    fBlockID: TSIIBin_Value_ID;
-    fFields:  TObjectList;
+    fFormatVersion: UInt32;
+    fLayout:        TSIIBin_Layout;
+    fName:          AnsiString;
+    fBlockID:       TSIIBin_Value_ID;
+    fFields:        TObjectList;
     Function GetFieldCount: Integer;
     Function GetField(Index: Integer): TSIIBin_Value;
   public
     class Function ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean; virtual;
-    constructor Create(Layout: TSIIBin_Layout);
+    constructor Create(FormatVersion: UInt32; Layout: TSIIBin_Layout);
     destructor Destroy; override;
     procedure Load(Stream: TStream); virtual;
     Function AsString: AnsiString; virtual;
@@ -608,9 +610,10 @@ end;
 {   TSIIBin_Value - public methods                                             }
 {------------------------------------------------------------------------------}
 
-constructor TSIIBin_Value.Create(const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
+constructor TSIIBin_Value.Create(FormatVersion: UInt32; const NamedValueInfo: TSIIBin_NamedValue; Stream: TStream);
 begin
 inherited Create;
+fFormatVersion := FormatVersion;
 fInfo := NamedValueInfo;
 fName := NamedValueInfo.ValueName;
 Load(Stream);
@@ -1220,9 +1223,12 @@ procedure TSIIBin_Value_00000019.Initialize;
 var
   Coef: Integer;
 begin
-Coef := Trunc(fValue[3]);
-fValue[0] := fValue[0] + Integer(((Coef and $FFF) - 2048) shl 9);
-fValue[2] := fValue[2] + Integer((((Coef shr 12) and $FFF) - 2048) shl 9);
+If fFormatVersion = 2 then
+  begin
+    Coef := Trunc(fValue[3]);
+    fValue[0] := fValue[0] + Integer(((Coef and $FFF) - 2048) shl 9);
+    fValue[2] := fValue[2] + Integer((((Coef shr 12) and $FFF) - 2048) shl 9);
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1236,7 +1242,19 @@ end;
 
 procedure TSIIBin_Value_00000019.Load(Stream: TStream);
 begin
-Stream_ReadBuffer(Stream,fValue,SizeOf(TSIIBin_Value_Vec8s));
+case fFormatVersion of
+  1:  begin
+        Stream_ReadFloat32(Stream,fValue[0]);
+        Stream_ReadFloat32(Stream,fValue[1]);
+        Stream_ReadFloat32(Stream,fValue[2]);
+        fValue[3] := 0.0;
+        Stream_ReadFloat32(Stream,fValue[4]);
+        Stream_ReadFloat32(Stream,fValue[5]);
+        Stream_ReadFloat32(Stream,fValue[6]);
+        Stream_ReadFloat32(Stream,fValue[7]);
+      end;
+  2:  Stream_ReadBuffer(Stream,fValue,SizeOf(TSIIBin_Value_Vec8s));
+end;
 end;
 
 {------------------------------------------------------------------------------}
@@ -1270,12 +1288,13 @@ procedure TSIIBin_Value_0000001A.Initialize;
 var
   i,Coef: Integer;
 begin
-For i := Low(fValue) to High(fValue) do
-  begin
-    Coef := Trunc(fValue[i][3]);
-    fValue[i][0] := fValue[i][0] + Integer(((Coef and $FFF) - 2048) shl 9);
-    fValue[i][2] := fValue[i][2] + Integer((((Coef shr 12) and $FFF) - 2048) shl 9);
-  end;
+If fFormatVersion = 2 then
+  For i := Low(fValue) to High(fValue) do
+    begin
+      Coef := Trunc(fValue[i][3]);
+      fValue[i][0] := fValue[i][0] + Integer(((Coef and $FFF) - 2048) shl 9);
+      fValue[i][2] := fValue[i][2] + Integer((((Coef shr 12) and $FFF) - 2048) shl 9);
+    end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1293,7 +1312,19 @@ var
 begin
 SetLength(fValue,Stream_ReadUInt32(Stream));
 For i := Low(fValue) to High(fValue) do
-  Stream_ReadBuffer(Stream,fValue[i],SizeOf(TSIIBin_Value_Vec8s));
+  case fFormatVersion of
+    1:  begin
+          Stream_ReadFloat32(Stream,fValue[i][0]);
+          Stream_ReadFloat32(Stream,fValue[i][1]);
+          Stream_ReadFloat32(Stream,fValue[i][2]);
+          fValue[i][3] := 0.0;
+          Stream_ReadFloat32(Stream,fValue[i][4]);
+          Stream_ReadFloat32(Stream,fValue[i][5]);
+          Stream_ReadFloat32(Stream,fValue[i][6]);
+          Stream_ReadFloat32(Stream,fValue[i][7]);
+        end;
+    2:  Stream_ReadBuffer(Stream,fValue[i],SizeOf(TSIIBin_Value_Vec8s));
+  end;
 end;
 
 {------------------------------------------------------------------------------}
@@ -1991,7 +2022,7 @@ end;
 
 Function TSIIBin_Value_00000039.AsString: AnsiString;
 begin
-Result := SIIBin_IDToStr(fValue);
+Result := SIIBin_IDToStr(fValue,fFormatVersion < 2);
 end;
 
 
@@ -2056,7 +2087,7 @@ If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
       TrailingLineBreak := False;
       AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
       For i := Low(fValue) to High(fValue) do
-        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i])]));
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i],fFormatVersion < 2)]));
       Result := Text;
     finally
       Free;
@@ -2067,7 +2098,7 @@ else
     Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
     For i := Low(fValue) to High(fValue) do
       Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) +
-                Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i])]));
+                Format('%s[%d]: %s',[fName,i,SIIBin_IDToStr(fValue[i],fFormatVersion < 2)]));
   end;
 end;
 
@@ -2110,9 +2141,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-constructor TSIIBin_DataBlock.Create(Layout: TSIIBin_Layout);
+constructor TSIIBin_DataBlock.Create(FormatVersion: UInt32; Layout: TSIIBin_Layout);
 begin
 inherited Create;
+fFormatVersion := FormatVersion;
 fLayout := Layout;
 fName := fLayout.Name;
 fFields := TObjectList.Create(True);
@@ -2138,35 +2170,35 @@ SIIBin_DecodeID(fBlockID);
 For i := Low(fLayout.Fields) to High(fLayout.Fields) do
   begin
     case fLayout.Fields[i].ValueType of
-      $00000001:  FieldObj := TSIIBin_Value_00000001.Create(fLayout.Fields[i],Stream);
-      $00000002:  FieldObj := TSIIBin_Value_00000002.Create(fLayout.Fields[i],Stream);
-      $00000003:  FieldObj := TSIIBin_Value_00000003.Create(fLayout.Fields[i],Stream);
-      $00000004:  FieldObj := TSIIBin_Value_00000004.Create(fLayout.Fields[i],Stream);
-      $00000005:  FieldObj := TSIIBin_Value_00000005.Create(fLayout.Fields[i],Stream);
-      $00000006:  FieldObj := TSIIBin_Value_00000006.Create(fLayout.Fields[i],Stream);
-      $00000009:  FieldObj := TSIIBin_Value_00000009.Create(fLayout.Fields[i],Stream);
-      $00000011:  FieldObj := TSIIBin_Value_00000011.Create(fLayout.Fields[i],Stream);
-      $00000012:  FieldObj := TSIIBin_Value_00000012.Create(fLayout.Fields[i],Stream);
-      $00000018:  FieldObj := TSIIBin_Value_00000018.Create(fLayout.Fields[i],Stream);
-      $00000019:  FieldObj := TSIIBin_Value_00000019.Create(fLayout.Fields[i],Stream);
-      $0000001A:  FieldObj := TSIIBin_Value_0000001A.Create(fLayout.Fields[i],Stream);
-      $00000025:  FieldObj := TSIIBin_Value_00000025.Create(fLayout.Fields[i],Stream);
-      $00000026:  FieldObj := TSIIBin_Value_00000026.Create(fLayout.Fields[i],Stream);
-      $00000027:  FieldObj := TSIIBin_Value_00000027.Create(fLayout.Fields[i],Stream);
-      $00000028:  FieldObj := TSIIBin_Value_00000028.Create(fLayout.Fields[i],Stream);
-      $0000002B:  FieldObj := TSIIBin_Value_0000002B.Create(fLayout.Fields[i],Stream);
-      $0000002C:  FieldObj := TSIIBin_Value_0000002C.Create(fLayout.Fields[i],Stream);
-      $00000031:  FieldObj := TSIIBin_Value_00000031.Create(fLayout.Fields[i],Stream);
-      $00000033:  FieldObj := TSIIBin_Value_00000033.Create(fLayout.Fields[i],Stream);
-      $00000034:  FieldObj := TSIIBin_Value_00000034.Create(fLayout.Fields[i],Stream);
-      $00000035:  FieldObj := TSIIBin_Value_00000035.Create(fLayout.Fields[i],Stream);
-      $00000036:  FieldObj := TSIIBin_Value_00000036.Create(fLayout.Fields[i],Stream);
-      $00000037:  FieldObj := TSIIBin_Value_00000037.Create(fLayout.Fields[i],Stream);
+      $00000001:  FieldObj := TSIIBin_Value_00000001.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000002:  FieldObj := TSIIBin_Value_00000002.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000003:  FieldObj := TSIIBin_Value_00000003.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000004:  FieldObj := TSIIBin_Value_00000004.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000005:  FieldObj := TSIIBin_Value_00000005.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000006:  FieldObj := TSIIBin_Value_00000006.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000009:  FieldObj := TSIIBin_Value_00000009.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000011:  FieldObj := TSIIBin_Value_00000011.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000012:  FieldObj := TSIIBin_Value_00000012.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000018:  FieldObj := TSIIBin_Value_00000018.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000019:  FieldObj := TSIIBin_Value_00000019.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $0000001A:  FieldObj := TSIIBin_Value_0000001A.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000025:  FieldObj := TSIIBin_Value_00000025.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000026:  FieldObj := TSIIBin_Value_00000026.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000027:  FieldObj := TSIIBin_Value_00000027.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000028:  FieldObj := TSIIBin_Value_00000028.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $0000002B:  FieldObj := TSIIBin_Value_0000002B.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $0000002C:  FieldObj := TSIIBin_Value_0000002C.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000031:  FieldObj := TSIIBin_Value_00000031.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000033:  FieldObj := TSIIBin_Value_00000033.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000034:  FieldObj := TSIIBin_Value_00000034.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000035:  FieldObj := TSIIBin_Value_00000035.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000036:  FieldObj := TSIIBin_Value_00000036.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $00000037:  FieldObj := TSIIBin_Value_00000037.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $00000039,
       $0000003B,
-      $0000003D:  FieldObj := TSIIBin_Value_00000039.Create(fLayout.Fields[i],Stream);
+      $0000003D:  FieldObj := TSIIBin_Value_00000039.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $0000003A,
-      $0000003C:  FieldObj := TSIIBin_Value_0000003A.Create(fLayout.Fields[i],Stream);
+      $0000003C:  FieldObj := TSIIBin_Value_0000003A.Create(fFormatVersion,fLayout.Fields[i],Stream);
     else
       raise Exception.CreateFmt('TSIIBin_DataBlock.Load: Unknown value type: %s(%d) at %d.',
             [fLayout.Fields[i].ValueName,fLayout.Fields[i].ValueType,Stream.Position]);
@@ -2183,7 +2215,7 @@ var
 begin
 with TAnsiStringList.Create do
 try
-  AddDef(Format('%s : %s {',[fName,SIIBin_IDToStr(fBlockID)]));
+  AddDef(Format('%s : %s {',[fName,SIIBin_IDToStr(fBlockID,fFormatVersion < 2)]));
   For i := 0 to Pred(fFields.Count) do
     Add(TSIIBin_Value(fFields[i]).AsLine(1));
   AddDef('}');
