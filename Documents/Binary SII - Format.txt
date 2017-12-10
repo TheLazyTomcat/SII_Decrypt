@@ -46,13 +46,15 @@ Structure of the header:
   begin
     UInt32 (4B)   - file signature, 0x49495342 ("BSII" when read as text)
     UInt32 (4B)   - version of format used in the file
-                    (must be 2 for current implementation)
+                    (must be 1 or 2 for current implementation)
   end
 
 WARNING - This documentation and also the decoder are both written only for
-          format version 2! There are other versions around, but they differ in
-          details and current decoder cannot work with them. I was not able to
-          obtain sufficient data to reverse-engineer those versions.
+          format versions 1 and 2! Other versions may differ in details and
+          current decoder cannot work with them.
+
+NOTE    - Currently, only known defference between version 1 and 2 is in value
+          types 0x19 and 0x1A.
 
 
 Blocks
@@ -72,28 +74,28 @@ given by this number (see further for details).
 Layout block
 ----------------------------------------
 Layout block is denoted by a block type of 0.
-Payload of the layout block consists of an 8bit value whose use is currently
-unknown, layout ID, layout name and an array of value information (type, name
+Payload of the layout block consists of an 8bit boolean value denoting block
+validity, layout ID, layout name and an  array of value information (type, name
 and type-specific data). This array is terminated by a value type of zero
 (NOT followed by a value name or data).
-When the unknown 8bit value is zero, the block is considered to be invalid and
-marks end of the file.
+When the 8bit boolean value (validity) is zero, the block is considered to be
+invalid and marks end of the file.
 Layout ID must not be 0 and must be unique (ID equal to 0 or non-unique ID is
 treated as an error).
 
 Structure of payload:
 
   begin
-    UInt8   (1B)            - unknown value
-    UInt32  (4B)            - layout ID
-    String  (variable size) - layout name
+    ByteBool  (1B)            - validity
+    UInt32    (4B)            - layout ID
+    String    (variable size) - layout name
     array of ...
     begin
-      UInt32  (4B)            - value type
-      String  (variable size) - value name
-      Data    (variable size) - data specific to the value type
+      UInt32    (4B)            - value type
+      String    (variable size) - value name
+      Data      (variable size) - data specific to the value type
     end
-    UInt32  (4B)            - invalid value type (0)
+    UInt32    (4B)            - invalid value type (0)
   end
 
 Layout ID is used to identify actual structure of any data block.
@@ -140,7 +142,7 @@ It should be read and parsed this way:
   02000000                                          - format version (2)
 
   00000000                                          - block type 0 -> layout block
-  01                                                - unknown
+  01                                                - validity (valid)
   01000000                                          - layout ID (1)
   0F000000                                          - length of following string (15)
   66697273745F737472756374757265                    - layout name (string) -> "first_structure"
@@ -156,7 +158,7 @@ It should be read and parsed this way:
   00000000                                          - value type 0 -> end of the layout block
 
   00000000                                          - block type 0 -> layout block
-  01                                                - unknown
+  01                                                - validity (valid)
   02000000                                          - layout ID (2)
   04000000                                          - length of following string (4)
   6C617374                                          - layout name (string) -> "last"
@@ -178,7 +180,7 @@ It should be read and parsed this way:
   0000803F                                          - single value (1.0)
 
   00000000                                          - block type 0 -> layout block
-  00                                                - invalid layout block -> end of file
+  00                                                - validity (invalid) -> end of file
 
 
 When converted into textual form, it looks like this:

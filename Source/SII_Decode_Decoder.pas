@@ -24,10 +24,10 @@ const
 {
   (8 bytes) header
     (4 bytes) signature
-    (4 bytes) version (2)
+    (4 bytes) version (1 or 2)
   (5 bytes) an invalid layout block
     (4 bytes) block type (0)
-    (1 byte ) unknown (0))
+    (1 byte ) valid (0))
 }
   SIIBIN_MIN_SIZE = 13;
 
@@ -154,8 +154,8 @@ var
   ValueCount: Integer;
   ValueType:  TSIIBin_ValueType;
 begin
-Layout.Unknown := Stream_ReadUInt8(Stream);
-If Layout.Unknown <> 0 then
+Layout.Valid := Stream_ReadBool(Stream);
+If Layout.Valid then
   begin
     Layout.ID := Stream_ReadUInt32(Stream);
     If (Layout.ID <> 0) and (IndexOfLayout(Layout.ID) < 0) then
@@ -201,7 +201,7 @@ begin
 Index := IndexOfLayout(LayoutID);
 If Index >= 0 then
   begin
-    DataBlock := TSIIBin_DataBlock.Create(fFileLayout.Layouts[Index]);
+    DataBlock := TSIIBin_DataBlock.Create(fFileLayout.Header.Version,fFileLayout.Layouts[Index]);
     DataBlock.Load(Stream);
     fFileDataBlocks.Add(DataBlock);
   end
@@ -275,7 +275,7 @@ If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
     Stream_ReadBuffer(Stream,fFileLayout.Header,SizeOf(TSIIBin_Header));
     case fFileLayout.Header.Signature of
       SIIBin_Signature_Bin:
-        If fFileLayout.Header.Version <> 2 then
+        If not fFileLayout.Header.Version in [1,2] then
           raise Exception.CreateFmt('TSIIBin_Decoder.LoadFromStream: Unsupported version (0x%.8x).',[fFileLayout.Header.Version]);
       SIIBin_Signature_Crypt:
         raise Exception.Create('TSIIBin_Decoder.LoadFromStream: Data are encrypted.');

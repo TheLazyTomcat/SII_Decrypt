@@ -43,7 +43,7 @@ type
   end;
 
   TSIIBin_Layout = record
-    Unknown:  UInt8;
+    Valid:    ByteBool;
     ID:       TSIIBin_LayoutID;
     Name:     AnsiString;
     Fields:   array of TSIIBin_NamedValue;
@@ -78,7 +78,7 @@ Function SIIBin_DecodeID(EncodedID: UInt64): AnsiString; overload;
 procedure SIIBin_DecodeID(var ID: TSIIBin_Value_ID); overload;
 
 Function SIIBin_SingleToStr(Value: Single): AnsiString;
-Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): AnsiString;
+Function SIIBin_IDToStr(ID: TSIIBin_Value_ID; OldHexStyle: Boolean): AnsiString;
 
 Function SIIBin_IsLimitedAlphabet(const Str: AnsiString): Boolean;
 procedure SIIBin_RectifyString(var Str: AnsiString);
@@ -206,35 +206,36 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function SIIBin_IDToStr(ID: TSIIBin_Value_ID): AnsiString;
+Function SIIBin_IDToStr(ID: TSIIBin_Value_ID; OldHexStyle: Boolean): AnsiString;
 var
   i:    Integer;
-{$IFDEF NamelessID_NewHexStyle}
   Temp: UInt64;
-{$ENDIF}
 begin
 case ID.Length of
   $00:  Result := StrToAnsi('null');
-{$IFDEF NamelessID_NewHexStyle}
-  $FF:  If ID.Parts[0] <> 0 then
+  $FF:  If OldHexStyle then
           begin
-            Temp := ID.Parts[0];
-            Result := '';
-            while Temp <> 0 do
-              begin
-                If (Temp and not UInt64($FFFF)) <> 0 then
-                  Result := StrToAnsi(AnsiLowerCase(Format('.%.4x',[UInt16(Temp)]))) + Result
-                else
-                  Result := StrToAnsi(AnsiLowerCase(Format('.%x',[UInt16(Temp)]))) + Result;
-                Temp := Temp shr 16;
-              end;
-            Result := AnsiString('_nameless') + Result;
+            Result := StrToAnsi('_nameless' + AnsiUpperCase(Format('.%.4x.%.4x',
+              [Int64Rec(ID.Parts[0]).Words[1],Int64Rec(ID.Parts[0]).Words[0]])));
           end
-        else Result := AnsiString('_nameless.0');
-{$ELSE}
-  $FF:  Result := StrToAnsi('_nameless' + AnsiUpperCase(Format('.%.4x.%.4x',
-                   [Int64Rec(ID.Parts[0]).Words[1],Int64Rec(ID.Parts[0]).Words[0]])));
-{$ENDIF}
+        else
+          begin
+            If ID.Parts[0] <> 0 then
+              begin
+                Temp := ID.Parts[0];
+                Result := '';
+                while Temp <> 0 do
+                  begin
+                    If (Temp and not UInt64($FFFF)) <> 0 then
+                      Result := StrToAnsi(AnsiLowerCase(Format('.%.4x',[UInt16(Temp)]))) + Result
+                    else
+                      Result := StrToAnsi(AnsiLowerCase(Format('.%x',[UInt16(Temp)]))) + Result;
+                    Temp := Temp shr 16;
+                  end;
+                Result := AnsiString('_nameless') + Result;
+              end
+            else Result := AnsiString('_nameless.0');
+          end;
 else
   Result := ID.PartsStr[0];
   For i := Succ(Low(ID.Parts)) to High(ID.Parts) do
