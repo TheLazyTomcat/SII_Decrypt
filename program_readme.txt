@@ -91,6 +91,7 @@ SII Decrypt program 1.2.2 -> SII Decrypt program 1.3.0
   - added support BSII file of format version 1
   - some minor internal changes
 
+
 SII Decrypt program 1.2.1 -> SII Decrypt program 1.2.2
   - added support for new value types (0x37)
 
