@@ -17,9 +17,9 @@
   This binding is distributed with all necessary binaries (object files, DLLs)
   precompiled. For details please refer to file bin_readme.txt.
 
-  ©František Milt 2017-08-07
+  ©František Milt 2018-02-07
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes  - github.com/ncs-sniper/Lib.AuxTypes
@@ -1737,19 +1737,19 @@ If CRT_LibHandle = 0 then
     CRT_LibHandle := LoadLibraryEx(PChar('msvcrt.dll'),0,0);
     If CRT_LibHandle <> 0 then
       begin
-        CRT_libfunc_strlen    := GetProcAddress(CRT_LibHandle,'strlen');
-        CRT_libfunc_open      := GetProcAddress(CRT_LibHandle,'_open');
-        CRT_libfunc_lseek     := GetProcAddress(CRT_LibHandle,'_lseek');
-        CRT_libfunc_wcstombs  := GetProcAddress(CRT_LibHandle,'wcstombs');
-        CRT_libfunc_wopen     := GetProcAddress(CRT_LibHandle,'_wopen');
-        CRT_libfunc_vsnprintf := GetProcAddress(CRT_LibHandle,'_vsnprintf');
-        CRT_libfunc_close     := GetProcAddress(CRT_LibHandle,'_close');
-        CRT_libfunc_memchr    := GetProcAddress(CRT_LibHandle,'memchr');
-        CRT_libfunc_read      := GetProcAddress(CRT_LibHandle,'_read');
-        CRT_libfunc_strerror  := GetProcAddress(CRT_LibHandle,'strerror');
-        CRT_libfunc_errno     := GetProcAddress(CRT_LibHandle,'_errno');
-        CRT_libfunc_write     := GetProcAddress(CRT_LibHandle,'_write');
-        CRT_libfunc_snprintf  := GetProcAddress(CRT_LibHandle,'_snprintf');
+        CRT_libfunc_strlen    := GetCheckProcAddress(CRT_LibHandle,'strlen');
+        CRT_libfunc_open      := GetCheckProcAddress(CRT_LibHandle,'_open');
+        CRT_libfunc_lseek     := GetCheckProcAddress(CRT_LibHandle,'_lseek');
+        CRT_libfunc_wcstombs  := GetCheckProcAddress(CRT_LibHandle,'wcstombs');
+        CRT_libfunc_wopen     := GetCheckProcAddress(CRT_LibHandle,'_wopen');
+        CRT_libfunc_vsnprintf := GetCheckProcAddress(CRT_LibHandle,'_vsnprintf');
+        CRT_libfunc_close     := GetCheckProcAddress(CRT_LibHandle,'_close');
+        CRT_libfunc_memchr    := GetCheckProcAddress(CRT_LibHandle,'memchr');
+        CRT_libfunc_read      := GetCheckProcAddress(CRT_LibHandle,'_read');
+        CRT_libfunc_strerror  := GetCheckProcAddress(CRT_LibHandle,'strerror');
+        CRT_libfunc_errno     := GetCheckProcAddress(CRT_LibHandle,'_errno');
+        CRT_libfunc_write     := GetCheckProcAddress(CRT_LibHandle,'_write');
+        CRT_libfunc_snprintf  := GetCheckProcAddress(CRT_LibHandle,'_snprintf');
       end
     else raise Exception.Create('ZLib/Initialize: Unable to load msvcrt.dll');
   end;

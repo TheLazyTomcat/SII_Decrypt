@@ -702,6 +702,7 @@ If CheckIndex(Index) then
         If (Endianness <> seSystem) and (Endianness <> GetSystemEndianness) then
           begin
             Temp := fStrings[Index];
+            UniqueString(Temp);
             WideSwapEndian(PWideChar(Temp),Length(Temp));
             Stream.WriteBuffer({$I 'ESL_inc\ESL_PCharType.inc'}(Temp)^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
           end
@@ -730,6 +731,7 @@ If Length(fLineBreak) > 0 then
     If (Endianness <> seSystem) and (Endianness <> GetSystemEndianness) then
       begin
         Temp := fLineBreak;
+        UniqueString(Temp);
         WideSwapEndian(PWideChar(Temp),Length(Temp));
         Stream.WriteBuffer({$I 'ESL_inc\ESL_PCharType.inc'}(Temp)^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
       end

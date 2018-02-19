@@ -49,7 +49,7 @@ try
   CMDParser := TCLPParser.Create;
   try
     WriteLn('************************************');
-    WriteLn('*    SII Decrypt program 1.3.0     *');
+    WriteLn('*    SII Decrypt program 1.3.1     *');
     WriteLn('*   (c) 2016-2018 Frantisek Milt   *');
     WriteLn('************************************');
 

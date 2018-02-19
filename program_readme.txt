@@ -2,7 +2,7 @@
 
                       SII Decrypt project - console program
 
-                                  version 1.3.0
+                                  version 1.3.1
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  39
   Changelog ...............................................  86
-  Known problems and limitations .......................... 104
-  Repositories ............................................ 115
-  Licensing ............................................... 128
-  Authors, contacts ....................................... 136
-  Copyright ............................................... 149
+  Known problems and limitations .......................... 109
+  Repositories ............................................ 120
+  Licensing ............................................... 133
+  Authors, contacts ....................................... 141
+  Copyright ............................................... 154
 
 
 Description
@@ -86,6 +86,10 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.3.0 -> SII Decrypt program 1.3.1
+  - corrected managing of erroneous data in IDs
+
 
 SII Decrypt program 1.2.2 -> SII Decrypt program 1.3.0
   - added support BSII file of format version 1

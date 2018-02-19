@@ -80,6 +80,10 @@ Examples:
 *******************************************************************************}
 unit SimpleCmdLineParser;
 
+{$IFDEF FPC}
+  {$MODE ObjFPC}{$H+}
+{$ENDIF}
+
 {$TYPEINFO ON}
 
 interface
