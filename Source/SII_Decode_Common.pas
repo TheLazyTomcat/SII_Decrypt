@@ -185,13 +185,17 @@ procedure SIIBin_DecodeID(var ID: TSIIBin_Value_ID);
 var
   i:  Integer;
 begin
-If not (ID.Length in [0,$FF]) then
-  begin
-    If Length(ID.PartsStr) <> Length(ID.Parts) then
-      SetLength(ID.PartsStr,Length(ID.Parts));
-    For i := Low(ID.Parts) to High(ID.Parts) do
-      ID.PartsStr[i] := SIIBin_DecodeID(ID.Parts[i]);
-  end;
+try
+  If not (ID.Length in [0,$FF]) then
+    begin
+      If Length(ID.PartsStr) <> Length(ID.Parts) then
+        SetLength(ID.PartsStr,Length(ID.Parts));
+      For i := Low(ID.Parts) to High(ID.Parts) do
+        ID.PartsStr[i] := SIIBin_DecodeID(ID.Parts[i]);
+    end;
+except
+  ID.Length := 0;
+end;
 end;
 
 //------------------------------------------------------------------------------

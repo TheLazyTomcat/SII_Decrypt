@@ -17,9 +17,9 @@
   This binding is distributed with all necessary binaries (object files, DLLs)
   precompiled. For details please refer to file bin_readme.txt.
 
-  ©František Milt 2017-08-07
+  ©František Milt 2018-02-07
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes  - github.com/ncs-sniper/Lib.AuxTypes
@@ -268,7 +268,7 @@ const
   Z_DEFLATED = 8;
 (* The deflate compression method (the only one supported in this version) *)
 
-	Z_NULL = nil;   (* for initializing zalloc, zfree, opaque *)
+  Z_NULL = nil;   (* for initializing zalloc, zfree, opaque *)
 
 type
   in_func = Function(Ptr: Pointer; Buff: PPByte): unsigned; cdecl;
@@ -288,7 +288,12 @@ type
 
 procedure CheckCompatibility(Flags: uLong);
 
+Function GetCheckProcAddress(Module: THandle; ProcName: String): Pointer;
+
 implementation
+
+uses
+  Windows, SysUtils;
 
 procedure CheckCompatibility(Flags: uLong);
 begin
@@ -306,6 +311,15 @@ Assert(((Flags shr 10) and 1) = 0,'incomatible calling convention');
 // check if all funcionality is available
 Assert(((Flags shr 16) and 1) = 0,'gz* functions cannot compress');
 Assert(((Flags shr 17) and 1) = 0,'unable to write gzip stream');
+end;
+
+//------------------------------------------------------------------------------
+
+Function GetCheckProcAddress(Module: THandle; ProcName: String): Pointer;
+begin
+Result := GetProcAddress(Module,PChar(ProcName));
+If not Assigned(Result) then
+  raise Exception.CreateFmt('GetCheckProcAddress: Address of function "%s" could not be obtained',[ProcName]);
 end;
 
 end.

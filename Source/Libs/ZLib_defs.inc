@@ -28,9 +28,9 @@
 
   When defined, the binding provides functions for GZIP file manipulation.
   Requires presence of msvcrt.dll in the system (should be integral part of
-  Windos NT and newer) for statically linked version.
+  Windows NT and newer) for statically linked version.
 
-  Defined by default;
+  Defined by default.
 }
 {$DEFINE GZIP_Support}
 
