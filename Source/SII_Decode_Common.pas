@@ -163,6 +163,7 @@ var
   CharIdx:  Integer;
   Len:      Integer;
 begin
+EncodedID := EncodedID and not(UInt64(1) shl 63); // mask out bit 63
 SetLength(Result,12);
 Len := 0;
 while EncodedID <> 0 do

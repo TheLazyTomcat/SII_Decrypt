@@ -89,7 +89,9 @@ Stored as a following structure:
 
 Encoded string                                                        0x00000003
 --------------------------------------------------------------------------------
-String identifier encoded into and stored as a 64bit number.
+String identifier encoded into and stored as a 64bit number. Only lower 63 bits
+of the number are used for the encoded string, bit 63 (highest bit) is used
+internally by the game and should be ignored in decoding.
 The identifier can contain only numbers, small letters and an underscore.
 Maximum length of the identifier is 12 characters (see further for explanation).
 
