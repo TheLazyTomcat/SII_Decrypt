@@ -84,7 +84,7 @@ var
 
   Returns format of file given by its name (path).
   It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, an generic error code is returned.
+  If the file does not exists, a generic error code is returned.
   The format is discerned acording to first four bytes (signature) and the size
   is then checked againts that format (must be high enough to contain valid
   data for the given format).
@@ -163,7 +163,7 @@ var
 
 {-------------------------------------------------------------------------------
 
-  IsEncryptedFile
+  IsEncodedFile
 
   Checks whether the given file contains a binary SII file.
   It is recommended to pass full file path, but relative path is acceptable.
@@ -412,7 +412,7 @@ var
   Decrypts and, if needed, decodes memory block given by the Input parameter and
   stores decoded data to a memory given by Output parameter.
   Use is exactly the same as in function DecodeMemoryHelper, refer there for
-  details about how to proprly use this function
+  details about how to properly use this function
 
   Parameters:
 
@@ -449,7 +449,7 @@ var
   Decrypts and, if needed, decodes memory block given by the Input parameter and
   stores decoded data to a memory given by Output parameter.
   Use is exactly the same as in function DecodeMemory, refer there for details
-  about how to proprly use this function
+  about how to properly use this function
 
   Parameters:
 
@@ -510,6 +510,26 @@ var
 }
   DecryptAndDecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
+{-------------------------------------------------------------------------------
+
+  FreeHelper
+
+  Frees resources taken by a helper object allocated by DecodeMemoryHelper or
+  DecryptAndDecodeMemoryHelper function. Refer to those functions documentation
+  for details about when you have to call this function and when you don't.
+  Passing in an already freed object is allowed, the function just returns
+  immediately.
+
+  Parameters:
+
+    Helper - Pointer to a variable containing helper object to be freed
+
+  Returns:
+
+    This routine does not have a return value.
+}
+  FreeHelper: procedure(Helper: PPointer); stdcall;
+
 //==============================================================================
 
 const
@@ -556,6 +576,8 @@ If LibHandle = 0 then
         DecryptAndDecodeMemoryHelper := GetProcAddress(LibHandle,'DecryptAndDecodeMemoryHelper');
         DecryptAndDecodeMemory       := GetProcAddress(LibHandle,'DecryptAndDecodeMemory');
         DecryptAndDecodeFile         := GetProcAddress(LibHandle,'DecryptAndDecodeFile');
+
+        FreeHelper := GetProcAddress(LibHandle,'FreeHelper');
       end
     else raise Exception.CreateFmt('Unable to load library %s.',[LibraryFile]);
   end;
