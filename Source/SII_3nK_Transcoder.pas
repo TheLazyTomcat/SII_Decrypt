@@ -243,7 +243,7 @@ If Input <> Output then
     If RectifySize then
       Output.Size := Output.Position;
   end
-else raise Exception.Create('TSII_3nK_Transcoder.EncodeStream: Input and output streams are the same.');
+else raise Exception.Create('TSII_3nK_Transcoder.EncodeStream: Input and output streams are the same, data would be corrupted.');
 end;
 
 //------------------------------------------------------------------------------
@@ -279,7 +279,7 @@ If Input <> Output then
       end
     else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input stream is not a valid 3nK stream.');
   end
-else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input and output streams are the same.');
+else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input and output streams are the same, data would be corrupted.');
 end;
 
 //------------------------------------------------------------------------------

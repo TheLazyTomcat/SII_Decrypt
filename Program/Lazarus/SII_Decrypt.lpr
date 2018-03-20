@@ -17,7 +17,9 @@ uses
   SII_Decode_Common,
   SII_Decode_Helpers,
   SII_Decode_Nodes,
-	SII_Decode_Decoder;
+  SII_Decode_Decoder,
+
+  SII_3nK_Transcoder;
 
 begin
   SII_Decrypt_Program.Main;
