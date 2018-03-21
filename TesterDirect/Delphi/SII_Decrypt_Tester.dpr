@@ -20,7 +20,9 @@ uses
   SII_Decode_Common  in '..\..\Source\SII_Decode_Common.pas',
   SII_Decode_Helpers in '..\..\Source\SII_Decode_Helpers.pas',
   SII_Decode_Nodes   in '..\..\Source\SII_Decode_Nodes.pas',
-  SII_Decode_Decoder in '..\..\Source\SII_Decode_Decoder.pas';
+  SII_Decode_Decoder in '..\..\Source\SII_Decode_Decoder.pas',
+  
+  SII_3nK_Transcoder in '..\..\Source\SII_3nK_Transcoder.pas';
 
 begin
   SII_Decrypt_Tester_Main.Main;

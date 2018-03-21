@@ -33,6 +33,7 @@ const
   SII_Signature_Encrypted = UInt32($43736353);  {ScsC}
   SII_Signature_Normal    = UInt32($4e696953);  {SiiN}
   SII_Signature_Binary    = UInt32($49495342);  {BSII}
+  SII_Signature_3nK       = UInt32($014B6E33);  {3nK#01}
 
 type
   TSIIHeader = packed record
@@ -49,7 +50,8 @@ type
                 rBinaryFormat   = 2,
                 rUnknownFormat  = 3,
                 rTooFewData     = 4,
-                rBufferTooSmall = 5);
+                rBufferTooSmall = 5,
+                r3nKFormat      = 6);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
@@ -68,6 +70,8 @@ type
     Function IsEncryptedSIIFile(const FileName: String): Boolean; virtual;
     Function IsEncodedSIIStream(Stream: TSTream): Boolean; virtual;
     Function IsEncodedSIIFile(const FileName: String): Boolean; virtual;
+    Function Is3nKSIIStream(Stream: TSTream): Boolean; virtual;
+    Function Is3nKSIIFile(const FileName: String): Boolean; virtual;
     Function DecryptStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult; virtual;
     Function DecryptFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptFileInMemory(const Input, Output: String): TSIIResult; virtual;
@@ -86,7 +90,7 @@ implementation
 
 uses
   SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, SII_Decode_Decoder,
-  ZLibCommon, ZLibStatic
+  SII_3nK_Transcoder, ZLibCommon, ZLibStatic
 {$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazFileUtils
 {$ENDIF};
@@ -169,6 +173,10 @@ try
                                   Result := rBinaryFormat
                                 else
                                   Result := rTooFewData;
+      SII_Signature_3nK:        If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
+                                  Result := r3nKFormat
+                                else
+                                  Result := rTooFewData;
     else
       Result := rUnknownFormat;
     end
@@ -224,6 +232,20 @@ end;
 Function TSII_Decryptor.IsEncodedSIIFile(const FileName: String): Boolean;
 begin
 Result := GetFileFormat(FileName) = rBinaryFormat;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TSII_Decryptor.Is3nKSIIStream(Stream: TSTream): Boolean;
+begin
+Result := GetStreamFormat(Stream) = r3nKFormat;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TSII_Decryptor.Is3nKSIIFile(const FileName: String): Boolean;
+begin
+Result := GetFileFormat(FileName) = r3nKFormat;
 end;
 
 //------------------------------------------------------------------------------
@@ -325,33 +347,62 @@ end;
 
 Function TSII_Decryptor.DecodeStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult;
 var
-  Decoder:    TSIIBin_Decoder;
+  DecoderBin: TSIIBin_Decoder;
+  Decoder3nK: TSII_3nK_Transcoder;
   InitOutPos: Int64;
   TextResult: TAnsiStringList;
+  TempStream: TMemoryStream;
 begin
 try
   Result := GetStreamFormat(Input);
-  If Result = rBinaryFormat then
-    begin
-      Decoder := TSIIBin_Decoder.Create;
-      try
-        InitOutPos := Output.Position;
-        Decoder.LoadFromStream(Input);
-        TextResult := TAnsiStringList.Create;
+  case Result of
+    rBinaryFormat:   //- BSII file - - - - - - - - - - - - - - - - - - - - - - -
+      begin
+        DecoderBin := TSIIBin_Decoder.Create;
         try
-          Decoder.Convert(TextResult);
-          Output.Seek(InitOutPos,soBeginning);
-          TextResult.SaveToStream(Output);
-          If RectifySize then
-            Output.Size := Output.Position;
+          InitOutPos := Output.Position;
+          DecoderBin.LoadFromStream(Input);
+          TextResult := TAnsiStringList.Create;
+          try
+            DecoderBin.Convert(TextResult);
+            Output.Seek(InitOutPos,soBeginning);
+            TextResult.SaveToStream(Output);
+            If RectifySize then
+              Output.Size := Output.Position;
+            Result := rSuccess;
+          finally
+            TextResult.Free;
+          end;
+        finally
+          DecoderBin.Free;
+        end;
+      end;
+    r3nKFormat:     //- 3nK file - - - - - - - - - - - - - - - - - - - - - - - -
+      begin
+        Decoder3nK := TSII_3nK_Transcoder.Create;
+        try
+          If Input = Output then
+            begin
+              TempStream := TMemoryStream.Create;
+              try
+                InitOutPos := Output.Position;
+                TempStream.Size := Input.Size - Input.Position;
+                Decoder3nK.DecodeStream(Input,TempStream,True);
+                Output.Seek(InitOutPos,soBeginning);
+                Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
+                If RectifySize then
+                  Output.Size := Output.Position;
+              finally
+                TempStream.Free;
+              end;
+            end
+          else Decoder3nK.DecodeStream(Input,Output,RectifySize);
           Result := rSuccess;
         finally
-          TextResult.Free;
+          Decoder3nK.Free;
         end;
-      finally
-        Decoder.Free;
       end;
-    end;
+  end;
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
@@ -440,7 +491,8 @@ try
               TempStream.Seek(0,soBeginning);
               Result := GetStreamFormat(TempStream);
               case Result of
-                rBinaryFormat:  begin
+                rBinaryFormat,
+                r3nKFormat:     begin
                                   Output.Seek(InitOutPos,soBeginning);
                                   Result := DecodeStream(TempStream,Output,False);
                                   If RectifySize and (Result = rSuccess) then
@@ -461,7 +513,8 @@ try
         end;
       end;
 
-    rBinaryFormat:
+    rBinaryFormat,
+    r3nKFormat:
       Result := DecodeStream(Input,Output,RectifySize);
   end;
 except

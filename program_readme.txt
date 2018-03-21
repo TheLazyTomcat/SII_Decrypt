@@ -2,7 +2,7 @@
 
                       SII Decrypt project - console program
 
-                                  version 1.3.2
+                                   version 1.4
 
 ================================================================================
 
@@ -11,20 +11,20 @@ Index
 
   Index ...................................................   9
   Description .............................................  23
-  Use of the program ......................................  39
-  Changelog ...............................................  86
-  Known problems and limitations .......................... 113
-  Repositories ............................................ 124
-  Licensing ............................................... 137
-  Authors, contacts ....................................... 145
-  Copyright ............................................... 158
+  Use of the program ......................................  41
+  Changelog ...............................................  88
+  Known problems and limitations .......................... 119
+  Repositories ............................................ 130
+  Licensing ............................................... 143
+  Authors, contacts ....................................... 151
+  Copyright ............................................... 164
 
 
 Description
 ------------------------------
 This program is designed to decrypt and/or decode SII files that are used as a
 mean of storing save data in truck games developed by SCS Software. It was
-successfuly tested on saves from Euro Truck Simulator 2 and American Truck
+successfully tested on saves from Euro Truck Simulator 2 and American Truck
 Simulator and therefore should work for those games.
 Unlike in previous version, you do not need to change save format the game is
 using. Current version of this program can understand the now used binary format
@@ -33,12 +33,14 @@ format specification is not public, the decoding cannot be fully tested and
 therefore might not work in rare circumstances or in future games. If that
 happens, you can disable it by command no_decode (but in that case, you have to
 configure the game to again store the saves in textual form).
+The program can also decode 3nK-encoded SII files used for example in
+localization.
 
 
 
 Use of the program
 ------------------------------
-This progam is a command line utility, meaning it does not have any graphical
+This program is a command line utility, meaning it does not have any graphical
 user interface - you are supposed to use it by running it with proper command
 line parameters.
 For normal user not familiar with command line, it simple means dropping file
@@ -50,8 +52,8 @@ Simple scheme
 
     SII_Decrypt.exe InputFile [OutputFile]
 
-  There are no commands awailable in the simple scheme. Program just takes first
-  parameter as input file path and secod parameter, if present, as an output
+  There are no commands available in the simple scheme. Program just takes first
+  parameter as input file path and second parameter, if present, as an output
   file path. If output path is not specified, the result is stored back into
   input file.
 
@@ -86,6 +88,10 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.3.2 -> SII Decrypt program 1.4.0
+  - added support for decoding of 3nK-encoded files
+
 
 SII Decrypt program 1.3.1 -> SII Decrypt program 1.3.2
   - changed decoding of encoded strings
@@ -124,7 +130,7 @@ problems, contact author or run the tool with command no_decode.
 Repositories
 ----------------------------------------
 You can get actual copies of complete SII Decrypt project, including source code
-of this progam, on either of these git repositories:
+of this program, on either of these git repositories:
 
 https://github.com/ncs-sniper/SII_Decrypt
 https://bitbucket.org/ncs-sniper/sii_decrypt
@@ -150,8 +156,8 @@ Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
 
 If you find this program useful and don't know what to do with your money ;),
 consider making a small donation using one of the following links:
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 https://www.paypal.me/FMilt
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
 
 

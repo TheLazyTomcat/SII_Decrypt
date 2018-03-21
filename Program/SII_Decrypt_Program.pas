@@ -27,6 +27,7 @@ case ResultCode of
   3:  Result := 'File is in unknown format';
   4:  Result := 'File is too small to contain valid data';
   5:  Result := 'Buffer is too small';
+  6:  Result := 'File is in 3nK format';
 else
   Result := 'Generic error';
 end;
@@ -49,7 +50,7 @@ try
   CMDParser := TCLPParser.Create;
   try
     WriteLn('************************************');
-    WriteLn('*    SII Decrypt program 1.3.2     *');
+    WriteLn('*    SII Decrypt program 1.4.0     *');
     WriteLn('*   (c) 2016-2018 Frantisek Milt   *');
     WriteLn('************************************');
 
@@ -127,7 +128,7 @@ try
                 If Length(ParamData.Arguments) > 0 then
                   OutFileName := ParamData.Arguments[0]
                 else
-                  raise Exception.Create('Error settings output file.');
+                  raise Exception.Create('Error setting output file.');
               end
             else OutFileName := InFileName;
             If CMDParser.CommandPresent('no_decode') then

@@ -47,6 +47,7 @@ const
   SIIDEC_RESULT_UNKNOWN_FORMAT   = 3;
   SIIDEC_RESULT_TOO_FEW_DATA     = 4;
   SIIDEC_RESULT_BUFFER_TOO_SMALL = 5;
+  SIIDEC_RESULT_3NK_FORMAT       = 6;
 
 //==============================================================================
 
@@ -75,6 +76,7 @@ var
     SIIDEC_RESULT_TOO_FEW_DATA     - memory buffer is too small to contain valid
                                      data for its format
     SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+    SIIDEC_RESULT_3NK_FORMAT       - memory contains 3nK-encoded SII file
 }
   GetMemoryFormat: Function(Mem: Pointer; Size: TMemSize): Int32; stdcall;
 
@@ -84,7 +86,7 @@ var
 
   Returns format of file given by its name (path).
   It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, an generic error code is returned.
+  If the file does not exists, a generic error code is returned.
   The format is discerned acording to first four bytes (signature) and the size
   is then checked againts that format (must be high enough to contain valid
   data for the given format).
@@ -103,6 +105,7 @@ var
     SIIDEC_RESULT_TOO_FEW_DATA     - file is too small to contain valid data for
                                      its format
     SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+    SIIDEC_RESULT_3NK_FORMAT       - file is an 3nK-encoded SII file
 }
   GetFileFormat: Function(FileName: PUTF8Char): Int32; stdcall;
 
@@ -163,7 +166,7 @@ var
 
 {-------------------------------------------------------------------------------
 
-  IsEncryptedFile
+  IsEncodedFile
 
   Checks whether the given file contains a binary SII file.
   It is recommended to pass full file path, but relative path is acceptable.
@@ -179,6 +182,43 @@ var
     file, it returns non-zero value (true).
 }
   IsEncodedFile: Function(FileName: PUTF8Char): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Is3nKEncodedMemory
+
+  Checks whether the passed memory buffer contains an 3nK-encoded SII file.
+
+  Parameters:
+
+    Mem  - Pointer to a memory block that should be checked (must not be nil)
+    Size - Size of the memory block in bytes
+
+  Returns:
+
+    Zero (false) when the buffer DOES NOT contain an 3nK-encoded SII file. When
+    it DOES contain an 3nK-encoded SII file, it returns non-zero value (true).
+}
+  Is3nKEncodedMemory: Function(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Is3nKEncodedFile
+
+  Checks whether the given file contains an 3nK-encoded SII file.
+  It is recommended to pass full file path, but relative path is acceptable.
+  If the file does not exists, zero (false) is returned.
+
+  Parameters:
+
+    FileName - path to the file that should be checked
+
+  Returns:
+
+    Zero (false) when the file is NOT an 3nK-encoded SII file. When it IS an
+    3nK-encoded SII file, it returns non-zero value (true).
+}
+  Is3nKEncodedFile: Function(FileName: PUTF8Char): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -226,6 +266,7 @@ var
                                      complete encrypted SII file header
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted data
+    SIIDEC_RESULT_3NK_FORMAT       - input data contains 3nK-encoded SII file
 }
   DecryptMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
   
@@ -258,6 +299,7 @@ var
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain complete
                                      encrypted SII file header
     SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+    SIIDEC_RESULT_3NK_FORMAT       - input file contains 3nK-encoded SII file
 }
   DecryptFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -335,6 +377,7 @@ var
                                      binary SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decoded data
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecodeMemoryHelper: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 
@@ -370,6 +413,7 @@ var
                                      binary SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decoded data
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecodeMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
@@ -402,6 +446,7 @@ var
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain a valid
                                      binary SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -412,7 +457,7 @@ var
   Decrypts and, if needed, decodes memory block given by the Input parameter and
   stores decoded data to a memory given by Output parameter.
   Use is exactly the same as in function DecodeMemoryHelper, refer there for
-  details about how to proprly use this function
+  details about how to properly use this function
 
   Parameters:
 
@@ -439,6 +484,7 @@ var
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted and
                                      decoded data
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecryptAndDecodeMemoryHelper: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 
@@ -449,7 +495,7 @@ var
   Decrypts and, if needed, decodes memory block given by the Input parameter and
   stores decoded data to a memory given by Output parameter.
   Use is exactly the same as in function DecodeMemory, refer there for details
-  about how to proprly use this function
+  about how to properly use this function
 
   Parameters:
 
@@ -475,6 +521,7 @@ var
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted and
                                      decoded data
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecryptAndDecodeMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
@@ -507,8 +554,29 @@ var
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain a valid
                                      encrypted or binary SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
+    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecryptAndDecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  FreeHelper
+
+  Frees resources taken by a helper object allocated by DecodeMemoryHelper or
+  DecryptAndDecodeMemoryHelper function. Refer to those functions documentation
+  for details about when you have to call this function and when you don't.
+  Passing in an already freed object is allowed, the function just returns
+  immediately.
+
+  Parameters:
+
+    Helper - Pointer to a variable containing helper object to be freed
+
+  Returns:
+
+    This routine does not have a return value.
+}
+  FreeHelper: procedure(Helper: PPointer); stdcall;
 
 //==============================================================================
 
@@ -539,12 +607,14 @@ If LibHandle = 0 then
     LibHandle := LoadLibrary(PChar(LibraryFile));
     If LibHandle <> 0 then
       begin
-        GetMemoryFormat   := GetProcAddress(LibHandle,'GetMemoryFormat');
-        GetFileFormat     := GetProcAddress(LibHandle,'GetFileFormat');
-        IsEncryptedMemory := GetProcAddress(LibHandle,'IsEncryptedMemory');
-        IsEncryptedFile   := GetProcAddress(LibHandle,'IsEncryptedFile');
-        IsEncodedMemory   := GetProcAddress(LibHandle,'IsEncodedMemory');
-        IsEncodedFile     := GetProcAddress(LibHandle,'IsEncodedFile');
+        GetMemoryFormat    := GetProcAddress(LibHandle,'GetMemoryFormat');
+        GetFileFormat      := GetProcAddress(LibHandle,'GetFileFormat');
+        IsEncryptedMemory  := GetProcAddress(LibHandle,'IsEncryptedMemory');
+        IsEncryptedFile    := GetProcAddress(LibHandle,'IsEncryptedFile');
+        IsEncodedMemory    := GetProcAddress(LibHandle,'IsEncodedMemory');
+        IsEncodedFile      := GetProcAddress(LibHandle,'IsEncodedFile');
+        Is3nKEncodedMemory := GetProcAddress(LibHandle,'Is3nKEncodedMemory');
+        Is3nKEncodedFile   := GetProcAddress(LibHandle,'Is3nKEncodedFile');
 
         DecryptMemory := GetProcAddress(LibHandle,'DecryptMemory');
         DecryptFile   := GetProcAddress(LibHandle,'DecryptFile');
@@ -556,6 +626,8 @@ If LibHandle = 0 then
         DecryptAndDecodeMemoryHelper := GetProcAddress(LibHandle,'DecryptAndDecodeMemoryHelper');
         DecryptAndDecodeMemory       := GetProcAddress(LibHandle,'DecryptAndDecodeMemory');
         DecryptAndDecodeFile         := GetProcAddress(LibHandle,'DecryptAndDecodeFile');
+
+        FreeHelper := GetProcAddress(LibHandle,'FreeHelper');
       end
     else raise Exception.CreateFmt('Unable to load library %s.',[LibraryFile]);
   end;
