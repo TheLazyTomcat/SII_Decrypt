@@ -2,21 +2,21 @@
 
                                SII Decrypt project
 
-                                 version 1.3.X
+                                 version 1.4.x
 
 ================================================================================
 
 Index
 ------------------------------
 
-  Index ...................................................   9
-  Description .............................................  22
-  Parts of the project ....................................  41
-  Project files ...........................................  68
-  Repositories ............................................ 112
-  Licensing ............................................... 125
-  Authors, contacts ....................................... 133
-  Copyright ............................................... 144
+  Index ................................................... 9
+  Description ............................................. 22
+  Parts of the project .................................... 46
+  Project files ........................................... 74
+  Repositories ............................................ 117
+  Licensing ............................................... 130
+  Authors, contacts ....................................... 138
+  Copyright ............................................... 149
 
 
 Description
@@ -29,6 +29,11 @@ It can also decode binary format normally used in these saves into its textual
 form. This decoding is done automatically when binary format is encountered.
 It means you no longer have to manually change format (g_save_format) the game
 is using while writing the saves.
+
+Since version 1.4, it is also possible to decode 3nK-encoded files. This
+encoding is usually used in localization SII files. See project 3nK Transcode
+(https://github.com/ncs-sniper/SII_3nK_Transcode) for further details on this
+format.
 
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.8.x
 (FPC 3.x) and therefore can be compiled by those development tools. But it
@@ -136,8 +141,8 @@ František Milt, frantisek.milt@gmail.com
 
 If you find this project useful and don't know what to do with your money ;),
 consider making a small donation using one of the following links:
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 https://www.paypal.me/FMilt
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
 
 
