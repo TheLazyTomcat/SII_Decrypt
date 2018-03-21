@@ -37,12 +37,14 @@ try
       TestStream := TMemoryStream.Create;
       try
         TestStream.LoadFromFile(ParamStr(1));
-        WriteLn('Exp_GetMemoryFormat   ',Exp_GetMemoryFormat(TestStream.Memory,TestStream.Size));
-        WriteLn('Exp_GetFileFormat     ',Exp_GetFileFormat(PUTF8Char(StrPrep(ParamStr(1)))));
-        WriteLn('Exp_IsEncryptedMemory ',Exp_IsEncryptedMemory(TestStream.Memory,TestStream.Size));
-        WriteLn('Exp_IsEncryptedFile   ',Exp_IsEncryptedFile(PUTF8Char(StrPrep(ParamStr(1)))));
-        WriteLn('Exp_IsEncodedMemory   ',Exp_IsEncodedMemory(TestStream.Memory,TestStream.Size));
-        WriteLn('Exp_IsEncodedFile     ',Exp_IsEncodedFile(PUTF8Char(StrPrep(ParamStr(1)))));
+        WriteLn('Exp_GetMemoryFormat    ',Exp_GetMemoryFormat(TestStream.Memory,TestStream.Size));
+        WriteLn('Exp_GetFileFormat      ',Exp_GetFileFormat(PUTF8Char(StrPrep(ParamStr(1)))));
+        WriteLn('Exp_IsEncryptedMemory  ',Exp_IsEncryptedMemory(TestStream.Memory,TestStream.Size));
+        WriteLn('Exp_IsEncryptedFile    ',Exp_IsEncryptedFile(PUTF8Char(StrPrep(ParamStr(1)))));
+        WriteLn('Exp_IsEncodedMemory    ',Exp_IsEncodedMemory(TestStream.Memory,TestStream.Size));
+        WriteLn('Exp_IsEncodedFile      ',Exp_IsEncodedFile(PUTF8Char(StrPrep(ParamStr(1)))));
+        WriteLn('Exp_Is3nKEncodedMemory ',Exp_Is3nKEncodedMemory(TestStream.Memory,TestStream.Size));
+        WriteLn('Exp_Is3nKEncodedFile   ',Exp_Is3nKEncodedFile(PUTF8Char(StrPrep(ParamStr(1)))));
 //--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
         WriteLn;
         Result := Exp_DecryptMemory(TestStream.Memory,TestStream.Size,nil,@AllocSize);

@@ -20,6 +20,8 @@ Function Exp_IsEncryptedMemory(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
 Function Exp_IsEncryptedFile(FileName: PUTF8Char): LongBool; stdcall;
 Function Exp_IsEncodedMemory(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
 Function Exp_IsEncodedFile(FileName: PUTF8Char): LongBool; stdcall;
+Function Exp_Is3nKEncodedMemory(Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_Is3nKEncodedFile(FileName: PUTF8Char): LongBool; stdcall;
 
 Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 Function Exp_DecryptFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
@@ -130,6 +132,27 @@ except
 end;
 end;
 
+//------------------------------------------------------------------------------
+
+Function Exp_Is3nKEncodedMemory(Mem: Pointer; Size: TMemSize): LongBool;
+begin
+try
+  Result := Exp_GetMemoryFormat(Mem,Size) = SIIDEC_RESULT_3NK_FORMAT;
+except
+  Result := False;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function Exp_Is3nKEncodedFile(FileName: PUTF8Char): LongBool;
+begin
+try
+  Result := Exp_GetFileFormat(FileName) = SIIDEC_RESULT_3NK_FORMAT;
+except
+  Result := False;
+end;
+end;
 //==============================================================================
 
 Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
@@ -219,7 +242,7 @@ try
     InMemStream := TStaticMemoryStream.Create(Input,InSize);
     try
       Result := Ord(GetStreamFormat(InMemStream));
-      If Result = SIIDEC_RESULT_BINARY_FORMAT then
+      If Result in [SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
         begin
           If Assigned(Output) then
             begin
@@ -299,7 +322,7 @@ try
   try
     ReraiseExceptions := False;
     Result := Ord(GetFileFormat(StrConv(InputFile)));
-    If Result = SIIDEC_RESULT_BINARY_FORMAT then
+    If Result in [SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
       Result := Ord(DecodeFile(StrConv(InputFile),StrConv(OutputFile)))
     else If Result = SIIDEC_RESULT_SUCCESS then
       Result := SIIDEC_RESULT_UNKNOWN_FORMAT;
@@ -326,7 +349,7 @@ try
     InMemStream := TStaticMemoryStream.Create(Input,InSize);
     try
       Result := Ord(GetStreamFormat(InMemStream));
-      If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT] then
+      If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
         begin
           If Assigned(Output) then
             begin
@@ -404,7 +427,7 @@ try
   try
     ReraiseExceptions := False;
     Result := Ord(GetFileFormat(StrConv(InputFile)));
-    If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT] then
+    If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
       Result := Ord(DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
   finally
     Free;
@@ -436,6 +459,8 @@ exports
   Exp_IsEncryptedFile              name 'IsEncryptedFile',
   Exp_IsEncodedMemory              name 'IsEncodedMemory',
   Exp_IsEncodedFile                name 'IsEncodedFile',
+  Exp_Is3nKEncodedMemory           name 'Is3nKEncodedMemory',
+  Exp_Is3nKEncodedFile             name 'Is3nKEncodedFile',
   Exp_DecryptMemory                name 'DecryptMemory',
   Exp_DecryptFile                  name 'DecryptFile',
   Exp_DecodeMemory                 name 'DecodeMemory',
