@@ -57,14 +57,20 @@ const
 type
   TSII_3nK_ProcRoutine = procedure(Input, Output: TStream; RectifySize: Boolean = True) of object;
 
+  TSII_3nK_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
+  TSII_3nK_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+
 {===============================================================================
     TSII_3nK_Transcoder - declaration
 ===============================================================================}
   TSII_3nK_Transcoder = class(TObject)
   private
-    fSeed:  UInt8;
+    fSeed:              UInt8;
+    fProgressEvent:     TSII_3nK_ProgressEvent;
+    fProgressCallback:  TSII_3nK_ProgressCallback;
     Function GetKey(Index: Integer): Byte;
   protected
+    procedure DoProgress(Progress: Single); virtual;
     procedure TranscodeBuffer(var Buff; Size: TMemSize; Seed: Int64); virtual;
     procedure ProcessFile(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
     procedure ProcessFileInMemory(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
@@ -83,6 +89,8 @@ type
     procedure TranscodeFileInMemory(const InFileName, OutFileName: String); virtual;
     property Keys[Index: Integer]: Byte read GetKey;
     property Seed: UInt8 read fSeed;
+    property ProgressEvent: TSII_3nK_ProgressEvent read fProgressEvent write fProgressEvent;
+    property ProgressCallback: TSII_3nK_ProgressCallback read fProgressCallback write fProgressCallback;
   end;
 
 implementation
@@ -116,6 +124,16 @@ end;
 {-------------------------------------------------------------------------------
     TSII_3nK_Transcoder - protected methods
 -------------------------------------------------------------------------------}
+
+procedure TSII_3nK_Transcoder.DoProgress(Progress: Single);
+begin
+If Assigned(fProgressEvent) then
+  fProgressEvent(Self,Progress);
+If Assigned(fProgressCallback) then
+  fProgressCallback(Self,Progress);
+end;
+
+//------------------------------------------------------------------------------
 
 procedure TSII_3nK_Transcoder.TranscodeBuffer(var Buff; Size: TMemSize; Seed: Int64);
 var
@@ -215,12 +233,14 @@ end;
 
 procedure TSII_3nK_Transcoder.EncodeStream(Input, Output: TStream; RectifySize: Boolean = True);
 var
-  Header:     SII_3nK_Header;
-  Buff:       TMemoryBuffer;
-  ActualReg:  Int64;
+  Header:         SII_3nK_Header;
+  Buff:           TMemoryBuffer;
+  ActualReg:      Int64;
+  ProgressStart:  Int64;
 begin
 If Input <> Output then
   begin
+    DoProgress(0.0);
     Header.Signature := SII_3nK_Signature;
     Header.UnkByte := 0;
     Header.Seed := UInt8(Random(High(Byte) + 1));
@@ -229,19 +249,25 @@ If Input <> Output then
     // write header to output
     Output.WriteBuffer(Header,SizeOf(Header));
     // encode data
-    GetBuffer(Buff,SII_3nK_BufferSize);
-    try
-      repeat
-        Buff.Data := Input.Read(Buff.Memory^,Buff.Size);
-        TranscodeBuffer(Buff.Memory^,Buff.Data,ActualReg);
-        Output.WriteBuffer(Buff.Memory^,Buff.Data);
-        ActualReg := ActualReg + Int64(Buff.Data);
-      until Buff.Data < PtrInt(Buff.Size);
-    finally
-      FreeBuffer(Buff);
-    end;
+    If (Input.Size - Input.Position) > 0 then
+      begin
+        GetBuffer(Buff,SII_3nK_BufferSize);
+        try
+          ProgressStart := Input.Position;
+          repeat
+            Buff.Data := Input.Read(Buff.Memory^,Buff.Size);
+            TranscodeBuffer(Buff.Memory^,Buff.Data,ActualReg);
+            Output.WriteBuffer(Buff.Memory^,Buff.Data);
+            ActualReg := ActualReg + Int64(Buff.Data);
+            DoProgress((Input.Position - ProgressStart) / (Input.Size - ProgressStart));
+          until Buff.Data < PtrInt(Buff.Size);
+        finally
+          FreeBuffer(Buff);
+        end;
+      end;
     If RectifySize then
       Output.Size := Output.Position;
+    DoProgress(1.0);  
   end
 else raise Exception.Create('TSII_3nK_Transcoder.EncodeStream: Input and output streams are the same, data would be corrupted.');
 end;
@@ -250,32 +276,40 @@ end;
 
 procedure TSII_3nK_Transcoder.DecodeStream(Input, Output: TStream; RectifySize: Boolean = True);
 var
-  Header:     SII_3nK_Header;
-  Buff:       TMemoryBuffer;
-  ActualReg:  Int64;
+  Header:         SII_3nK_Header;
+  Buff:           TMemoryBuffer;
+  ActualReg:      Int64;
+  ProgressStart:  Int64;
 begin
 If Input <> Output then
   begin
     If Is3nKStream(Input) then
       begin
+        DoProgress(0.0);
         // read header
         Input.ReadBuffer(Header{%H-},SizeOf(Header));
         ActualReg := Int64(Header.Seed);
         fSeed := Header.Seed;
         // decode data
-        GetBuffer(Buff,SII_3nK_BufferSize);
-        try
-          repeat
-            Buff.Data := Input.Read(Buff.Memory^,Buff.Size);
-            TranscodeBuffer(Buff.Memory^,Buff.Data,ActualReg);
-            Output.WriteBuffer(Buff.Memory^,Buff.Data);
-            ActualReg := ActualReg + Int64(Buff.Data);
-          until Buff.Data < PtrInt(Buff.Size);
-        finally
-          FreeBuffer(Buff);
-        end;
+        If (Input.Size - Input.Position) > 0 then
+          begin
+            GetBuffer(Buff,SII_3nK_BufferSize);
+            try
+              ProgressStart := Input.Position;
+              repeat
+                Buff.Data := Input.Read(Buff.Memory^,Buff.Size);
+                TranscodeBuffer(Buff.Memory^,Buff.Data,ActualReg);
+                Output.WriteBuffer(Buff.Memory^,Buff.Data);
+                ActualReg := ActualReg + Int64(Buff.Data);
+                DoProgress((Input.Position - ProgressStart) / (Input.Size - ProgressStart));
+              until Buff.Data < PtrInt(Buff.Size);
+            finally
+              FreeBuffer(Buff);
+            end;
+          end;
         If RectifySize then
           Output.Size := Output.Position;
+        DoProgress(1.0);
       end
     else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input stream is not a valid 3nK stream.');
   end
