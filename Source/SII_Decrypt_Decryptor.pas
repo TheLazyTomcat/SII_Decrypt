@@ -72,13 +72,13 @@ type
     Function IsEncodedSIIFile(const FileName: String): Boolean; virtual;
     Function Is3nKSIIStream(Stream: TSTream): Boolean; virtual;
     Function Is3nKSIIFile(const FileName: String): Boolean; virtual;
-    Function DecryptStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult; virtual;
+    Function DecryptStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecryptFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptFileInMemory(const Input, Output: String): TSIIResult; virtual;
-    Function DecodeStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult; virtual;
+    Function DecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecodeFile(const Input, Output: String): TSIIResult; virtual;
     Function DecodeFileInMemory(const Input, Output: String): TSIIResult; virtual;
-    Function DecryptAndDecodeStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult; virtual;
+    Function DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecryptAndDecodeFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptAndDecodeFileInMemory(const Input, Output: String): TSIIResult; virtual;
   published
@@ -250,7 +250,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSII_Decryptor.DecryptStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult;
+Function TSII_Decryptor.DecryptStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   InitOutPos: Int64;
   Header:     TSIIHeader;
@@ -269,7 +269,7 @@ try
             DecryptStreamInternal(Input,TempStream,Header);
             Output.Seek(InitOutPos,soBeginning);
             Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
-            If RectifySize then
+            If not InvariantOutput then
               Output.Size := Output.Position;
             Result := rSuccess;  
           finally
@@ -296,7 +296,7 @@ try
     begin
       InputStream := TFileStream.Create(StrToRTL(Input),fmOpenReadWrite or fmShareExclusive);
       try
-        Result := DecryptStream(InputStream,InputStream);
+        Result := DecryptStream(InputStream,InputStream,False);
       finally
         InputStream.Free;
       end;
@@ -307,7 +307,7 @@ try
       try
         OutputStream := TFileStream.Create(StrToRTL(Output),fmCreate or fmShareExclusive);
         try
-          Result := DecryptStream(InputStream,OutputStream);
+          Result := DecryptStream(InputStream,OutputStream,False);
         finally
           OutputStream.Free;
         end;
@@ -331,7 +331,7 @@ try
   MemoryStream := TMemoryStream.Create;
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
-    Result := DecryptStream(MemoryStream,MemoryStream);
+    Result := DecryptStream(MemoryStream,MemoryStream,False);
     If Result = rSuccess then
       MemoryStream.SaveToFile(StrToRTL(Output));
   finally
@@ -345,7 +345,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSII_Decryptor.DecodeStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult;
+Function TSII_Decryptor.DecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   DecoderBin: TSIIBin_Decoder;
   Decoder3nK: TSII_3nK_Transcoder;
@@ -360,19 +360,23 @@ try
       begin
         DecoderBin := TSIIBin_Decoder.Create;
         try
-          InitOutPos := Output.Position;
-          DecoderBin.LoadFromStream(Input);
-          TextResult := TAnsiStringList.Create;
-          try
-            DecoderBin.Convert(TextResult);
-            Output.Seek(InitOutPos,soBeginning);
-            TextResult.SaveToStream(Output);
-            If RectifySize then
-              Output.Size := Output.Position;
-            Result := rSuccess;
-          finally
-            TextResult.Free;
-          end;
+          If Input = Output then
+            begin
+              InitOutPos := Output.Position;
+              TextResult := TAnsiStringList.Create;
+              try
+                TextResult.TrailingLineBreak := False;
+                DecoderBin.ConvertFromStream(Input,TextResult);
+                Output.Seek(InitOutPos,soBeginning);
+                TextResult.SaveToStream(Output);
+                If not InvariantOutput then
+                  Output.Size := Output.Position;
+              finally
+                TextResult.Free;
+              end;
+            end
+          else DecoderBin.ConvertStream(Input,Output,InvariantOutput);
+          Result := rSuccess;
         finally
           DecoderBin.Free;
         end;
@@ -387,16 +391,16 @@ try
               try
                 InitOutPos := Output.Position;
                 TempStream.Size := Input.Size - Input.Position;
-                Decoder3nK.DecodeStream(Input,TempStream,True);
+                Decoder3nK.DecodeStream(Input,TempStream,False);
                 Output.Seek(InitOutPos,soBeginning);
                 Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
-                If RectifySize then
+                If not InvariantOutput then
                   Output.Size := Output.Position;
               finally
                 TempStream.Free;
               end;
             end
-          else Decoder3nK.DecodeStream(Input,Output,RectifySize);
+          else Decoder3nK.DecodeStream(Input,Output,InvariantOutput);
           Result := rSuccess;
         finally
           Decoder3nK.Free;
@@ -421,7 +425,7 @@ try
     begin
       InputStream := TFileStream.Create(StrToRTL(Input),fmOpenReadWrite or fmShareExclusive);
       try
-        Result := DecodeStream(InputStream,InputStream);
+        Result := DecodeStream(InputStream,InputStream,False);
       finally
         InputStream.Free;
       end;
@@ -432,7 +436,7 @@ try
       try
         OutputStream := TFileStream.Create(StrToRTL(Output),fmCreate or fmShareExclusive);
         try
-          Result := DecodeStream(InputStream,OutputStream);
+          Result := DecodeStream(InputStream,OutputStream,False);
         finally
           OutputStream.Free;
         end;
@@ -456,7 +460,7 @@ try
   MemoryStream := TMemoryStream.Create;
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
-    Result := DecodeStream(MemoryStream,MemoryStream);
+    Result := DecodeStream(MemoryStream,MemoryStream,False);
     If Result = rSuccess then
       MemoryStream.SaveToFile(StrToRTL(Output));
   finally
@@ -470,7 +474,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSII_Decryptor.DecryptAndDecodeStream(Input, Output: TStream; RectifySize: Boolean = True): TSIIResult;
+Function TSII_Decryptor.DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   TempStream: TMemoryStream;
   InitOutPos: Int64;
@@ -494,14 +498,12 @@ try
                 rBinaryFormat,
                 r3nKFormat:     begin
                                   Output.Seek(InitOutPos,soBeginning);
-                                  Result := DecodeStream(TempStream,Output,False);
-                                  If RectifySize and (Result = rSuccess) then
-                                    Output.Size := Output.Position;
+                                  Result := DecodeStream(TempStream,Output,InvariantOutput);
                                 end;
                 rNotEncrypted:  begin
                                   Output.Seek(InitOutPos,soBeginning);
                                   Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
-                                  If RectifySize then
+                                  If not InvariantOutput then
                                     Output.Size := Output.Position;
                                   Result := rSuccess;
                                 end;
@@ -515,7 +517,7 @@ try
 
     rBinaryFormat,
     r3nKFormat:
-      Result := DecodeStream(Input,Output,RectifySize);
+      Result := DecodeStream(Input,Output,InvariantOutput);
   end;
 except
   Result := rGenericError;
@@ -535,7 +537,7 @@ try
     begin
       InputStream := TFileStream.Create(StrToRTL(Input),fmOpenReadWrite or fmShareExclusive);
       try
-        Result := DecryptAndDecodeStream(InputStream,InputStream);
+        Result := DecryptAndDecodeStream(InputStream,InputStream,False);
       finally
         InputStream.Free;
       end;
@@ -546,7 +548,7 @@ try
       try
         OutputStream := TFileStream.Create(StrToRTL(Output),fmCreate or fmShareExclusive);
         try
-          Result := DecryptAndDecodeStream(InputStream,OutputStream);
+          Result := DecryptAndDecodeStream(InputStream,OutputStream,False);
         finally
           OutputStream.Free;
         end;
@@ -570,7 +572,7 @@ try
   MemoryStream := TMemoryStream.Create;
   try
     MemoryStream.LoadFromFile(StrToRTL(Input));
-    Result := DecryptAndDecodeStream(MemoryStream,MemoryStream);
+    Result := DecryptAndDecodeStream(MemoryStream,MemoryStream,False);
     If Result = rSuccess then
       MemoryStream.SaveToFile(StrToRTL(Output));
   finally

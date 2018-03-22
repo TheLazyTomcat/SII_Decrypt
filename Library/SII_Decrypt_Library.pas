@@ -25,14 +25,17 @@ Function Exp_Is3nKEncodedFile(FileName: PUTF8Char): LongBool; stdcall;
 
 Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 Function Exp_DecryptFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_DecryptFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 Function Exp_DecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 Function Exp_DecodeMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 Function Exp_DecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_DecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 Function Exp_DecryptAndDecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 Function Exp_DecryptAndDecodeMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 Function Exp_DecryptAndDecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_DecryptAndDecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 procedure Exp_FreeHelper(Helper: PPointer); stdcall;
 
@@ -180,7 +183,7 @@ try
                     begin
                       OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                       try
-                        Result := Ord(DecryptStream(InMemStream,OutMemStream,False));
+                        Result := Ord(DecryptStream(InMemStream,OutMemStream,True));
                         If Result = SIIDEC_RESULT_SUCCESS then
                           OutSize^ := TMemSize(OutMemStream.Position);
                       finally
@@ -219,6 +222,25 @@ try
     Result := Ord(GetFileFormat(StrConv(InputFile)));
     If Result = SIIDEC_RESULT_SUCCESS then
       Result := Ord(DecryptFile(StrConv(InputFile),StrConv(OutputFile)));
+  finally
+    Free;
+  end;
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function Exp_DecryptFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+begin
+try
+  with TSII_Decryptor.Create do
+  try
+    ReraiseExceptions := False;
+    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    If Result = SIIDEC_RESULT_SUCCESS then
+      Result := Ord(DecryptFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
   finally
     Free;
   end;
@@ -266,7 +288,7 @@ try
                 begin
                   OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                   try
-                    Result := Ord(DecodeStream(InMemStream,OutMemStream,False));
+                    Result := Ord(DecodeStream(InMemStream,OutMemStream,True));
                     If Result = SIIDEC_RESULT_SUCCESS then
                       OutSize^ := TMemSize(OutMemStream.Position);
                   finally
@@ -278,7 +300,7 @@ try
             begin
               HelperStream := TMemoryStream.Create;
               try
-                Result := Ord(DecodeStream(InMemStream,HelperStream,True));
+                Result := Ord(DecodeStream(InMemStream,HelperStream,False));
                 If Result = SIIDEC_RESULT_SUCCESS then
                   OutSize^ := TMemSize(HelperStream.Size);
               finally
@@ -334,6 +356,27 @@ except
 end;
 end;
 
+//------------------------------------------------------------------------------
+
+Function Exp_DecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+begin
+try
+  with TSII_Decryptor.Create do
+  try
+    ReraiseExceptions := False;
+    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    If Result in [SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
+      Result := Ord(DecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
+    else If Result = SIIDEC_RESULT_SUCCESS then
+      Result := SIIDEC_RESULT_UNKNOWN_FORMAT;
+  finally
+    Free;
+  end;
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
 //==============================================================================
 
 Function Exp_DecryptAndDecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
@@ -373,7 +416,7 @@ try
                 begin
                   OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                   try
-                    Result := Ord(DecryptAndDecodeStream(InMemStream,OutMemStream,False));
+                    Result := Ord(DecryptAndDecodeStream(InMemStream,OutMemStream,True));
                     If Result = SIIDEC_RESULT_SUCCESS then
                       OutSize^ := TMemSize(OutMemStream.Position);
                   finally
@@ -385,7 +428,7 @@ try
             begin
               HelperStream := TMemoryStream.Create;
               try
-                Result := Ord(DecryptAndDecodeStream(InMemStream,HelperStream,True));
+                Result := Ord(DecryptAndDecodeStream(InMemStream,HelperStream,False));
                 If Result = SIIDEC_RESULT_SUCCESS then
                   OutSize^ := TMemSize(HelperStream.Size);
               finally
@@ -437,6 +480,25 @@ except
 end;
 end;
 
+//------------------------------------------------------------------------------
+
+Function Exp_DecryptAndDecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+begin
+try
+  with TSII_Decryptor.Create do
+  try
+    ReraiseExceptions := False;
+    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    If Result in [SIIDEC_RESULT_SUCCESS,SIIDEC_RESULT_BINARY_FORMAT,SIIDEC_RESULT_3NK_FORMAT] then
+      Result := Ord(DecryptAndDecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
+  finally
+    Free;
+  end;
+except
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
+end;
+
 //==============================================================================
 
 procedure Exp_FreeHelper(Helper: PPointer); stdcall;
@@ -463,12 +525,15 @@ exports
   Exp_Is3nKEncodedFile             name 'Is3nKEncodedFile',
   Exp_DecryptMemory                name 'DecryptMemory',
   Exp_DecryptFile                  name 'DecryptFile',
+  Exp_DecryptFileInMemory          name 'DecryptFileInMemory',
   Exp_DecodeMemory                 name 'DecodeMemory',
   Exp_DecodeMemoryHelper           name 'DecodeMemoryHelper',
   Exp_DecodeFile                   name 'DecodeFile',
+  Exp_DecodeFileInMemory           name 'DecodeFileInMemory',
   Exp_DecryptAndDecodeMemory       name 'DecryptAndDecodeMemory',
   Exp_DecryptAndDecodeMemoryHelper name 'DecryptAndDecodeMemoryHelper',
   Exp_DecryptAndDecodeFile         name 'DecryptAndDecodeFile',
+  Exp_DecryptAndDecodeFileInMemory name 'DecryptAndDecodeFileInMemory',
   Exp_FreeHelper                   name 'FreeHelper';
 
 end.

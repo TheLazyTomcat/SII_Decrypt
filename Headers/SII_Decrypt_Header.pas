@@ -283,8 +283,9 @@ var
 
   Parameters:
 
-    Input  - path to the source file (encrypted SII file)
-    Output - path to the destination file (where decrypted result will be stored)
+    InputFile   - path to the source file (encrypted SII file)
+    OutputFile  - path to the destination file (where decrypted result will be
+                  stored)
 
   Returns:
 
@@ -302,6 +303,16 @@ var
     SIIDEC_RESULT_3NK_FORMAT       - input file contains 3nK-encoded SII file
 }
   DecryptFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  DecryptFileInMemory
+
+  Works exactly the same as function DecryptFile (refer there for details), but
+  is implemented slightly differently. It reduces IO operations in exchange for
+  larger memory use.
+}
+  DecryptFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -430,8 +441,9 @@ var
 
   Parameters:
 
-    Input  - path to the source file (binary SII file)
-    Output - path to the destination file (where decoded result will be stored)
+    InputFile   - path to the source file (binary SII file)
+    OutputFile  - path to the destination file (where decoded result will be
+                  stored)
 
   Returns:
 
@@ -449,6 +461,16 @@ var
     SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  DecodeFileInMemory
+
+  Works exactly the same as function DecodeFile (refer there for details), but
+  is implemented slightly differently. It reduces IO operations in exchange for
+  larger memory use.
+}
+  DecodeFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -538,9 +560,9 @@ var
 
   Parameters:
 
-    Input  - path to the source file (ecrypted or binary SII file)
-    Output - path to the destination file (where decrypted and decoded result
-             will be stored)
+    InputFile   - path to the source file (ecrypted or binary SII file)
+    OutputFile  - path to the destination file (where decrypted and decoded
+                  result will be stored)
 
   Returns:
 
@@ -557,6 +579,16 @@ var
     SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
 }
   DecryptAndDecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  DecryptAndDecodeFileInMemory
+
+  Works exactly the same as function DecryptAndDecodeFile (refer there for
+  details), but is implemented slightly differently. It reduces IO operations
+  in exchange for larger memory use.
+}
+  DecryptAndDecodeFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -616,16 +648,19 @@ If LibHandle = 0 then
         Is3nKEncodedMemory := GetProcAddress(LibHandle,'Is3nKEncodedMemory');
         Is3nKEncodedFile   := GetProcAddress(LibHandle,'Is3nKEncodedFile');
 
-        DecryptMemory := GetProcAddress(LibHandle,'DecryptMemory');
-        DecryptFile   := GetProcAddress(LibHandle,'DecryptFile');
+        DecryptMemory       := GetProcAddress(LibHandle,'DecryptMemory');
+        DecryptFile         := GetProcAddress(LibHandle,'DecryptFile');
+        DecryptFileInMemory := GetProcAddress(LibHandle,'DecryptFileInMemory');
 
         DecodeMemoryHelper := GetProcAddress(LibHandle,'DecodeMemoryHelper');
         DecodeMemory       := GetProcAddress(LibHandle,'DecodeMemory');
         DecodeFile         := GetProcAddress(LibHandle,'DecodeFile');
+        DecodeFileInMemory := GetProcAddress(LibHandle,'DecodeFileInMemory');
 
         DecryptAndDecodeMemoryHelper := GetProcAddress(LibHandle,'DecryptAndDecodeMemoryHelper');
         DecryptAndDecodeMemory       := GetProcAddress(LibHandle,'DecryptAndDecodeMemory');
         DecryptAndDecodeFile         := GetProcAddress(LibHandle,'DecryptAndDecodeFile');
+        DecryptAndDecodeFileInMemory := GetProcAddress(LibHandle,'DecryptAndDecodeFileInMemory');
 
         FreeHelper := GetProcAddress(LibHandle,'FreeHelper');
       end
