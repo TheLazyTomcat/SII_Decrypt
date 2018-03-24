@@ -57,11 +57,11 @@ type
 {   TSII_Decryptor - declaration                                               }
 {==============================================================================}
 const
-  TSII_PRGS_STAGEID_DECRYPT = 0;
-  TSII_PRGS_STAGEID_DECODE  = 1;
+  SII_PRGS_STAGEID_DECRYPT = 0;
+  SII_PRGS_STAGEID_DECODE  = 1;
 
-  TSII_PRGS_STAGELEN_DECRYPT = 10;
-  TSII_PRGS_STAGELEN_DECODE  = 90;
+  SII_PRGS_STAGELEN_DECRYPT = 10;
+  SII_PRGS_STAGELEN_DECODE  = 90;
 
 type
   TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
@@ -105,7 +105,7 @@ type
     property ReraiseExceptions: Boolean read fReraiseExceptions write fReraiseExceptions;
     property AcceleratedAES: Boolean read fAcceleratedAES write fAcceleratedAES;
     property OnProgressEvent: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
-
+    property OnProgress: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
   end;
 
 implementation
@@ -153,14 +153,14 @@ end;
 
 procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
 begin
-fProgressTracked.SetStageIDProgress(TSII_PRGS_STAGEID_DECRYPT,Progress);
+fProgressTracked.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
 begin
-fProgressTracked.SetStageIDProgress(TSII_PRGS_STAGEID_DECODE,Progress);
+fProgressTracked.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
 end;
 
 //------------------------------------------------------------------------------
@@ -318,8 +318,8 @@ var
   Header:     TSIIHeader;
   TempStream: TMemoryStream;
 begin
-If fProgressTracked.IndexOf(TSII_PRGS_STAGEID_DECRYPT) < 0 then
-  fProgressTracked.Add(TSII_PRGS_STAGELEN_DECRYPT,TSII_PRGS_STAGEID_DECRYPT);
+If fProgressTracked.IndexOf(SII_PRGS_STAGEID_DECRYPT) < 0 then
+  fProgressTracked.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
 try
   Result := GetStreamFormat(Input);
   If Result = rSuccess then
@@ -423,8 +423,8 @@ var
   TextResult: TAnsiStringList;
   TempStream: TMemoryStream;
 begin
-If fProgressTracked.IndexOf(TSII_PRGS_STAGEID_DECODE) < 0 then
-  fProgressTracked.Add(TSII_PRGS_STAGELEN_DECODE,TSII_PRGS_STAGEID_DECODE);
+If fProgressTracked.IndexOf(SII_PRGS_STAGEID_DECODE) < 0 then
+  fProgressTracked.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
 try
   Result := GetStreamFormat(Input);
   case Result of
@@ -565,8 +565,8 @@ try
   case Result of
     rSuccess:
       begin
-        fProgressTracked.Add(TSII_PRGS_STAGELEN_DECRYPT,TSII_PRGS_STAGEID_DECRYPT);
-        fProgressTracked.Add(TSII_PRGS_STAGELEN_DECODE,TSII_PRGS_STAGEID_DECODE);
+        fProgressTracked.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
+        fProgressTracked.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
         TempStream := TMemoryStream.Create;
         try
           InitOutPos := Input.Position;
