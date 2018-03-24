@@ -2,7 +2,7 @@
 
                       SII Decrypt project - console program
 
-                                   version 1.4
+                                  version 1.4
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  88
-  Known problems and limitations .......................... 119
-  Repositories ............................................ 130
-  Licensing ............................................... 143
-  Authors, contacts ....................................... 151
-  Copyright ............................................... 164
+  Known problems and limitations .......................... 120
+  Repositories ............................................ 127
+  Licensing ............................................... 140
+  Authors, contacts ....................................... 148
+  Copyright ............................................... 162
 
 
 Description
@@ -91,6 +91,7 @@ List of changes between individual versions of this program.
 
 SII Decrypt program 1.3.2 -> SII Decrypt program 1.4.0
   - added support for decoding of 3nK-encoded files
+  - reduced memory use by implementig streaming conversion
 
 
 SII Decrypt program 1.3.1 -> SII Decrypt program 1.3.2
@@ -118,11 +119,7 @@ SII Decrypt program 1.2 -> SII Decrypt program 1.2.1
 
 Known problems and limitations
 ----------------------------------------
-The program has rather large memory footprint - it can use tens to hundreds
-megabytes of memory (but rarely more than 120MiB). Currently, it is not seen as
-a problem, but in case anyone will have problem with that, please contact the
-author.
-Also, as mentioned before, decoding might not be 100% reliable. In case of
+As mentioned before, decoding might not be 100% reliable. In case of
 problems, contact author or run the tool with command no_decode.
 
 

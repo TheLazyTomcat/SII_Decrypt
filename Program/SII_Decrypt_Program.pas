@@ -16,7 +16,9 @@ procedure Main;
 implementation
 
 uses
-  SysUtils, SimpleCmdLineParser, SII_Decrypt_Decryptor;
+  SysUtils,
+  SimpleCmdLineParser, StrRect,
+  SII_Decrypt_Decryptor;
 
 Function GetResultText(ResultCode: Integer): String;
 begin
@@ -167,7 +169,7 @@ except
     begin
       WriteLn('An error has occured. Error message:');
       WriteLn;
-      WriteLn('  ',E.Message);
+      WriteLn('  ',StrToCsl(E.Message));
       ExitCode := -1;
     end;
 end;
