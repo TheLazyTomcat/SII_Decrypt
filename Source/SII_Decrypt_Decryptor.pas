@@ -71,7 +71,7 @@ type
   private
     fReraiseExceptions:   Boolean;
     fAcceleratedAES:      Boolean;
-    fProgressTracked:     TProgressTracker;
+    fProgressTracker:     TProgressTracker;
     fReportProgress:      Boolean;
     fOnProgressEvent:     TSII_ProgressEvent;
     fOnProgressCallback:  TSII_ProgressCallback;
@@ -107,6 +107,12 @@ type
     property OnProgressEvent: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
     property OnProgress: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
   end;
+  
+{==============================================================================}
+{   Auxiliary functions                                                        }
+{==============================================================================}
+
+Function GetResultAsText(ResultCode: TSIIResult): String;  
 
 implementation
 
@@ -128,6 +134,24 @@ begin
 {$ELSE}
   Result := SysUtils.ExpandFileName(Path);
 {$ENDIF}
+end;
+
+//------------------------------------------------------------------------------
+
+Function GetResultAsText(ResultCode: TSIIResult): String;
+begin
+case ResultCode of
+  rSuccess:         Result := 'Success';
+  rNotEncrypted:    Result := 'Data contain a plain-text SII';
+  rBinaryFormat:    Result := 'Data contain a binary SII';
+  rUnknownFormat:   Result := 'Data are in an unknown format';
+  rTooFewData:      Result := 'Too few data to contain a valid format';
+  rBufferTooSmall:  Result := 'Buffer is too small';
+  r3nKFormat:       Result := 'Data contain a 3nK format';
+else
+  {rGenericError}
+  Result := 'Generic error';
+end;
 end;
 
 {==============================================================================}
@@ -153,14 +177,14 @@ end;
 
 procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
 begin
-fProgressTracked.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
+fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
 begin
-fProgressTracked.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
+fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
 end;
 
 //------------------------------------------------------------------------------
@@ -205,8 +229,8 @@ begin
 inherited Create;
 fReraiseExceptions := True;
 fAcceleratedAES := True;
-fProgressTracked := TProgressTracker.Create;
-fProgressTracked.OnProgress := DoProgress;
+fProgressTracker := TProgressTracker.Create;
+fProgressTracker.OnProgress := DoProgress;
 fReportProgress := True;
 end;
 
@@ -214,8 +238,8 @@ end;
 
 destructor TSII_Decryptor.Destroy;
 begin
-fProgressTracked.OnProgress := nil;
-fProgressTracked.Free;
+fProgressTracker.OnProgress := nil;
+fProgressTracker.Free;
 inherited;
 end;
 
@@ -318,8 +342,8 @@ var
   Header:     TSIIHeader;
   TempStream: TMemoryStream;
 begin
-If fProgressTracked.IndexOf(SII_PRGS_STAGEID_DECRYPT) < 0 then
-  fProgressTracked.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
+If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECRYPT) < 0 then
+  fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
 try
   Result := GetStreamFormat(Input);
   If Result = rSuccess then
@@ -348,7 +372,7 @@ except
 end;
 fReportProgress := False;
 try
-  fProgressTracked.Clear;
+  fProgressTracker.Clear;
 finally
   fReportProgress := True;
 end;
@@ -423,8 +447,8 @@ var
   TextResult: TAnsiStringList;
   TempStream: TMemoryStream;
 begin
-If fProgressTracked.IndexOf(SII_PRGS_STAGEID_DECODE) < 0 then
-  fProgressTracked.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
+If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECODE) < 0 then
+  fProgressTracker.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
 try
   Result := GetStreamFormat(Input);
   case Result of
@@ -480,6 +504,8 @@ try
           Decoder3nK.Free;
         end;
       end;
+  else
+    Result := rUnknownFormat;
   end;
 except
   Result := rGenericError;
@@ -487,7 +513,7 @@ except
 end;
 fReportProgress := False;
 try
-  fProgressTracked.Clear;
+  fProgressTracker.Clear;
 finally
   fReportProgress := True;
 end;
@@ -565,8 +591,8 @@ try
   case Result of
     rSuccess:
       begin
-        fProgressTracked.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
-        fProgressTracked.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
+        fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
+        fProgressTracker.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
         TempStream := TMemoryStream.Create;
         try
           InitOutPos := Input.Position;
@@ -606,7 +632,7 @@ except
 end;
 fReportProgress := False;
 try
-  fProgressTracked.Clear;
+  fProgressTracker.Clear;
 finally
   fReportProgress := True;
 end;
