@@ -4,7 +4,7 @@ object fMainForm: TfMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt GUI'
-  ClientHeight = 204
+  ClientHeight = 307
   ClientWidth = 464
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,14 +20,14 @@ object fMainForm: TfMainForm
   TextHeight = 13
   object bvlHor_Progress: TBevel
     Left = 8
-    Top = 104
+    Top = 208
     Width = 449
     Height = 9
     Shape = bsTopLine
   end
   object lblProgress: TLabel
     Left = 8
-    Top = 144
+    Top = 248
     Width = 46
     Height = 13
     Caption = 'Progress:'
@@ -72,7 +72,7 @@ object fMainForm: TfMainForm
   end
   object pbProgress: TProgressBar
     Left = 8
-    Top = 160
+    Top = 264
     Width = 449
     Height = 17
     Max = 1000
@@ -80,7 +80,7 @@ object fMainForm: TfMainForm
   end
   object sbStatusBar: TStatusBar
     Left = 0
-    Top = 185
+    Top = 288
     Width = 464
     Height = 19
     Panels = <
@@ -92,12 +92,50 @@ object fMainForm: TfMainForm
   end
   object btnStartProcessing: TButton
     Left = 8
-    Top = 112
+    Top = 216
     Width = 449
     Height = 25
     Caption = 'Start processing'
     TabOrder = 4
     OnClick = btnStartProcessingClick
+  end
+  object gbOptions: TGroupBox
+    Left = 8
+    Top = 104
+    Width = 449
+    Height = 97
+    Caption = 'Options'
+    TabOrder = 7
+    object cbNoDecode: TCheckBox
+      Left = 8
+      Top = 24
+      Width = 209
+      Height = 17
+      Caption = 'Do not attempt decoding, only decrypt'
+      TabOrder = 0
+    end
+    object cbAccelAES: TCheckBox
+      Left = 8
+      Top = 48
+      Width = 401
+      Height = 17
+      Caption = 
+        'Allow hardware-accelerated AES decryption (AES-NI instruction se' +
+        't extension)'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object cbInMemProc: TCheckBox
+      Left = 8
+      Top = 72
+      Width = 193
+      Height = 17
+      Caption = 'Do entire file processing in memory'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
   end
   object oXPManifest: TXPManifest
     Left = 80

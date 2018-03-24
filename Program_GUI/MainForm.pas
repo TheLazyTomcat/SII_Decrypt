@@ -21,6 +21,10 @@ type
     diaOpenInputFile: TOpenDialog;
     diaSaveOutputFile: TSaveDialog;
     btnStartProcessing: TButton;
+    gbOptions: TGroupBox;
+    cbNoDecode: TCheckBox;
+    cbAccelAES: TCheckBox;
+    cbInMemProc: TCheckBox;
     procedure FormCreate(Sender: TObject);    
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnBrowseInFileClick(Sender: TObject);
@@ -31,6 +35,7 @@ type
   protected
     ProcessingThread: TSII_DecryptProcessThread;
     procedure ProgressHandler(Sender: TObject; Progress: Single);
+    procedure EnableOptions(Enable: Boolean);
   public
     { Public declarations }
   end;
@@ -55,6 +60,7 @@ If Progress > 1.0 then
     // process finished
     pbProgress.Position := pbProgress.Max;
     btnStartProcessing.Enabled := True;
+    EnableOptions(True);
     SetTaskbarProgressState(tpsNoProgress);
     MessageDlg('File succesfully decrypted/decoded.',mtInformation,[mbOk],0);
     ProcessingThread := nil;
@@ -64,6 +70,7 @@ else If Progress < 0.0 then
     // error in processing
     pbProgress.Position := pbProgress.Max;
     btnStartProcessing.Enabled := True;
+    EnableOptions(True);
     SetTaskbarProgressState(tpsError);
     TempStr := ProcessingThread.ErrorText;
     UniqueString(TempStr);
@@ -81,6 +88,16 @@ else
         SetTaskbarProgressValue(Progress);
       end;
   end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TfMainForm.EnableOptions(Enable: Boolean);
+begin
+gbOptions.Enabled := Enable;
+cbNoDecode.Enabled := Enable;
+cbAccelAES.Enabled := Enable;
+cbInMemProc.Enabled := Enable;
 end;
 
 //==============================================================================
@@ -134,6 +151,7 @@ begin
 If leInputFile.Text <> '' then
   begin
     btnStartProcessing.Enabled := False;
+    EnableOptions(False);
     SetTaskbarProgressValue(0.0);
     SetTaskbarProgressState(tpsNormal);
     // create, set up and run processing thread
@@ -144,6 +162,9 @@ If leInputFile.Text <> '' then
     else
       ProcessingThread.OutputFile := leInputFile.Text;
     ProcessingThread.OnProgress := ProgressHandler;
+    ProcessingThread.Opt_InMemoryProcess := cbInMemProc.Checked;
+    ProcessingThread.Opt_AcceleratedAES := cbAccelAES.Checked;
+    ProcessingThread.Opt_NoDecode := cbNoDecode.Checked;
     ProcessingThread.Run;
   end
 else MessageDlg('No input file selected.',mtError,[mbOk],0);
