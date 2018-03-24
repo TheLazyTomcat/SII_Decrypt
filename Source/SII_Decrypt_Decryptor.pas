@@ -13,7 +13,7 @@ interface
 
 uses
   Classes,
-  AuxTypes, AES;
+  AuxTypes, AES, ProgressTracker;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -56,14 +56,33 @@ type
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
 {==============================================================================}
+const
+  TSII_PRGS_STAGEID_DECRYPT = 0;
+  TSII_PRGS_STAGEID_DECODE  = 1;
+
+  TSII_PRGS_STAGELEN_DECRYPT = 10;
+  TSII_PRGS_STAGELEN_DECODE  = 90;
+
+type
+  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
+  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+
   TSII_Decryptor = class(TObject)
   private
-    fReraiseExceptions: Boolean;
-    fAcceleratedAES:    Boolean;
+    fReraiseExceptions:   Boolean;
+    fAcceleratedAES:      Boolean;
+    fProgressTracked:     TProgressTracker;
+    fReportProgress:      Boolean;
+    fOnProgressEvent:     TSII_ProgressEvent;
+    fOnProgressCallback:  TSII_ProgressCallback;
   protected
+    procedure DoProgress(Sender: TObject; Progress: Single); virtual;
+    procedure DecryptProgressHandler(Sender: TObject; Progress: Single); virtual;
+    procedure DecodeProgressHandler(Sender: TObject; Progress: Single); virtual;
     procedure DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader); virtual;
   public
     constructor Create;
+    destructor Destroy; override;
     Function GetStreamFormat(Stream: TSTream): TSIIResult; virtual;
     Function GetFileFormat(const FileName: String): TSIIResult; virtual;
     Function IsEncryptedSIIStream(Stream: TSTream): Boolean; virtual;
@@ -81,9 +100,12 @@ type
     Function DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecryptAndDecodeFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptAndDecodeFileInMemory(const Input, Output: String): TSIIResult; virtual;
+    property OnProgressCallback: TSII_ProgressCallback read fOnProgressCallback write fOnProgressCallback;    
   published
     property ReraiseExceptions: Boolean read fReraiseExceptions write fReraiseExceptions;
     property AcceleratedAES: Boolean read fAcceleratedAES write fAcceleratedAES;
+    property OnProgressEvent: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
+
   end;
 
 implementation
@@ -116,6 +138,33 @@ end;
 {   TSII_Decryptor - protected methods                                         }
 {------------------------------------------------------------------------------}
 
+procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Single);
+begin
+If fReportProgress then
+  begin
+    If Assigned(fOnProgressEvent) then
+      fOnProgressEvent(Self,Progress);
+    If Assigned(fOnProgressCallback) then
+      fOnProgressCallback(Self,Progress);
+  end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
+begin
+fProgressTracked.SetStageIDProgress(TSII_PRGS_STAGEID_DECRYPT,Progress);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
+begin
+fProgressTracked.SetStageIDProgress(TSII_PRGS_STAGEID_DECODE,Progress);
+end;
+
+//------------------------------------------------------------------------------
+
 procedure TSII_Decryptor.DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader);
 var
   AESDec:     TAESCipher;
@@ -127,6 +176,7 @@ If fAcceleratedAES then
 else
   AESDec := TAESCipher.Create(SII_Key,Header.InitVector,r256bit,cmDecrypt);
 try
+  AESDec.OnProgress := DecryptProgressHandler;
   Temp.Seek(0,soBeginning);
   AESDec.ModeOfOperation := moCBC;
   AESDec.ProcessStream(Input,Temp);
@@ -155,6 +205,18 @@ begin
 inherited Create;
 fReraiseExceptions := True;
 fAcceleratedAES := True;
+fProgressTracked := TProgressTracker.Create;
+fProgressTracked.OnProgress := DoProgress;
+fReportProgress := True;
+end;
+
+//------------------------------------------------------------------------------
+
+destructor TSII_Decryptor.Destroy;
+begin
+fProgressTracked.OnProgress := nil;
+fProgressTracked.Free;
+inherited;
 end;
 
 //------------------------------------------------------------------------------
@@ -256,6 +318,8 @@ var
   Header:     TSIIHeader;
   TempStream: TMemoryStream;
 begin
+If fProgressTracked.IndexOf(TSII_PRGS_STAGEID_DECRYPT) < 0 then
+  fProgressTracked.Add(TSII_PRGS_STAGELEN_DECRYPT,TSII_PRGS_STAGEID_DECRYPT);
 try
   Result := GetStreamFormat(Input);
   If Result = rSuccess then
@@ -271,7 +335,7 @@ try
             Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
             If not InvariantOutput then
               Output.Size := Output.Position;
-            Result := rSuccess;  
+            Result := rSuccess;
           finally
             TempStream.Free;
           end;
@@ -281,6 +345,12 @@ try
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracked.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 
@@ -353,6 +423,8 @@ var
   TextResult: TAnsiStringList;
   TempStream: TMemoryStream;
 begin
+If fProgressTracked.IndexOf(TSII_PRGS_STAGEID_DECODE) < 0 then
+  fProgressTracked.Add(TSII_PRGS_STAGELEN_DECODE,TSII_PRGS_STAGEID_DECODE);
 try
   Result := GetStreamFormat(Input);
   case Result of
@@ -360,6 +432,7 @@ try
       begin
         DecoderBin := TSIIBin_Decoder.Create;
         try
+          DecoderBin.OnProgress := DecodeProgressHandler;
           If Input = Output then
             begin
               InitOutPos := Output.Position;
@@ -385,6 +458,7 @@ try
       begin
         Decoder3nK := TSII_3nK_Transcoder.Create;
         try
+          Decoder3nK.OnProgress := DecodeProgressHandler;
           If Input = Output then
             begin
               TempStream := TMemoryStream.Create;
@@ -410,6 +484,12 @@ try
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracked.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 
@@ -485,6 +565,8 @@ try
   case Result of
     rSuccess:
       begin
+        fProgressTracked.Add(TSII_PRGS_STAGELEN_DECRYPT,TSII_PRGS_STAGEID_DECRYPT);
+        fProgressTracked.Add(TSII_PRGS_STAGELEN_DECODE,TSII_PRGS_STAGEID_DECODE);
         TempStream := TMemoryStream.Create;
         try
           InitOutPos := Input.Position;
@@ -514,7 +596,6 @@ try
             TempStream.Free;
         end;
       end;
-
     rBinaryFormat,
     r3nKFormat:
       Result := DecodeStream(Input,Output,InvariantOutput);
@@ -522,6 +603,12 @@ try
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracked.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 

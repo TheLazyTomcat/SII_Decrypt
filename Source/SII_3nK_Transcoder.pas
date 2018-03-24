@@ -65,9 +65,9 @@ type
 ===============================================================================}
   TSII_3nK_Transcoder = class(TObject)
   private
-    fSeed:              UInt8;
-    fProgressEvent:     TSII_3nK_ProgressEvent;
-    fProgressCallback:  TSII_3nK_ProgressCallback;
+    fSeed:                UInt8;
+    fOnProgressEvent:     TSII_3nK_ProgressEvent;
+    fOnProgressCallback:  TSII_3nK_ProgressCallback;
     Function GetKey(Index: Integer): Byte;
   protected
     procedure DoProgress(Progress: Single); virtual;
@@ -89,8 +89,9 @@ type
     procedure TranscodeFileInMemory(const InFileName, OutFileName: String); virtual;
     property Keys[Index: Integer]: Byte read GetKey;
     property Seed: UInt8 read fSeed;
-    property ProgressEvent: TSII_3nK_ProgressEvent read fProgressEvent write fProgressEvent;
-    property ProgressCallback: TSII_3nK_ProgressCallback read fProgressCallback write fProgressCallback;
+    property OnProgress: TSII_3nK_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
+    property OnProgressEvent: TSII_3nK_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
+    property OnProgressCallback: TSII_3nK_ProgressCallback read fOnProgressCallback write fOnProgressCallback;
   end;
 
 implementation
@@ -127,10 +128,10 @@ end;
 
 procedure TSII_3nK_Transcoder.DoProgress(Progress: Single);
 begin
-If Assigned(fProgressEvent) then
-  fProgressEvent(Self,Progress);
-If Assigned(fProgressCallback) then
-  fProgressCallback(Self,Progress);
+If Assigned(fOnProgressEvent) then
+  fOnProgressEvent(Self,Progress);
+If Assigned(fOnProgressCallback) then
+  fOnProgressCallback(Self,Progress);
 end;
 
 //------------------------------------------------------------------------------
