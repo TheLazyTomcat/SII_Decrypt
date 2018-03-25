@@ -1,17 +1,28 @@
+{-------------------------------------------------------------------------------
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-------------------------------------------------------------------------------}
 unit MainForm;
+
+{$INCLUDE '..\Source\SII_Decrypt_defs.inc'}
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, XPMan, ComCtrls,
+  Windows, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, {$IFNDEF FPC}XPMan,{$ENDIF} ComCtrls,
   SII_Decrypt_ProcessingThread;
 
 type
   TfMainForm = class(TForm)
     leInputFile: TLabeledEdit;
     btnBrowseInFile: TButton;
+  {$IFNDEF FPC}
     oXPManifest: TXPManifest;
+  {$ENDIF}
     leOutputFile: TLabeledEdit;
     btnBrowseOutFile: TButton;
     bvlHor_Progress: TBevel;
@@ -45,7 +56,11 @@ var
 
 implementation
 
-{$R *.dfm}
+{$IFDEF FPC}
+  {$R *.lfm}
+{$ELSE}
+  {$R *.dfm}
+{$ENDIF}
 
 uses
   TaskbarProgress, WinFileInfo;

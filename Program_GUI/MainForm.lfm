@@ -1,153 +1,164 @@
 object fMainForm: TfMainForm
   Left = 787
+  Height = 307
   Top = 116
+  Width = 464
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt'
   ClientHeight = 307
   ClientWidth = 464
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
-  Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 13
+  Position = poScreenCenter
+  LCLVersion = '1.8.2.0'
   object bvlHor_Progress: TBevel
     Left = 8
+    Height = 9
     Top = 208
     Width = 449
-    Height = 9
     Shape = bsTopLine
   end
   object lblProgress: TLabel
     Left = 8
+    Height = 13
     Top = 248
     Width = 46
-    Height = 13
     Caption = 'Progress:'
+    ParentColor = False
   end
   object leInputFile: TLabeledEdit
     Left = 8
+    Height = 21
     Top = 24
     Width = 424
-    Height = 21
-    EditLabel.Width = 47
+    EditLabel.AnchorSideLeft.Control = leInputFile
+    EditLabel.AnchorSideRight.Control = leInputFile
+    EditLabel.AnchorSideRight.Side = asrBottom
+    EditLabel.AnchorSideBottom.Control = leInputFile
+    EditLabel.Left = 8
     EditLabel.Height = 13
+    EditLabel.Top = 8
+    EditLabel.Width = 424
     EditLabel.Caption = 'Input file:'
+    EditLabel.ParentColor = False
     TabOrder = 0
   end
   object btnBrowseInFile: TButton
     Left = 432
+    Height = 21
     Top = 24
     Width = 25
-    Height = 21
     Caption = '...'
-    TabOrder = 1
     OnClick = btnBrowseInFileClick
+    TabOrder = 1
   end
   object leOutputFile: TLabeledEdit
     Left = 8
+    Height = 21
     Top = 72
     Width = 424
-    Height = 21
-    EditLabel.Width = 104
+    EditLabel.AnchorSideLeft.Control = leOutputFile
+    EditLabel.AnchorSideRight.Control = leOutputFile
+    EditLabel.AnchorSideRight.Side = asrBottom
+    EditLabel.AnchorSideBottom.Control = leOutputFile
+    EditLabel.Left = 8
     EditLabel.Height = 13
+    EditLabel.Top = 56
+    EditLabel.Width = 424
     EditLabel.Caption = 'Output file (optional):'
+    EditLabel.ParentColor = False
     TabOrder = 2
   end
   object btnBrowseOutFile: TButton
     Left = 432
+    Height = 21
     Top = 72
     Width = 25
-    Height = 21
     Caption = '...'
-    TabOrder = 3
     OnClick = btnBrowseOutFileClick
+    TabOrder = 3
   end
   object pbProgress: TProgressBar
     Left = 8
+    Height = 17
     Top = 264
     Width = 449
-    Height = 17
     Max = 1000
     TabOrder = 6
   end
   object stbStatusBar: TStatusBar
     Left = 0
-    Top = 288
+    Height = 23
+    Top = 284
     Width = 464
-    Height = 19
-    Panels = <
+    Panels = <    
       item
         Alignment = taRightJustify
         Text = '-copyright-'
         Width = 50
       end>
+    SimplePanel = False
   end
   object btnStartProcessing: TButton
     Left = 8
+    Height = 25
     Top = 216
     Width = 449
-    Height = 25
     Caption = 'Start processing'
-    TabOrder = 5
     OnClick = btnStartProcessingClick
+    TabOrder = 5
   end
   object gbOptions: TGroupBox
     Left = 8
+    Height = 97
     Top = 104
     Width = 449
-    Height = 97
     Caption = 'Options'
+    ClientHeight = 79
+    ClientWidth = 445
     TabOrder = 4
     object cbNoDecode: TCheckBox
-      Left = 8
-      Top = 24
-      Width = 209
+      Left = 6
       Height = 17
+      Top = 10
+      Width = 204
       Caption = 'Do not attempt decoding, only decrypt'
       TabOrder = 0
     end
     object cbAccelAES: TCheckBox
-      Left = 8
-      Top = 48
-      Width = 401
+      Left = 6
       Height = 17
-      Caption = 
-        'Allow hardware-accelerated AES decryption (AES-NI instruction se' +
-        't extension)'
+      Top = 34
+      Width = 394
+      Caption = 'Allow hardware-accelerated AES decryption (AES-NI instruction set extension)'
       Checked = True
       State = cbChecked
       TabOrder = 1
     end
     object cbInMemProc: TCheckBox
-      Left = 8
-      Top = 72
-      Width = 193
+      Left = 6
       Height = 17
+      Top = 58
+      Width = 185
       Caption = 'Do entire file processing in memory'
       Checked = True
       State = cbChecked
       TabOrder = 2
     end
   end
-  object oXPManifest: TXPManifest
-    Left = 80
-  end
   object diaOpenInputFile: TOpenDialog
     Filter = 'SII save files (*.sii)|*.sii|All files (*.*)|*.*'
-    Left = 112
+    left = 112
   end
   object diaSaveOutputFile: TSaveDialog
     DefaultExt = '.sii'
     Filter = 'SII save files (*.sii)|*.sii|All files (*.*)|*.*'
-    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 144
+    Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
+    left = 144
   end
 end

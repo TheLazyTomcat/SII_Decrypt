@@ -7,16 +7,23 @@
 -------------------------------------------------------------------------------}
 program SII_Decrypt;
 
+{$mode objfpc}{$H+}
+
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Interfaces, // this includes the LCL widgetset
   Forms,
-  MainForm in '..\MainForm.pas' {fMainForm},
-  SII_Decrypt_ProcessingThread in '..\..\Source\SII_Decrypt_ProcessingThread.pas';
+  MainForm,
+  SII_Decrypt_ProcessingThread;
 
 {$R *.res}
 
 begin
+  RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.Title := 'SII Decrypt';
   Application.CreateForm(TfMainForm, fMainForm);
   Application.Run;
 end.
+
