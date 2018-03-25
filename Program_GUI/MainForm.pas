@@ -77,7 +77,7 @@ If Progress > 1.0 then
     btnStartProcessing.Enabled := True;
     EnableOptions(True);
     SetTaskbarProgressState(tpsNoProgress);
-    MessageDlg('File succesfully decrypted/decoded.',mtInformation,[mbOk],0);
+    MessageDlg('File successfully decrypted/decoded.',mtInformation,[mbOk],0);
     ProcessingThread.OnProgress := nil;
     ProcessingThread := nil;
   end
@@ -90,7 +90,7 @@ else If Progress < 0.0 then
     SetTaskbarProgressState(tpsError);
     TempStr := ProcessingThread.ErrorText;
     UniqueString(TempStr);
-    MessageDlg('An error has occured during processing:' +
+    MessageDlg('An error has occurred during processing:' +
                sLineBreak + sLineBreak + TempStr,mtError,[mbOk],0);
     ProcessingThread.OnProgress := nil;               
     ProcessingThread := nil;
