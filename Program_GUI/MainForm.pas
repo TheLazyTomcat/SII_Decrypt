@@ -17,7 +17,7 @@ type
     bvlHor_Progress: TBevel;
     lblProgress: TLabel;
     pbProgress: TProgressBar;
-    sbStatusBar: TStatusBar;
+    stbStatusBar: TStatusBar;
     diaOpenInputFile: TOpenDialog;
     diaSaveOutputFile: TSaveDialog;
     btnStartProcessing: TButton;
@@ -25,7 +25,7 @@ type
     cbNoDecode: TCheckBox;
     cbAccelAES: TCheckBox;
     cbInMemProc: TCheckBox;
-    procedure FormCreate(Sender: TObject);    
+    procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnBrowseInFileClick(Sender: TObject);
     procedure btnBrowseOutFileClick(Sender: TObject);
@@ -48,7 +48,7 @@ implementation
 {$R *.dfm}
 
 uses
-  TaskbarProgress;
+  TaskbarProgress, WinFileInfo;
 
 procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Single);
 var
@@ -63,6 +63,7 @@ If Progress > 1.0 then
     EnableOptions(True);
     SetTaskbarProgressState(tpsNoProgress);
     MessageDlg('File succesfully decrypted/decoded.',mtInformation,[mbOk],0);
+    ProcessingThread.OnProgress := nil;
     ProcessingThread := nil;
   end
 else If Progress < 0.0 then
@@ -76,6 +77,7 @@ else If Progress < 0.0 then
     UniqueString(TempStr);
     MessageDlg('An error has occured during processing:' +
                sLineBreak + sLineBreak + TempStr,mtError,[mbOk],0);
+    ProcessingThread.OnProgress := nil;               
     ProcessingThread := nil;
   end
 else
@@ -104,8 +106,19 @@ end;
 
 procedure TfMainForm.FormCreate(Sender: TObject);
 begin
-sbStatusBar.DoubleBuffered := True;
+stbStatusBar.DoubleBuffered := True;
 SetTaskbarProgressState(tpsNoProgress);
+// load copyright
+with TWinFileInfo.Create(WFI_LS_LoadVersionInfo or WFI_LS_LoadFixedFileInfo or WFI_LS_DecodeFixedFileInfo) do
+  begin
+    stbStatusBar.Panels[0].Text :=
+      VersionInfoValues[VersionInfoTranslations[0].LanguageStr,'LegalCopyright'] + ', version ' +
+      VersionInfoValues[VersionInfoTranslations[0].LanguageStr,'ProductVersion'] + ' (' +
+      {$IFDEF FPC}'L'{$ELSE}'D'{$ENDIF}{$IFDEF x64}+ '64'{$ELSE}+ '32'{$ENDIF} + 
+      ' #' + IntToStr(VersionInfoFixedFileInfoDecoded.FileVersionMembers.Build)
+      {$IFDEF Debug}+ ' debug'{$ENDIF} + ')';
+    Free;
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -120,7 +133,8 @@ If Assigned(ProcessingThread) then
                   'Kill the thread now?',mtWarning,[mbYes,mbNo],0) = mrYes then
       begin
         // kill the thread
-        TerminateThread(ProcessingThread.Handle,0);
+        If Assigned(ProcessingThread) then
+          TerminateThread(ProcessingThread.Handle,0);
         CanClose := True;
       end
     else CanClose := False;

@@ -3,7 +3,7 @@ object fMainForm: TfMainForm
   Top = 116
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'SII Decrypt GUI'
+  Caption = 'SII Decrypt'
   ClientHeight = 307
   ClientWidth = 464
   Color = clBtnFace
@@ -76,9 +76,9 @@ object fMainForm: TfMainForm
     Width = 449
     Height = 17
     Max = 1000
-    TabOrder = 5
+    TabOrder = 6
   end
-  object sbStatusBar: TStatusBar
+  object stbStatusBar: TStatusBar
     Left = 0
     Top = 288
     Width = 464
@@ -96,7 +96,7 @@ object fMainForm: TfMainForm
     Width = 449
     Height = 25
     Caption = 'Start processing'
-    TabOrder = 4
+    TabOrder = 5
     OnClick = btnStartProcessingClick
   end
   object gbOptions: TGroupBox
@@ -105,7 +105,7 @@ object fMainForm: TfMainForm
     Width = 449
     Height = 97
     Caption = 'Options'
-    TabOrder = 7
+    TabOrder = 4
     object cbNoDecode: TCheckBox
       Left = 8
       Top = 24

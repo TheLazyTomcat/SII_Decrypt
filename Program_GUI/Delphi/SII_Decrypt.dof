@@ -107,11 +107,11 @@ UseLauncher=0
 DebugCWD=
 [Version Info]
 IncludeVerInfo=1
-AutoIncBuild=0
+AutoIncBuild=1
 MajorVer=1
 MinorVer=4
 Release=0
-Build=0
+Build=3
 Debug=0
 PreRelease=0
 Special=0
@@ -120,16 +120,16 @@ DLL=0
 Locale=1029
 CodePage=1250
 [Version Info Keys]
-CompanyName=
-FileDescription=
-FileVersion=1.4.0.0
-InternalName=
-LegalCopyright=
-LegalTrademarks=
-OriginalFilename=
-ProductName=
+CompanyName=František Milt
+FileDescription=SII Decrypt - GUI program
+FileVersion=1.4.0.3
+InternalName=SII Decrypt
+LegalCopyright=© 2016 - 2018 František Milt
+LegalTrademarks=SII Decrypt
+OriginalFilename=SII_Decrypt.exe
+ProductName=SII Decrypt
 ProductVersion=1.4.0
-Comments=
+Comments=Tool for SII files decryption/decoding
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

@@ -174,6 +174,8 @@ end;
 
 procedure TSII_DecryptProcessThread.Run;
 begin
+UniqueString(fInputFile);
+UniqueString(fOutputFile);
 {$IF Defined(FPC) or (CompilerVersion >= 21)} // Delphi 2010+
 Start;
 {$ELSE}

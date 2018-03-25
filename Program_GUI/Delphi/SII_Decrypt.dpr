@@ -9,6 +9,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'SII Decrypt';
   Application.CreateForm(TfMainForm, fMainForm);
   Application.Run;
 end.
