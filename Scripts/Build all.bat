@@ -1,5 +1,5 @@
 @echo off
 
-call "Build Library.bat"
-call "Build Program.bat"
-call "Build Tester.bat"
+call "Build library.bat"
+call "Build console program.bat"
+call "Build tester.bat"

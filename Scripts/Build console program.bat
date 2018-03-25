@@ -2,7 +2,7 @@
 
 pushd .
 
-cd ..\Program\Delphi
+cd ..\Program_Console\Delphi
 dcc32.exe -Q -B SII_Decrypt.dpr
 
 cd ..\Lazarus

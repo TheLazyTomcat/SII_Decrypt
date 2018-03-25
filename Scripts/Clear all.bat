@@ -1,5 +1,5 @@
 @echo off
 
-call "Clear Library builds.bat"
-call "Clear Program builds.bat"
-call "Clear Tester builds.bat"
+call "Clear library builds.bat"
+call "Clear console program builds.bat"
+call "Clear tester builds.bat"
