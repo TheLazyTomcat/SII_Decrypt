@@ -14,6 +14,10 @@ copy ..\Program_Console\Delphi\Release\win_x86\SII_Decrypt.exe  "..\Release\SII_
 copy ..\Program_Console\Lazarus\Release\win_x86\SII_Decrypt.exe "..\Release\SII_Decrypt[L32].exe"
 copy ..\Program_Console\Lazarus\Release\win_x64\SII_Decrypt.exe "..\Release\SII_Decrypt[L64].exe"
 
+copy ..\Program_GUI\Delphi\Release\win_x86\SII_Decrypt.exe  "..\Release\SII_Decrypt_GUI[D32].exe"
+copy ..\Program_GUI\Lazarus\Release\win_x86\SII_Decrypt.exe "..\Release\SII_Decrypt_GUI[L32].exe"
+copy ..\Program_GUI\Lazarus\Release\win_x64\SII_Decrypt.exe "..\Release\SII_Decrypt_GUI[L64].exe"
+
 copy ..\Library\Delphi\Release\win_x86\SII_Decrypt.dll  "..\Release\Library\SII_Decrypt[D32].dll" 
 copy ..\Library\Lazarus\Release\win_x86\SII_Decrypt.dll "..\Release\Library\SII_Decrypt[L32].dll"
 copy ..\Library\Lazarus\Release\win_x64\SII_Decrypt.dll "..\Release\Library\SII_Decrypt[L64].dll"
