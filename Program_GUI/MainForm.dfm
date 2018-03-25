@@ -56,9 +56,9 @@ object fMainForm: TfMainForm
     Top = 72
     Width = 424
     Height = 21
-    EditLabel.Width = 55
+    EditLabel.Width = 104
     EditLabel.Height = 13
-    EditLabel.Caption = 'Output file:'
+    EditLabel.Caption = 'Output file (optional):'
     TabOrder = 2
   end
   object btnBrowseOutFile: TButton

@@ -114,7 +114,20 @@ var
   DecryptorResult:  TSIIResult;
 begin
 try
-  DecryptorResult := fDecryptor.DecryptAndDecodeFile(fInputFile,fOutputFile);
+  If fOpt_NoDecode then
+    begin
+      If fOpt_InMemProc then
+        DecryptorResult := fDecryptor.DecryptFileInMemory(fInputFile,fOutputFile)
+      else
+        DecryptorResult := fDecryptor.DecryptFile(fInputFile,fOutputFile);
+    end
+  else
+    begin
+      If fOpt_InMemProc then
+        DecryptorResult := fDecryptor.DecryptAndDecodeFileInMemory(fInputFile,fOutputFile)
+      else
+        DecryptorResult := fDecryptor.DecryptAndDecodeFile(fInputFile,fOutputFile);
+    end;
   If DecryptorResult = rSuccess then
     begin
       fErrorText := 'Success';
