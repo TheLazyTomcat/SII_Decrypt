@@ -1,6 +1,6 @@
 ================================================================================
 
-                      SII Decrypt project - console program
+                         SII Decrypt project - programs
 
                                   version 1.4
 
@@ -12,12 +12,12 @@ Index
   Index ...................................................   9
   Description .............................................  23
   Use of the program ......................................  41
-  Changelog ...............................................  88
-  Known problems and limitations .......................... 120
-  Repositories ............................................ 127
-  Licensing ............................................... 140
-  Authors, contacts ....................................... 148
-  Copyright ............................................... 162
+  Changelog ...............................................  90
+  Known problems and limitations .......................... 123
+  Repositories ............................................ 130
+  Licensing ............................................... 143
+  Authors, contacts ....................................... 151
+  Copyright ............................................... 164
 
 
 Description
@@ -28,7 +28,7 @@ successfully tested on saves from Euro Truck Simulator 2 and American Truck
 Simulator and therefore should work for those games.
 Unlike in previous version, you do not need to change save format the game is
 using. Current version of this program can understand the now used binary format
-and will convert it to a human-readable textual form. However, as the binary
+and will convert it to a human readable textual form. However, as the binary
 format specification is not public, the decoding cannot be fully tested and
 therefore might not work in rare circumstances or in future games. If that
 happens, you can disable it by command no_decode (but in that case, you have to
@@ -40,9 +40,11 @@ localization.
 
 Use of the program
 ------------------------------
-This program is a command line utility, meaning it does not have any graphical
-user interface - you are supposed to use it by running it with proper command
-line parameters.
+Using the GUI program should be simple enough. Just run it and use provided
+controls (buttons, edits, ...) to select input and output files, set processing
+settings and so on.
+
+To use command line utility, run it with proper command line parameters.
 For normal user not familiar with command line, it simple means dropping file
 that has to be decrypted on the utility icon.
 More advanced user can use one of two available parameter schemes - simple and
@@ -90,8 +92,9 @@ Changelog
 List of changes between individual versions of this program.
 
 SII Decrypt program 1.3.2 -> SII Decrypt program 1.4.0
+  - added program with graphical user interface (window)
   - added support for decoding of 3nK-encoded files
-  - reduced memory use by implementig streaming conversion
+  - reduced memory use by implementing streaming conversion
 
 
 SII Decrypt program 1.3.1 -> SII Decrypt program 1.3.2
@@ -103,7 +106,7 @@ SII Decrypt program 1.3.0 -> SII Decrypt program 1.3.1
 
 
 SII Decrypt program 1.2.2 -> SII Decrypt program 1.3.0
-  - added support BSII file of format version 1
+  - added support for BSII file of format version 1
   - some minor internal changes
 
 
