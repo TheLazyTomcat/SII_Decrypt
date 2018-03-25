@@ -44,14 +44,15 @@ type
   end;
   PSIIHeader = ^TSIIHeader;
 
-  TSIIResult = (rGenericError   = -1,
-                rSuccess        = 0,
-                rNotEncrypted   = 1,
-                rBinaryFormat   = 2,
-                rUnknownFormat  = 3,
-                rTooFewData     = 4,
-                rBufferTooSmall = 5,
-                r3nKFormat      = 6);
+  TSIIResult = (rGenericError    = -1,
+                rSuccess         = 0,
+                rFormatPlainText = 1,
+                rFormatEncrypted = 2,
+                rFormatBinary    = 3,
+                rFormat3nK       = 4,
+                rFormatUnknown   = 10,
+                rTooFewData      = 11,
+                rBufferTooSmall  = 12);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
@@ -142,12 +143,13 @@ Function GetResultAsText(ResultCode: TSIIResult): String;
 begin
 case ResultCode of
   rSuccess:         Result := 'Success';
-  rNotEncrypted:    Result := 'Data contain a plain-text SII';
-  rBinaryFormat:    Result := 'Data contain a binary SII';
-  rUnknownFormat:   Result := 'Data are in an unknown format';
+  rFormatPlainText: Result := 'Data contain a plain-text SII';
+  rFormatEncrypted: Result := 'Data contain an encrypted SII';
+  rFormatBinary:    Result := 'Data contain a binary SII';
+  rFormat3nK:       Result := 'Data contain a 3nK format';
+  rFormatUnknown:   Result := 'Data are in an unknown format';
   rTooFewData:      Result := 'Too few data to contain a valid format';
   rBufferTooSmall:  Result := 'Buffer is too small';
-  r3nKFormat:       Result := 'Data contain a 3nK format';
 else
   {rGenericError}
   Result := 'Generic error';
@@ -251,20 +253,20 @@ try
   If (Stream.Size - Stream.Position) >= SizeOf(UInt32) then
     case Stream_ReadUInt32(Stream,False) of
       SII_Signature_Encrypted:  If (Stream.Size - Stream.Position) >= SizeOf(TSIIHeader) then
-                                  Result := rSuccess
+                                  Result := rFormatEncrypted
                                 else
                                   Result := rTooFewData;
-      SII_Signature_Normal:     Result := rNotEncrypted;
+      SII_Signature_Normal:     Result := rFormatPlainText;
       SII_Signature_Binary:     If (Stream.Size - Stream.Position) >= SIIBIN_MIN_SIZE then
-                                  Result := rBinaryFormat
+                                  Result := rFormatBinary
                                 else
                                   Result := rTooFewData;
       SII_Signature_3nK:        If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
-                                  Result := r3nKFormat
+                                  Result := rFormat3nK
                                 else
                                   Result := rTooFewData;
     else
-      Result := rUnknownFormat;
+      Result := rFormatUnknown;
     end
   else Result := rTooFewData;
 except
@@ -296,42 +298,42 @@ end;
 
 Function TSII_Decryptor.IsEncryptedSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = rSuccess;
+Result := GetStreamFormat(Stream) = rFormatEncrypted;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncryptedSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = rSuccess;
+Result := GetFileFormat(FileName) = rFormatEncrypted;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncodedSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = rBinaryFormat;
+Result := GetStreamFormat(Stream) = rFormatBinary;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncodedSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = rBinaryFormat;
+Result := GetFileFormat(FileName) = rFormatBinary;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.Is3nKSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = r3nKFormat;
+Result := GetStreamFormat(Stream) = rFormat3nK;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.Is3nKSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = r3nKFormat;
+Result := GetFileFormat(FileName) = rFormat3nK;
 end;
 
 //------------------------------------------------------------------------------
@@ -346,7 +348,7 @@ If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECRYPT) < 0 then
   fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
 try
   Result := GetStreamFormat(Input);
-  If Result = rSuccess then
+  If Result = rFormatEncrypted then
     begin
       InitOutPos := Output.Position;
       If (Input.Size - Input.Position) >= SizeOf(TSIIHeader) then
@@ -452,7 +454,7 @@ If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECODE) < 0 then
 try
   Result := GetStreamFormat(Input);
   case Result of
-    rBinaryFormat:   //- BSII file - - - - - - - - - - - - - - - - - - - - - - -
+    rFormatBinary:   //- BSII file - - - - - - - - - - - - - - - - - - - - - - -
       begin
         DecoderBin := TSIIBin_Decoder.Create;
         try
@@ -478,7 +480,7 @@ try
           DecoderBin.Free;
         end;
       end;
-    r3nKFormat:     //- 3nK file - - - - - - - - - - - - - - - - - - - - - - - -
+    rFormat3nK:     //- 3nK file - - - - - - - - - - - - - - - - - - - - - - - -
       begin
         Decoder3nK := TSII_3nK_Transcoder.Create;
         try
@@ -504,8 +506,6 @@ try
           Decoder3nK.Free;
         end;
       end;
-  else
-    Result := rUnknownFormat;
   end;
 except
   Result := rGenericError;
@@ -589,7 +589,7 @@ begin
 try
   Result := GetStreamFormat(Input);
   case Result of
-    rSuccess:
+    rFormatEncrypted:
       begin
         fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
         fProgressTracker.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
@@ -603,18 +603,18 @@ try
               TempStream.Seek(0,soBeginning);
               Result := GetStreamFormat(TempStream);
               case Result of
-                rBinaryFormat,
-                r3nKFormat:     begin
-                                  Output.Seek(InitOutPos,soBeginning);
-                                  Result := DecodeStream(TempStream,Output,InvariantOutput);
-                                end;
-                rNotEncrypted:  begin
-                                  Output.Seek(InitOutPos,soBeginning);
-                                  Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
-                                  If not InvariantOutput then
-                                    Output.Size := Output.Position;
-                                  Result := rSuccess;
-                                end;
+                rFormatBinary,
+                rFormat3nK:       begin
+                                    Output.Seek(InitOutPos,soBeginning);
+                                    Result := DecodeStream(TempStream,Output,InvariantOutput);
+                                  end;
+                rFormatPlainText: begin
+                                    Output.Seek(InitOutPos,soBeginning);
+                                    Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
+                                    If not InvariantOutput then
+                                      Output.Size := Output.Position;
+                                    Result := rSuccess;
+                                  end;
               end;
             end
           else Result := rTooFewData;
@@ -622,8 +622,8 @@ try
             TempStream.Free;
         end;
       end;
-    rBinaryFormat,
-    r3nKFormat:
+    rFormatBinary,
+    rFormat3nK:
       Result := DecodeStream(Input,Output,InvariantOutput);
   end;
 except

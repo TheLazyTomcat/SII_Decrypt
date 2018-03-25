@@ -20,23 +20,6 @@ uses
   SimpleCmdLineParser, StrRect,
   SII_Decrypt_Decryptor;
 
-Function GetResultText(ResultCode: Integer): String;
-begin
-case ResultCode of
-  0:  Result := 'Success';
-  1:  Result := 'File is a plain-text SII';
-  2:  Result := 'File is a binary SII';
-  3:  Result := 'File is in unknown format';
-  4:  Result := 'File is too small to contain valid data';
-  5:  Result := 'Buffer is too small';
-  6:  Result := 'File is in 3nK format';
-else
-  Result := 'Generic error';
-end;
-end;
-
-//------------------------------------------------------------------------------
-
 procedure Main;
 type
   TParsingMode = (pmNone,pmSimple,pmExtended);
@@ -47,6 +30,7 @@ var
   ParamData:    TCLPParameter;
   InFileName:   String;
   OutFileName:  String;
+  ProcResult:   TSIIResult;
 begin
 try
   CMDParser := TCLPParser.Create;
@@ -101,9 +85,10 @@ try
                 InFileName := CMDParser.Last.Str;
                 OutFileName := InFileName
               end;
-            ExitCode := Ord(Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName));
+            ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
+            ExitCode := Ord(ProcResult);
             WriteLn;
-            WriteLn(Format('Result: %s (%d)',[GetResultText(ExitCode),ExitCode]));
+            WriteLn(Format('Result: %s (%d)',[GetResultAsText(ProcResult),ExitCode]));
           finally
             Decryptor.Free;
           end;
@@ -136,19 +121,20 @@ try
             If CMDParser.CommandPresent('no_decode') then
               begin
                 If CMDParser.CommandPresent('on_file') then
-                  ExitCode := Ord(Decryptor.DecryptFile(InFileName,OutFileName))
+                  ProcResult := Decryptor.DecryptFile(InFileName,OutFileName)
                 else
-                  ExitCode := Ord(Decryptor.DecryptFileInMemory(InFileName,OutFileName));
+                  ProcResult := Decryptor.DecryptFileInMemory(InFileName,OutFileName);
               end
             else
               begin
                 If CMDParser.CommandPresent('on_file') then
-                  ExitCode := Ord(Decryptor.DecryptAndDecodeFile(InFileName,OutFileName))
+                  ProcResult := Decryptor.DecryptAndDecodeFile(InFileName,OutFileName)
                 else
-                  ExitCode := Ord(Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName));
+                  ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
               end;
+            ExitCode := Ord(ProcResult);
             WriteLn;
-            WriteLn(Format('Result: %s (%d)',[GetResultText(ExitCode),ExitCode]));
+            WriteLn(Format('Result: %s (%d)',[GetResultAsText(ProcResult),ExitCode]));
           finally
             Decryptor.Free;
           end;
@@ -160,7 +146,7 @@ try
         WriteLn;
         Write('Press enter to continue...'); ReadLn;
       end;
-      
+    readln;  
   finally
     CMDParser.Free;
   end;
