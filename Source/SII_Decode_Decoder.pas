@@ -36,18 +36,22 @@ const
 type
   TSIIBin_ProgressType = (ptLoading,ptConverting,ptStreaming);
 
-  TSIIBin_ProgressEvent    = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType) of object;
-  TSIIBin_ProgressCallback = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType);
+  TSIIBin_ProgressTypeEvent    = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType) of object;
+  TSIIBin_ProgressEvent        = procedure(Sender: TObject; Progress: Single) of object;
+  TSIIBin_ProgressTypeCallback = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType);
+  TSIIBin_ProgressCallback     = procedure(Sender: TObject; Progress: Single);
 
 {==============================================================================}
 {   TSIIBin_Decoder - declaration                                              }
 {==============================================================================}
   TSIIBin_Decoder = class(TObject)
   private
-    fFileLayout:      TSIIBin_FileLayout;
-    fFileDataBlocks:  TObjectList;
-    fOnProgress:      TSIIBin_ProgressEvent;
-    fOnPRogressCB:    TSIIBin_ProgressCallback;
+    fFileLayout:              TSIIBin_FileLayout;
+    fFileDataBlocks:          TObjectList;
+    fOnProgressTypeEvent:     TSIIBin_ProgressTypeEvent;
+    fOnProgressEvent:         TSIIBin_ProgressEvent;
+    fOnProgressTypeCallback:  TSIIBin_ProgressTypeCallback;
+    fOnProgressCallback:      TSIIBin_ProgressCallback;
     Function GetDataBlockCount: Integer;
     Function GetDataBlock(Index: Integer): TSIIBin_DataBlock;
   protected
@@ -76,10 +80,13 @@ type
     procedure ConvertStream(InStream, OutStream: TStream; InvariantOutput: Boolean = False); virtual;
     procedure ConvertFile(const InFileName, OutFileName: String); overload; virtual;
     property DataBlocks[Index: Integer]: TSIIBin_DataBlock read GetDataBlock;
-    property OnProgressCallBack: TSIIBin_ProgressCallback read fOnProgressCB write fOnProgressCB;    
+    property OnProgressTypeCallBack: TSIIBin_ProgressTypeCallback read fOnProgressTypeCallback write fOnProgressTypeCallback;
+    property OnProgressCallBack: TSIIBin_ProgressCallback read fOnProgressCallback write fOnProgressCallback;
   published
     property DataBlockCount: Integer read GetDataBlockCount;
-    property OnProgress: TSIIBin_ProgressEvent read fOnProgress write fOnProgress;
+    property OnProgressTypeEvent: TSIIBin_ProgressTypeEvent read fOnProgressTypeEvent write fOnProgressTypeEvent;
+    property OnProgressEvent: TSIIBin_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
+    property OnProgress: TSIIBin_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
   end;
 
 implementation
@@ -242,10 +249,14 @@ end;
 
 procedure TSIIBin_Decoder.DoProgress(Progress: Single; ProgressType: TSIIBin_ProgressType);
 begin
-If Assigned(fOnProgress) then
-  fOnProgress(Self,Progress,ProgressType);
-If Assigned(fOnProgressCB) then
-  fOnProgressCB(Self,Progress,ProgressType);  
+If Assigned(fOnProgressTypeEvent) then
+  fOnProgressTypeEvent(Self,Progress,ProgressType);
+If Assigned(fOnProgressEvent) then
+  fOnProgressEvent(Self,Progress);
+If Assigned(fOnProgressTypeCallback) then
+  fOnProgressTypeCallback(Self,Progress,ProgressType);
+If Assigned(fOnProgressCallback) then
+  fOnProgressCallback(Self,Progress);
 end;
 
 {------------------------------------------------------------------------------}

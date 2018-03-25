@@ -12,11 +12,11 @@ Index
   Index ................................................... 9
   Description ............................................. 22
   Parts of the project .................................... 46
-  Project files ........................................... 74
-  Repositories ............................................ 117
-  Licensing ............................................... 130
-  Authors, contacts ....................................... 138
-  Copyright ............................................... 149
+  Project files ........................................... 78
+  Repositories ............................................ 125
+  Licensing ............................................... 138
+  Authors, contacts ....................................... 146
+  Copyright ............................................... 157
 
 
 Description
@@ -32,7 +32,7 @@ is using while writing the saves.
 
 Since version 1.4, it is also possible to decode 3nK-encoded files. This
 encoding is usually used in localization SII files. See project 3nK Transcode
-(https://github.com/ncs-sniper/SII_3nK_Transcode) for further details on this
+(https://github.com/ncs-sniper/S3nK_Transcode) for further details on this
 format.
 
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.8.x
@@ -45,12 +45,12 @@ All main parts can be compiled into both 32bit and 64bit binaries.
 
 Parts of the project
 ------------------------------
-The project can be principally used in three ways - directly as a code, as
-a dynamically loaded library (DLL) or as console program.
+The project can be principally used in four ways - directly as a code, as
+a dynamically loaded library (DLL), as console program or as a GUI program.
 
   If you want to use it directly, simply include files from .\Source folder in
   your project and use provided classes. Also make sure you add folder
-  .\Source\Libs to project's search paths, as decryptor requires units that are
+  .\Source\Libs to project search paths, as decryptor requires units that are
   stored there.
 
   To use this project as a library (DLL), include header file
@@ -68,6 +68,10 @@ a dynamically loaded library (DLL) or as console program.
   You can use exit code of the program to check processing for errors. The
   result codes are the same as for functions exported by DLL version of this
   project - so refer to DLL headers for details.
+
+  Using the GUI program is straight forward - run the program and use its
+  controls (buttons, edits, ...) to select input file, output file, set options
+  and then run the processing and wait for it to finish.
 
 
 
@@ -96,9 +100,13 @@ List of folders with description of their content:
 
     Library (DLL) part of the project.
 
-  .\Program
+  .\Program_Console
 
     Console program part of the project.
+
+  .\Program_GUI
+
+    GUI program part of the project.
 
   .\Tester
 

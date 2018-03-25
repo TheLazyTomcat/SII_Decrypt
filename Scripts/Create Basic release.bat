@@ -8,4 +8,6 @@ copy ..\program_readme.txt ..\Release\readme.txt
 
 copy ..\license.txt ..\Release\license.txt
 
-copy ..\Program\Delphi\Release\win_x86\SII_Decrypt.exe "..\Release\SII_Decrypt.exe"
+copy ..\Program_Console\Delphi\Release\win_x86\SII_Decrypt.exe "..\Release\SII_Decrypt.exe"
+
+copy ..\Program_GUI\Delphi\Release\win_x86\SII_Decrypt.exe "..\Release\SII_Decrypt_GUI.exe"

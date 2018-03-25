@@ -13,7 +13,7 @@ interface
 
 uses
   Classes,
-  AuxTypes, AES;
+  AuxTypes, AES, ProgressTracker;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -44,26 +44,46 @@ type
   end;
   PSIIHeader = ^TSIIHeader;
 
-  TSIIResult = (rGenericError   = -1,
-                rSuccess        = 0,
-                rNotEncrypted   = 1,
-                rBinaryFormat   = 2,
-                rUnknownFormat  = 3,
-                rTooFewData     = 4,
-                rBufferTooSmall = 5,
-                r3nKFormat      = 6);
+  TSIIResult = (rGenericError    = -1,
+                rSuccess         = 0,
+                rFormatPlainText = 1,
+                rFormatEncrypted = 2,
+                rFormatBinary    = 3,
+                rFormat3nK       = 4,
+                rFormatUnknown   = 10,
+                rTooFewData      = 11,
+                rBufferTooSmall  = 12);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
 {==============================================================================}
+const
+  SII_PRGS_STAGEID_DECRYPT = 0;
+  SII_PRGS_STAGEID_DECODE  = 1;
+
+  SII_PRGS_STAGELEN_DECRYPT = 10;
+  SII_PRGS_STAGELEN_DECODE  = 90;
+
+type
+  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
+  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+
   TSII_Decryptor = class(TObject)
   private
-    fReraiseExceptions: Boolean;
-    fAcceleratedAES:    Boolean;
+    fReraiseExceptions:   Boolean;
+    fAcceleratedAES:      Boolean;
+    fProgressTracker:     TProgressTracker;
+    fReportProgress:      Boolean;
+    fOnProgressEvent:     TSII_ProgressEvent;
+    fOnProgressCallback:  TSII_ProgressCallback;
   protected
+    procedure DoProgress(Sender: TObject; Progress: Single); virtual;
+    procedure DecryptProgressHandler(Sender: TObject; Progress: Single); virtual;
+    procedure DecodeProgressHandler(Sender: TObject; Progress: Single); virtual;
     procedure DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader); virtual;
   public
     constructor Create;
+    destructor Destroy; override;
     Function GetStreamFormat(Stream: TSTream): TSIIResult; virtual;
     Function GetFileFormat(const FileName: String): TSIIResult; virtual;
     Function IsEncryptedSIIStream(Stream: TSTream): Boolean; virtual;
@@ -81,10 +101,19 @@ type
     Function DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecryptAndDecodeFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptAndDecodeFileInMemory(const Input, Output: String): TSIIResult; virtual;
+    property OnProgressCallback: TSII_ProgressCallback read fOnProgressCallback write fOnProgressCallback;    
   published
     property ReraiseExceptions: Boolean read fReraiseExceptions write fReraiseExceptions;
     property AcceleratedAES: Boolean read fAcceleratedAES write fAcceleratedAES;
+    property OnProgressEvent: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
+    property OnProgress: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
   end;
+  
+{==============================================================================}
+{   Auxiliary functions                                                        }
+{==============================================================================}
+
+Function GetResultAsText(ResultCode: TSIIResult): String;  
 
 implementation
 
@@ -108,6 +137,25 @@ begin
 {$ENDIF}
 end;
 
+//------------------------------------------------------------------------------
+
+Function GetResultAsText(ResultCode: TSIIResult): String;
+begin
+case ResultCode of
+  rSuccess:         Result := 'Success';
+  rFormatPlainText: Result := 'Data contain a plain-text SII';
+  rFormatEncrypted: Result := 'Data contain an encrypted SII';
+  rFormatBinary:    Result := 'Data contain a binary SII';
+  rFormat3nK:       Result := 'Data contain a 3nK format';
+  rFormatUnknown:   Result := 'Data are in an unknown format';
+  rTooFewData:      Result := 'Too few data to contain a valid format';
+  rBufferTooSmall:  Result := 'Buffer is too small';
+else
+  {rGenericError}
+  Result := 'Generic error';
+end;
+end;
+
 {==============================================================================}
 {   TSII_Decryptor - implementation                                            }
 {==============================================================================}
@@ -115,6 +163,33 @@ end;
 {------------------------------------------------------------------------------}
 {   TSII_Decryptor - protected methods                                         }
 {------------------------------------------------------------------------------}
+
+procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Single);
+begin
+If fReportProgress then
+  begin
+    If Assigned(fOnProgressEvent) then
+      fOnProgressEvent(Self,Progress);
+    If Assigned(fOnProgressCallback) then
+      fOnProgressCallback(Self,Progress);
+  end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
+begin
+fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
+begin
+fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
+end;
+
+//------------------------------------------------------------------------------
 
 procedure TSII_Decryptor.DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader);
 var
@@ -127,6 +202,7 @@ If fAcceleratedAES then
 else
   AESDec := TAESCipher.Create(SII_Key,Header.InitVector,r256bit,cmDecrypt);
 try
+  AESDec.OnProgress := DecryptProgressHandler;
   Temp.Seek(0,soBeginning);
   AESDec.ModeOfOperation := moCBC;
   AESDec.ProcessStream(Input,Temp);
@@ -155,6 +231,18 @@ begin
 inherited Create;
 fReraiseExceptions := True;
 fAcceleratedAES := True;
+fProgressTracker := TProgressTracker.Create;
+fProgressTracker.OnProgress := DoProgress;
+fReportProgress := True;
+end;
+
+//------------------------------------------------------------------------------
+
+destructor TSII_Decryptor.Destroy;
+begin
+fProgressTracker.OnProgress := nil;
+fProgressTracker.Free;
+inherited;
 end;
 
 //------------------------------------------------------------------------------
@@ -165,20 +253,20 @@ try
   If (Stream.Size - Stream.Position) >= SizeOf(UInt32) then
     case Stream_ReadUInt32(Stream,False) of
       SII_Signature_Encrypted:  If (Stream.Size - Stream.Position) >= SizeOf(TSIIHeader) then
-                                  Result := rSuccess
+                                  Result := rFormatEncrypted
                                 else
                                   Result := rTooFewData;
-      SII_Signature_Normal:     Result := rNotEncrypted;
+      SII_Signature_Normal:     Result := rFormatPlainText;
       SII_Signature_Binary:     If (Stream.Size - Stream.Position) >= SIIBIN_MIN_SIZE then
-                                  Result := rBinaryFormat
+                                  Result := rFormatBinary
                                 else
                                   Result := rTooFewData;
       SII_Signature_3nK:        If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
-                                  Result := r3nKFormat
+                                  Result := rFormat3nK
                                 else
                                   Result := rTooFewData;
     else
-      Result := rUnknownFormat;
+      Result := rFormatUnknown;
     end
   else Result := rTooFewData;
 except
@@ -210,42 +298,42 @@ end;
 
 Function TSII_Decryptor.IsEncryptedSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = rSuccess;
+Result := GetStreamFormat(Stream) = rFormatEncrypted;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncryptedSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = rSuccess;
+Result := GetFileFormat(FileName) = rFormatEncrypted;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncodedSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = rBinaryFormat;
+Result := GetStreamFormat(Stream) = rFormatBinary;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.IsEncodedSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = rBinaryFormat;
+Result := GetFileFormat(FileName) = rFormatBinary;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.Is3nKSIIStream(Stream: TSTream): Boolean;
 begin
-Result := GetStreamFormat(Stream) = r3nKFormat;
+Result := GetStreamFormat(Stream) = rFormat3nK;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TSII_Decryptor.Is3nKSIIFile(const FileName: String): Boolean;
 begin
-Result := GetFileFormat(FileName) = r3nKFormat;
+Result := GetFileFormat(FileName) = rFormat3nK;
 end;
 
 //------------------------------------------------------------------------------
@@ -256,9 +344,11 @@ var
   Header:     TSIIHeader;
   TempStream: TMemoryStream;
 begin
+If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECRYPT) < 0 then
+  fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
 try
   Result := GetStreamFormat(Input);
-  If Result = rSuccess then
+  If Result = rFormatEncrypted then
     begin
       InitOutPos := Output.Position;
       If (Input.Size - Input.Position) >= SizeOf(TSIIHeader) then
@@ -271,7 +361,7 @@ try
             Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
             If not InvariantOutput then
               Output.Size := Output.Position;
-            Result := rSuccess;  
+            Result := rSuccess;
           finally
             TempStream.Free;
           end;
@@ -281,6 +371,12 @@ try
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracker.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 
@@ -353,13 +449,16 @@ var
   TextResult: TAnsiStringList;
   TempStream: TMemoryStream;
 begin
+If fProgressTracker.IndexOf(SII_PRGS_STAGEID_DECODE) < 0 then
+  fProgressTracker.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
 try
   Result := GetStreamFormat(Input);
   case Result of
-    rBinaryFormat:   //- BSII file - - - - - - - - - - - - - - - - - - - - - - -
+    rFormatBinary:   //- BSII file - - - - - - - - - - - - - - - - - - - - - - -
       begin
         DecoderBin := TSIIBin_Decoder.Create;
         try
+          DecoderBin.OnProgress := DecodeProgressHandler;
           If Input = Output then
             begin
               InitOutPos := Output.Position;
@@ -381,10 +480,11 @@ try
           DecoderBin.Free;
         end;
       end;
-    r3nKFormat:     //- 3nK file - - - - - - - - - - - - - - - - - - - - - - - -
+    rFormat3nK:     //- 3nK file - - - - - - - - - - - - - - - - - - - - - - - -
       begin
         Decoder3nK := TSII_3nK_Transcoder.Create;
         try
+          Decoder3nK.OnProgress := DecodeProgressHandler;
           If Input = Output then
             begin
               TempStream := TMemoryStream.Create;
@@ -410,6 +510,12 @@ try
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracker.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 
@@ -483,8 +589,10 @@ begin
 try
   Result := GetStreamFormat(Input);
   case Result of
-    rSuccess:
+    rFormatEncrypted:
       begin
+        fProgressTracker.Add(SII_PRGS_STAGELEN_DECRYPT,SII_PRGS_STAGEID_DECRYPT);
+        fProgressTracker.Add(SII_PRGS_STAGELEN_DECODE,SII_PRGS_STAGEID_DECODE);
         TempStream := TMemoryStream.Create;
         try
           InitOutPos := Input.Position;
@@ -495,18 +603,18 @@ try
               TempStream.Seek(0,soBeginning);
               Result := GetStreamFormat(TempStream);
               case Result of
-                rBinaryFormat,
-                r3nKFormat:     begin
-                                  Output.Seek(InitOutPos,soBeginning);
-                                  Result := DecodeStream(TempStream,Output,InvariantOutput);
-                                end;
-                rNotEncrypted:  begin
-                                  Output.Seek(InitOutPos,soBeginning);
-                                  Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
-                                  If not InvariantOutput then
-                                    Output.Size := Output.Position;
-                                  Result := rSuccess;
-                                end;
+                rFormatBinary,
+                rFormat3nK:       begin
+                                    Output.Seek(InitOutPos,soBeginning);
+                                    Result := DecodeStream(TempStream,Output,InvariantOutput);
+                                  end;
+                rFormatPlainText: begin
+                                    Output.Seek(InitOutPos,soBeginning);
+                                    Output.WriteBuffer(TempStream.Memory^,TempStream.Size);
+                                    If not InvariantOutput then
+                                      Output.Size := Output.Position;
+                                    Result := rSuccess;
+                                  end;
               end;
             end
           else Result := rTooFewData;
@@ -514,14 +622,19 @@ try
             TempStream.Free;
         end;
       end;
-
-    rBinaryFormat,
-    r3nKFormat:
+    rFormatBinary,
+    rFormat3nK:
       Result := DecodeStream(Input,Output,InvariantOutput);
   end;
 except
   Result := rGenericError;
   If fReraiseExceptions then raise;
+end;
+fReportProgress := False;
+try
+  fProgressTracker.Clear;
+finally
+  fReportProgress := True;
 end;
 end;
 
