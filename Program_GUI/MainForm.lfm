@@ -1,12 +1,12 @@
 object fMainForm: TfMainForm
   Left = 787
-  Height = 307
+  Height = 312
   Top = 116
   Width = 464
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt'
-  ClientHeight = 307
+  ClientHeight = 312
   ClientWidth = 464
   Color = clBtnFace
   Font.Color = clWindowText
@@ -94,7 +94,7 @@ object fMainForm: TfMainForm
   object stbStatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 284
+    Top = 289
     Width = 464
     Panels = <    
       item

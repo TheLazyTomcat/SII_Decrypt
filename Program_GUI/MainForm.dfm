@@ -4,7 +4,7 @@ object fMainForm: TfMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt'
-  ClientHeight = 307
+  ClientHeight = 312
   ClientWidth = 464
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -80,7 +80,7 @@ object fMainForm: TfMainForm
   end
   object stbStatusBar: TStatusBar
     Left = 0
-    Top = 288
+    Top = 293
     Width = 464
     Height = 19
     Panels = <
