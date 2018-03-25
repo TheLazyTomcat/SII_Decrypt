@@ -44,13 +44,17 @@ try
     begin
       MemStream := TMemoryStream.Create;
       try
-        WriteLn(DecryptFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
-        WriteLn(DecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
-        WriteLn(DecryptAndDecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
+        WriteLn(Format('API version: %.8x',[APIVersion()]));
 
-        WriteLn(DecryptFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfout'))));
-        WriteLn(DecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mf2out'))));
-        WriteLn(DecryptAndDecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfdout'))));
+        WriteLn;
+        WriteLn('DecryptFile:          ',DecryptFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
+        WriteLn('DecodeFile:           ',DecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
+        WriteLn('DecryptAndDecodeFile: ',DecryptAndDecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
+
+        WriteLn;
+        WriteLn('DecryptFileInMemory:          ',DecryptFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfout'))));
+        WriteLn('DecodeFileInMemory:           ',DecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mf2out'))));
+        WriteLn('DecryptAndDecodeFileInMemory: ',DecryptAndDecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfdout'))));
 
         MemStream.LoadFromFile(ParamStr(1));
         If DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,nil,@OutSize) = SIIDEC_RESULT_SUCCESS then
@@ -58,7 +62,8 @@ try
             GetMem(OutBuff,OutSize);
             try
               MemStream.Position := 0;
-              WriteLn(DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
+              WriteLn;
+              WriteLn('DecryptAndDecodeMemory: ',DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
               MemStream.Seek(0,soBeginning);
               MemStream.WriteBuffer(OutBuff^,OutSize);
               MemStream.Size := OutSize;
@@ -71,6 +76,7 @@ try
         MemStream.Free;
       end;
     end;
+  WriteLn;  
   Write('Press enter to continue...'); ReadLn;
 finally
   Unload_SII_Decrypt;

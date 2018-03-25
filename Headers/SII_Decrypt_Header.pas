@@ -5,6 +5,28 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------}
+{===============================================================================
+
+  Current SII Decrypt version:  1.4.0
+  Current library API version:  1.0
+
+  Note:
+
+    Change in major version of library API marks compatibility change, minor
+    version marks only changes that do not break backward compatibility.
+    For example, if you implement your application for API of version 1.1, it
+    will be still compatible with version 1.95, but not with version 2.0.
+
+  Changelog:
+
+    1.4.0 - started documenting changes
+          - return values completely changed
+          - added function APIVersion
+          - added functions Is3nKEncodedMemory, Is3nKEncodedFile
+          - added functions DecryptFileInMemory, DecodeFileInMemory and
+            DecryptAndDecodeFileInMemory
+
+===============================================================================}
 unit SII_Decrypt_Header;
 
 {$IFDEF FPC}
@@ -26,6 +48,7 @@ uses
                 4 bytes on 32bit system)
     PMemSize  - pointer to an unsigned pointer-sized integer
     Int32     - signed 32bit integer
+    UInt32    - unsigned 32bit integer
     PUTF8Char - pointer to the first character of UTF8-encoded, null-terminated
                 string
     LongBool  = 32bit wide boolean value (0 = False; any other value = True)
@@ -36,22 +59,38 @@ const
 {
   Following are all possible values any library function can return.
   For meaning of individual values, refer to description of functions that
-  returns them.
+  returns them - only values the function can normally return are documented,
+  if it returns value that is not documented for that particular fucntion,
+  treat it as SIIDEC_RESULT_GENERIC_ERROR.
   If any function returns value that is not listed here, you should process it
   as if it returned SIIDEC_RESULT_GENERIC_ERROR.
 }
   SIIDEC_RESULT_GENERIC_ERROR    = -1;
   SIIDEC_RESULT_SUCCESS          = 0;
-  SIIDEC_RESULT_NOT_ENCRYPTED    = 1;
-  SIIDEC_RESULT_BINARY_FORMAT    = 2;
-  SIIDEC_RESULT_UNKNOWN_FORMAT   = 3;
-  SIIDEC_RESULT_TOO_FEW_DATA     = 4;
-  SIIDEC_RESULT_BUFFER_TOO_SMALL = 5;
-  SIIDEC_RESULT_3NK_FORMAT       = 6;
+  SIIDEC_RESULT_FORMAT_PLAINTEXT = 1;
+  SIIDEC_RESULT_FORMAT_ENCRYPTED = 2;
+  SIIDEC_RESULT_FORMAT_BINARY    = 3;
+  SIIDEC_RESULT_FORMAT_3NK       = 4;
+  SIIDEC_RESULT_FORMAT_UNKNOWN   = 10;
+  SIIDEC_RESULT_TOO_FEW_DATA     = 11;
+  SIIDEC_RESULT_BUFFER_TOO_SMALL = 12;
 
 //==============================================================================
 
 var
+{-------------------------------------------------------------------------------
+
+  APIVersion
+
+  Returns version of API the library is providing. Lower 16 bits or returned
+  value contains minor version, higher 16 bits contains major version.
+
+  Returns:
+
+    Version of provided API.
+}
+  APIVersion: Function: UInt32; stdcall;
+
 {-------------------------------------------------------------------------------
 
   GetMemoryFormat
@@ -69,14 +108,14 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - memory contains encrypted SII file
-    SIIDEC_RESULT_NOT_ENCRYPTED    - memory contains plain-text SII file
-    SIIDEC_RESULT_BINARY_FORMAT    - memory contains binary form of SII file
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - memory contains unknown data
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - memory contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_ENCRYPTED - memory contains encrypted SII file
+    SIIDEC_RESULT_FORMAT_BINARY    - memory contains binary form of SII file
+    SIIDEC_RESULT_FORMAT_3NK       - memory contains 3nK-encoded SII file
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - memory contains unknown data format
     SIIDEC_RESULT_TOO_FEW_DATA     - memory buffer is too small to contain valid
                                      data for its format
-    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_RESULT_3NK_FORMAT       - memory contains 3nK-encoded SII file
+
 }
   GetMemoryFormat: Function(Mem: Pointer; Size: TMemSize): Int32; stdcall;
 
@@ -98,14 +137,14 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - encrypted SII file
-    SIIDEC_RESULT_NOT_ENCRYPTED    - plain-text SII file
-    SIIDEC_RESULT_BINARY_FORMAT    - binary form of SII file
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - file of an uknown format
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - plain-text SII file
+    SIIDEC_RESULT_FORMAT_ENCRYPTED - encrypted SII file
+    SIIDEC_RESULT_FORMAT_BINARY    - binary form of SII file
+    SIIDEC_RESULT_FORMAT_3NK       - file is an 3nK-encoded SII file
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - file of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - file is too small to contain valid data for
                                      its format
-    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_RESULT_3NK_FORMAT       - file is an 3nK-encoded SII file
+
 }
   GetFileFormat: Function(FileName: PUTF8Char): Int32; stdcall;
 
@@ -257,19 +296,21 @@ var
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
     SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted and
                                      result stored in the output buffer
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input data contains plain-text SII file
                                      (does not need decryption)
-    SIIDEC_RESULT_BINARY_FORMAT    - input data contains binary form of SII file
+    SIIDEC_RESULT_FORMAT_BINARY    - input data contains binary form of SII file
                                      (does not need decryption)
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format
+    SIIDEC_RESULT_FORMAT_3NK       - input data contains 3nK-encoded SII file
+                                     (does not need decryption)
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input data are of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain
                                      complete encrypted SII file header
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted data
-    SIIDEC_RESULT_3NK_FORMAT       - input data contains 3nK-encoded SII file
+
 }
   DecryptMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
-  
+
 {-------------------------------------------------------------------------------
 
   DecryptFile
@@ -290,17 +331,18 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - input file was successfully decrypted and
+    SIIDEC_RESULT_SUCCESS          - input file were successfully decrypted and
                                      result stored in the output file
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input file contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input file contains plain-text SII file
                                      (does not need decryption)
-    SIIDEC_RESULT_BINARY_FORMAT    - input file contains binary form of SII file
+    SIIDEC_RESULT_FORMAT_BINARY    - input file contains binary form of SII file
                                      (does not need decryption)
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input file is of an uknown format
+    SIIDEC_RESULT_FORMAT_3NK       - input file contains 3nK-encoded SII file
+                                     (does not need decryption)
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input file is of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain complete
                                      encrypted SII file header
-    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_RESULT_3NK_FORMAT       - input file contains 3nK-encoded SII file
+
 }
   DecryptFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -379,16 +421,16 @@ var
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
     SIIDEC_RESULT_SUCCESS          - input data were successfully decoded and
                                      result stored in the output buffer
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input data contains plain-text SII file
                                      (does not need decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format or it is
-                                     an encrypted SII file
+    SIIDEC_RESULT_FORMAT_ENCRYPTED - input data contains encrypted SII file
+                                     (needs decrypting before decoding)
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input data are of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
-                                     binary SII file
+                                     binary or 3nK-encoded SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decoded data
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+
 }
   DecodeMemoryHelper: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 
@@ -415,16 +457,16 @@ var
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
     SIIDEC_RESULT_SUCCESS          - input data were successfully decoded and
                                      result stored in the output buffer
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT  - input data contains plain-text SII file
                                      (does not need decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format or it is
-                                     an encrypted SII file
+    SIIDEC_RESULT_FORMAT_ENCRYPTED - input data contains encrypted SII file
+                                     (needs decrypting before decoding)
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input data are of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
-                                     binary SII file
+                                     binary or 3nK-encoded SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decoded data
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+
 }
   DecodeMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
@@ -450,15 +492,14 @@ var
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
     SIIDEC_RESULT_SUCCESS          - input file was successfully decoded and
                                      result stored in the output file
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input file contains plain-text SII file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input file contains plain-text SII file
                                      (does not need decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input file is of an uknown format or it is
-                                     an encrypted SII file
+    SIIDEC_RESULT_FORMAT_ENCRYPTED - input file contains encrypted SII file
+                                     (needs decrypting before decoding)
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input file is of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain a valid
-                                     binary SII file
-    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+                                     binary or 3nK-encoded SII file
+
 }
   DecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -494,19 +535,18 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted and
-                                     decoded and result stored in the output
-                                     buffer
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted
+                                     and/or decoded and result stored in the
+                                     output buffer
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input data contains plain-text SII file
                                      (does not need decryption or decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input data are of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
-                                     encrypted or binary SII file
+                                     encrypted or encoded SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted and
                                      decoded data
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+
 }
   DecryptAndDecodeMemoryHelper: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 
@@ -531,19 +571,18 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted and
-                                     decoded and result stored in the output
-                                     buffer
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input data contains plain-text SII file
+    SIIDEC_RESULT_SUCCESS          - input data were successfully decrypted
+                                     and/or decoded and result stored in the
+                                     output buffer
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input data contains plain-text SII file
                                      (does not need decryption or decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input data is of an uknown format
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input data are of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input buffer is too small to contain valid
-                                     encrypted or binary SII file
+                                     encrypted or encoded SII file
     SIIDEC_RESULT_BUFFER_TOO_SMALL - size of the output buffer given in OutSize
                                      is too small to store all decrypted and
                                      decoded data
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+
 }
   DecryptAndDecodeMemory: Function(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
@@ -567,16 +606,15 @@ var
   Returns:
 
     SIIDEC_RESULT_GENERIC_ERROR    - an unhandled exception have occured
-    SIIDEC_RESULT_SUCCESS          - input file was successfully decrypted and
-                                     decoded and result stored in the output file
-    SIIDEC_RESULT_NOT_ENCRYPTED    - input file contains plain-text SII file
+    SIIDEC_RESULT_SUCCESS          - input file was successfully decrypted
+                                     and/or decoded and result stored in the
+                                     output file
+    SIIDEC_RESULT_FORMAT_PLAINTEXT - input file contains plain-text SII file
                                      (does not need decryption or decoding)
-    SIIDEC_RESULT_BINARY_FORMAT    - not returned by this function
-    SIIDEC_RESULT_UNKNOWN_FORMAT   - input file is of an uknown format
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - input file is of an uknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - input file is too small to contain a valid
-                                     encrypted or binary SII file
-    SIIDEC_RESULT_BUFFER_TOO_SMALL - not returned by this function
-    SIIDEC_RESULT_3NK_FORMAT       - not returned by this function
+                                     encrypted or encoded SII file
+
 }
   DecryptAndDecodeFile: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -639,6 +677,8 @@ If LibHandle = 0 then
     LibHandle := LoadLibrary(PChar(LibraryFile));
     If LibHandle <> 0 then
       begin
+        APIVersion         := GetProcAddress(LibHandle,'APIVersion');
+
         GetMemoryFormat    := GetProcAddress(LibHandle,'GetMemoryFormat');
         GetFileFormat      := GetProcAddress(LibHandle,'GetFileFormat');
         IsEncryptedMemory  := GetProcAddress(LibHandle,'IsEncryptedMemory');

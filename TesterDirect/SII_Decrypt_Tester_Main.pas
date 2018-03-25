@@ -36,6 +36,8 @@ try
     begin
       TestStream := TMemoryStream.Create;
       try
+        WriteLn('APIVersion: 0x',Format('%.8x',[Exp_APIVersion]));
+        WriteLn;
         TestStream.LoadFromFile(ParamStr(1));
         WriteLn('Exp_GetMemoryFormat    ',Exp_GetMemoryFormat(TestStream.Memory,TestStream.Size));
         WriteLn('Exp_GetFileFormat      ',Exp_GetFileFormat(PUTF8Char(StrPrep(ParamStr(1)))));
