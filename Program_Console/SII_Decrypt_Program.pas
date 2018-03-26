@@ -146,7 +146,7 @@ try
         WriteLn;
         Write('Press enter to continue...'); ReadLn;
       end;
-    readln;  
+  
   finally
     CMDParser.Free;
   end;
