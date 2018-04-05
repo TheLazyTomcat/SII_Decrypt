@@ -1225,9 +1225,9 @@ var
 begin
 DoChanging;
 SetCapacity(Strings.Count);
+fCount := Strings.Count;
 For i := LowIndex to HighIndex do
   fStrings[i] := Strings[i];
-fCount := Strings.Count;
 fSorted := False;
 DoChange;
 end;
@@ -1262,9 +1262,9 @@ var
 begin
 DoChanging;
 SetCapacity(Strings.Count);
+fCount := Strings.Count;
 For i := LowIndex to HighIndex do
   fStrings[i] := ConvertStringTo(Strings[i]);
-fCount := Strings.Count;
 fSorted := False;
 DoChange;
 end;
@@ -1277,7 +1277,7 @@ var
 begin
 DoChanging;
 SetCapacity(Length(Strings));
-For i := LowIndex to HighIndex do
+For i := Low(Strings) to High(Strings) do
   fStrings[i] := ConvertStringTo(Strings[i]);
 fCount := Length(Strings);
 fSorted := False;

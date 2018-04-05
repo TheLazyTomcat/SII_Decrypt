@@ -45,7 +45,7 @@ type
     { Private declarations }
   protected
     ProcessingThread: TSII_DecryptProcessThread;
-    procedure ProgressHandler(Sender: TObject; Progress: Single);
+    procedure ProgressHandler(Sender: TObject; Progress: Double);
     procedure EnableOptions(Enable: Boolean);
   public
     { Public declarations }
@@ -65,7 +65,7 @@ implementation
 uses
   TaskbarProgress, WinFileInfo;
 
-procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Single);
+procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Double);
 var
   TempStr:  String;
   NewPos:   Integer;

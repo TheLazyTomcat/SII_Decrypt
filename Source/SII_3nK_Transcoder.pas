@@ -57,8 +57,8 @@ const
 type
   TSII_3nK_ProcRoutine = procedure(Input, Output: TStream; RectifySize: Boolean = True) of object;
 
-  TSII_3nK_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
-  TSII_3nK_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+  TSII_3nK_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
+  TSII_3nK_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
 {===============================================================================
     TSII_3nK_Transcoder - declaration
@@ -70,7 +70,7 @@ type
     fOnProgressCallback:  TSII_3nK_ProgressCallback;
     Function GetKey(Index: Integer): Byte;
   protected
-    procedure DoProgress(Progress: Single); virtual;
+    procedure DoProgress(Progress: Double); virtual;
     procedure TranscodeBuffer(var Buff; Size: TMemSize; Seed: Int64); virtual;
     procedure ProcessFile(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
     procedure ProcessFileInMemory(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
@@ -126,7 +126,7 @@ end;
     TSII_3nK_Transcoder - protected methods
 -------------------------------------------------------------------------------}
 
-procedure TSII_3nK_Transcoder.DoProgress(Progress: Single);
+procedure TSII_3nK_Transcoder.DoProgress(Progress: Double);
 begin
 If Assigned(fOnProgressEvent) then
   fOnProgressEvent(Self,Progress);

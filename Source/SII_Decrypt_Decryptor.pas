@@ -65,8 +65,8 @@ const
   SII_PRGS_STAGELEN_DECODE  = 90;
 
 type
-  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
-  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
+  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
   TSII_Decryptor = class(TObject)
   private
@@ -77,9 +77,9 @@ type
     fOnProgressEvent:     TSII_ProgressEvent;
     fOnProgressCallback:  TSII_ProgressCallback;
   protected
-    procedure DoProgress(Sender: TObject; Progress: Single); virtual;
-    procedure DecryptProgressHandler(Sender: TObject; Progress: Single); virtual;
-    procedure DecodeProgressHandler(Sender: TObject; Progress: Single); virtual;
+    procedure DoProgress(Sender: TObject; Progress: Double); virtual;
+    procedure DecryptProgressHandler(Sender: TObject; Progress: Double); virtual;
+    procedure DecodeProgressHandler(Sender: TObject; Progress: Double); virtual;
     procedure DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader); virtual;
   public
     constructor Create;
@@ -164,7 +164,7 @@ end;
 {   TSII_Decryptor - protected methods                                         }
 {------------------------------------------------------------------------------}
 
-procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Single);
+procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Double);
 begin
 If fReportProgress then
   begin
@@ -177,14 +177,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
+procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
+procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
 end;

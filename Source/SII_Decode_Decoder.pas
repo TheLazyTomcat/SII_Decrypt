@@ -36,10 +36,10 @@ const
 type
   TSIIBin_ProgressType = (ptLoading,ptConverting,ptStreaming);
 
-  TSIIBin_ProgressTypeEvent    = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType) of object;
-  TSIIBin_ProgressEvent        = procedure(Sender: TObject; Progress: Single) of object;
-  TSIIBin_ProgressTypeCallback = procedure(Sender: TObject; Progress: Single; ProgressType: TSIIBin_ProgressType);
-  TSIIBin_ProgressCallback     = procedure(Sender: TObject; Progress: Single);
+  TSIIBin_ProgressTypeEvent    = procedure(Sender: TObject; Progress: Double; ProgressType: TSIIBin_ProgressType) of object;
+  TSIIBin_ProgressEvent        = procedure(Sender: TObject; Progress: Double) of object;
+  TSIIBin_ProgressTypeCallback = procedure(Sender: TObject; Progress: Double; ProgressType: TSIIBin_ProgressType);
+  TSIIBin_ProgressCallback     = procedure(Sender: TObject; Progress: Double);
 
 {==============================================================================}
 {   TSIIBin_Decoder - declaration                                              }
@@ -63,7 +63,7 @@ type
     Function IndexOfLayout(LayoutID: TSIIBin_LayoutID): Integer; virtual;
     Function LoadLayoutBlock(Stream: TStream): Boolean; virtual;
     procedure LoadDataBlock(Stream: TStream; LayoutID: TSIIBin_LayoutID); virtual;
-    procedure DoProgress(Progress: Single; ProgressType: TSIIBin_ProgressType); virtual;
+    procedure DoProgress(Progress: Double; ProgressType: TSIIBin_ProgressType); virtual;
   public
     class Function IsBinarySIIStream(Stream: TStream): Boolean; virtual;
     class Function IsBinarySIIFile(const FileName: String): Boolean; virtual;
@@ -247,7 +247,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSIIBin_Decoder.DoProgress(Progress: Single; ProgressType: TSIIBin_ProgressType);
+procedure TSIIBin_Decoder.DoProgress(Progress: Double; ProgressType: TSIIBin_ProgressType);
 begin
 If Assigned(fOnProgressTypeEvent) then
   fOnProgressTypeEvent(Self,Progress,ProgressType);

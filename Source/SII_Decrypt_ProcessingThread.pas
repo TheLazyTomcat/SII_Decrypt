@@ -34,7 +34,7 @@ type
     fInputFile:     String;
     fOutputFile:    String;
     fDecryptor:     TSII_Decryptor;
-    fProgress_sync: Single;
+    fProgress_sync: Double;
     fErrorText:     String;
     fOnProgress:    TSII_ProgressEvent;
     fOpt_InMemProc: Boolean;
@@ -42,7 +42,7 @@ type
     procedure SetOption(Option: Integer; Value: Boolean); virtual;
   protected
     procedure sync_DoProgress; virtual;
-    procedure DecryptorProgressHandler(Sender: TObject; Progress: Single); virtual;
+    procedure DecryptorProgressHandler(Sender: TObject; Progress: Double); virtual;
     procedure Execute; override;
   public
     constructor Create;
@@ -97,7 +97,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSII_DecryptProcessThread.DecryptorProgressHandler(Sender: TObject; Progress: Single);
+procedure TSII_DecryptProcessThread.DecryptorProgressHandler(Sender: TObject; Progress: Double);
 begin
 // limit number of synchronization to 1000
 If not SameValue(Progress,fProgress_sync,1e-3) then

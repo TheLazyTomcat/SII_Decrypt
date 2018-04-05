@@ -9,9 +9,9 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2017-07-26
+  ©František Milt 2018-04-05
 
-  Version 1.1
+  Version 1.1.1
 
   All combinations of allowed key and block sizes are implemented and should be
   compatible with reference Rijndael cipher.
@@ -99,7 +99,7 @@ type
   TBCPadding         = (padZeroes,padPKCS7,padANSIX923,padISO10126,padISOIEC7816_4);
 
   TBCUpdateProc = procedure(const Input; out Output) of object;
-  TBCProgressEvent = procedure(Sender: TObject; Progress: Single) of object;
+  TBCProgressEvent = procedure(Sender: TObject; Progress: Double) of object;
 
   TBlockCipher = class(TObject)
   private
@@ -131,7 +131,7 @@ type
     procedure Update_CTR(const Input; out Output); virtual;
     procedure ProcessBuffer(Buffer: Pointer; Size: TMemSize); virtual;
     procedure PrepareUpdateProc; virtual;
-    procedure DoProgress(Progress: Single); virtual;
+    procedure DoProgress(Progress: Double); virtual;
     procedure CipherInit; virtual; abstract;
     procedure CipherFinal; virtual; abstract;
     procedure CipherEncrypt(const Input; out Output); virtual; abstract;
@@ -517,7 +517,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TBlockCipher.DoProgress(Progress: Single);
+procedure TBlockCipher.DoProgress(Progress: Double);
 begin
 If Assigned(fOnProgress) then fOnProgress(Self,Progress);
 end;
