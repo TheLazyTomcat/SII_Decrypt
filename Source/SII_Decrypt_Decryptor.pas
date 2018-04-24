@@ -44,15 +44,9 @@ type
   end;
   PSIIHeader = ^TSIIHeader;
 
-  TSIIResult = (rGenericError    = -1,
-                rSuccess         = 0,
-                rFormatPlainText = 1,
-                rFormatEncrypted = 2,
-                rFormatBinary    = 3,
-                rFormat3nK       = 4,
-                rFormatUnknown   = 10,
-                rTooFewData      = 11,
-                rBufferTooSmall  = 12);
+  TSIIResult = (rGenericError, rSuccess, rFormatPlainText, rFormatEncrypted,
+                rFormatBinary, rFormat3nK, rFormatUnknown, rTooFewData,
+                rBufferTooSmall);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
@@ -113,13 +107,14 @@ type
 {   Auxiliary functions                                                        }
 {==============================================================================}
 
-Function GetResultAsText(ResultCode: TSIIResult): String;  
+Function GetResultAsInt(ResultCode: TSIIResult): Int32;
+Function GetResultAsText(ResultCode: TSIIResult): String;
 
 implementation
 
 uses
-  SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, SII_Decode_Decoder,
-  SII_3nK_Transcoder, ZLibCommon, ZLibStatic
+  SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, ZLibCommon, ZLibStatic,
+  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Header
 {$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazFileUtils
 {$ENDIF};
@@ -135,6 +130,25 @@ begin
 {$ELSE}
   Result := SysUtils.ExpandFileName(Path);
 {$ENDIF}
+end;
+
+//------------------------------------------------------------------------------
+
+Function GetResultAsInt(ResultCode: TSIIResult): Int32;
+begin
+case ResultCode of
+  rSuccess:         Result := SIIDEC_RESULT_SUCCESS;
+  rFormatPlainText: Result := SIIDEC_RESULT_FORMAT_PLAINTEXT;
+  rFormatEncrypted: Result := SIIDEC_RESULT_FORMAT_ENCRYPTED;
+  rFormatBinary:    Result := SIIDEC_RESULT_FORMAT_BINARY;
+  rFormat3nK:       Result := SIIDEC_RESULT_FORMAT_3NK;
+  rFormatUnknown:   Result := SIIDEC_RESULT_FORMAT_UNKNOWN;
+  rTooFewData:      Result := SIIDEC_RESULT_TOO_FEW_DATA;
+  rBufferTooSmall:  Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
+else
+  {rGenericError}
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
 end;
 
 //------------------------------------------------------------------------------

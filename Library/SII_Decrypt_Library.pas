@@ -84,7 +84,7 @@ try
     ReraiseExceptions := False;
     MemStream := TStaticMemoryStream.Create(Mem,Size);
     try
-      Result := Ord(GetStreamFormat(MemStream));
+      Result := GetResultAsInt(GetStreamFormat(MemStream));
     finally
       MemStream.Free;
     end;
@@ -104,7 +104,7 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(FileName)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(FileName)));
   finally
     Free;
   end;
@@ -194,7 +194,7 @@ try
         ReraiseExceptions := False;
         InMemStream := TStaticMemoryStream.Create(Input,InSize);
         try
-          Result := Ord(GetStreamFormat(InMemStream));
+          Result := GetResultAsInt(GetStreamFormat(InMemStream));
           If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
             begin
               InMemStream.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
@@ -205,7 +205,7 @@ try
                     begin
                       OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                       try
-                        Result := Ord(DecryptStream(InMemStream,OutMemStream,True));
+                        Result := GetResultAsInt(DecryptStream(InMemStream,OutMemStream,True));
                         If Result = SIIDEC_RESULT_SUCCESS then
                           OutSize^ := TMemSize(OutMemStream.Position);
                       finally
@@ -241,9 +241,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
-      Result := Ord(DecryptFile(StrConv(InputFile),StrConv(OutputFile)));
+      Result := GetResultAsInt(DecryptFile(StrConv(InputFile),StrConv(OutputFile)));
   finally
     Free;
   end;
@@ -260,9 +260,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
-      Result := Ord(DecryptFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
+      Result := GetResultAsInt(DecryptFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
   finally
     Free;
   end;
@@ -285,7 +285,7 @@ try
     ReraiseExceptions := False;
     InMemStream := TStaticMemoryStream.Create(Input,InSize);
     try
-      Result := Ord(GetStreamFormat(InMemStream));
+      Result := GetResultAsInt(GetStreamFormat(InMemStream));
       If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
         begin
           If Assigned(Output) then
@@ -310,7 +310,7 @@ try
                 begin
                   OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                   try
-                    Result := Ord(DecodeStream(InMemStream,OutMemStream,True));
+                    Result := GetResultAsInt(DecodeStream(InMemStream,OutMemStream,True));
                     If Result = SIIDEC_RESULT_SUCCESS then
                       OutSize^ := TMemSize(OutMemStream.Position);
                   finally
@@ -322,7 +322,7 @@ try
             begin
               HelperStream := TMemoryStream.Create;
               try
-                Result := Ord(DecodeStream(InMemStream,HelperStream,False));
+                Result := GetResultAsInt(DecodeStream(InMemStream,HelperStream,False));
                 If Result = SIIDEC_RESULT_SUCCESS then
                   OutSize^ := TMemSize(HelperStream.Size);
               finally
@@ -363,9 +363,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-      Result := Ord(DecodeFile(StrConv(InputFile),StrConv(OutputFile)));
+      Result := GetResultAsInt(DecodeFile(StrConv(InputFile),StrConv(OutputFile)));
   finally
     Free;
   end;
@@ -382,9 +382,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-      Result := Ord(DecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
+      Result := GetResultAsInt(DecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
   finally
     Free;
   end;
@@ -407,7 +407,7 @@ try
     ReraiseExceptions := False;
     InMemStream := TStaticMemoryStream.Create(Input,InSize);
     try
-      Result := Ord(GetStreamFormat(InMemStream));
+      Result := GetResultAsInt(GetStreamFormat(InMemStream));
       If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
         begin
           If Assigned(Output) then
@@ -432,7 +432,7 @@ try
                 begin
                   OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                   try
-                    Result := Ord(DecryptAndDecodeStream(InMemStream,OutMemStream,True));
+                    Result := GetResultAsInt(DecryptAndDecodeStream(InMemStream,OutMemStream,True));
                     If Result = SIIDEC_RESULT_SUCCESS then
                       OutSize^ := TMemSize(OutMemStream.Position);
                   finally
@@ -444,7 +444,7 @@ try
             begin
               HelperStream := TMemoryStream.Create;
               try
-                Result := Ord(DecryptAndDecodeStream(InMemStream,HelperStream,False));
+                Result := GetResultAsInt(DecryptAndDecodeStream(InMemStream,HelperStream,False));
                 If Result = SIIDEC_RESULT_SUCCESS then
                   OutSize^ := TMemSize(HelperStream.Size);
               finally
@@ -485,9 +485,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-      Result := Ord(DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
+      Result := GetResultAsInt(DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
   finally
     Free;
   end;
@@ -504,9 +504,9 @@ try
   with TSII_Decryptor.Create do
   try
     ReraiseExceptions := False;
-    Result := Ord(GetFileFormat(StrConv(InputFile)));
+    Result := GetResultAsInt(GetFileFormat(StrConv(InputFile)));
     If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-      Result := Ord(DecryptAndDecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
+      Result := GetResultAsInt(DecryptAndDecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
   finally
     Free;
   end;

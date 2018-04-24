@@ -9,8 +9,7 @@ program SII_Decrypt;
 
 uses
   Forms,
-  MainForm in '..\MainForm.pas' {fMainForm},
-  SII_Decrypt_ProcessingThread in '..\..\Source\SII_Decrypt_ProcessingThread.pas';
+  MainForm in '..\MainForm.pas' {fMainForm};
 
 {$R *.res}
 

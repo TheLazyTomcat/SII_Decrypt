@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="17"/>
+      <BuildNr Value="18"/>
       <Language Value="0405"/>
       <StringTable Comments="Tool for SII files decryption/decoding" CompanyName="František Milt" FileDescription="SII Decrypt - GUI program" InternalName="SII Decrypt" LegalCopyright="© 2016 - 2018 František Milt" LegalTrademarks="SII Decrypt" OriginalFilename="SII_Decrypt.exe" ProductName="SII Decrypt" ProductVersion="1.4.0"/>
     </VersionInfo>
@@ -34,7 +34,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -73,7 +73,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -119,7 +119,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -189,7 +189,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs"/>
+      <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

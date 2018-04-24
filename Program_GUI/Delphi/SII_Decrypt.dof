@@ -94,7 +94,7 @@ OutputDir=.\Release\win_x86
 UnitOutputDir=.\DCU
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\Source;..\..\Source\Libs
+SearchPath=..\..\Headers;..\..\Source;..\..\Source\Libs
 Packages=vcl;rtl;vclx;VclSmp;vclshlctrls;_AltFixUnit;_GlobalInstanceControl;_XPAdminMan;AdvCircularProgressPkgD7;TMSMenusD7;AdvShaperPkgD7;_alignedit;_ALProgressBar;_SuperLabel;_ButtonComps;_PJVersionInfo;EZJTexturePanelD6;FormShapePkgD7;GradientLabelPkgD7;_adpInstanceControl;_Label3D;_lfreg;_FadeWorks;_MMJLabel;PNGDelphi;_AlphaShowHide;_QProgBar;_ShadowLabel;_VistaAltFixUnit;shape;_XiButton;GR32_D7
 Conditionals=
 DebugSourceDirs=
@@ -111,7 +111,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=4
 Release=0
-Build=5
+Build=6
 Debug=0
 PreRelease=0
 Special=0
@@ -122,7 +122,7 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=SII Decrypt - GUI program
-FileVersion=1.4.0.5
+FileVersion=1.4.0.6
 InternalName=SII Decrypt
 LegalCopyright=© 2016 - 2018 František Milt
 LegalTrademarks=SII Decrypt
@@ -134,10 +134,11 @@ Comments=Tool for SII files decryption/decoding
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
-Item0=..\..\Source;..\..\Source\Libs
-Item1=..\Source;..\Source\Libs
-Item2=..\Source\Libs
+Count=4
+Item0=..\..\Headers;..\..\Source;..\..\Source\Libs
+Item1=..\..\Source;..\..\Source\Libs
+Item2=..\Source;..\Source\Libs
+Item3=..\Source\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=.\DCU
