@@ -172,6 +172,20 @@ implementation
 
 uses
   SysUtils, StrRect;
+  
+{===============================================================================
+    Implementation constants
+===============================================================================}
+
+const
+  def_CommandIntroChar = '-';
+  def_QuoteChar        = '"';
+  def_DelimiterChar    = ',';
+  def_CmdTerminateChar = ';';
+
+  CHARS_SHORTCOMMAND = ['a'..'z','A'..'Z'];
+  CHARS_LONGCOMMAND  = ['a'..'z','A'..'Z','0'..'9','_','-'];
+  CHARS_WHITESPACE   = [#0..#32];  
 
 {===============================================================================
     Auxiliary functions
@@ -195,20 +209,6 @@ else
 end;
 
 {$IFEND}
-
-{===============================================================================
-    Implementation constants
-===============================================================================}
-
-const
-  def_CommandIntroChar = '-';
-  def_QuoteChar        = '"';
-  def_DelimiterChar    = ',';
-  def_CmdTerminateChar = ';';
-
-  CHARS_SHORTCOMMAND = ['a'..'z','A'..'Z'];
-  CHARS_LONGCOMMAND  = ['a'..'z','A'..'Z','0'..'9','_','-'];
-  CHARS_WHITESPACE   = [#0..#32];
 
 {===============================================================================
 --------------------------------------------------------------------------------

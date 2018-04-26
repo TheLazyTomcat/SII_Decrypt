@@ -100,6 +100,11 @@ uses
   SysUtils,
   StrRect, BinaryStreaming, MemoryBuffer;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                TSII_3nK_Transcoder
@@ -142,8 +147,8 @@ var
 begin
 If Size > 0 then
   For i := 0 to Pred(Size) do
-    {%H-}PByte({%H-}PtrUInt(@Buff) + PtrUInt(i))^ :=
-      {%H-}PByte({%H-}PtrUInt(@Buff) + PtrUInt(i))^ xor SII_3nK_KeyTable[Byte(Seed + i)];
+    PByte(PtrUInt(@Buff) + PtrUInt(i))^ :=
+      PByte(PtrUInt(@Buff) + PtrUInt(i))^ xor SII_3nK_KeyTable[Byte(Seed + i)];
 end;
 
 //------------------------------------------------------------------------------
@@ -207,7 +212,7 @@ var
 begin
 If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
   begin
-    Stream_ReadBuffer(Stream,Header{%H-},SizeOf(Header),False);
+    Stream_ReadBuffer(Stream,Header,SizeOf(Header),False);
     Result := Header.Signature = SII_3nK_Signature;
     If Result then
       fSeed := Header.Seed;
@@ -300,7 +305,7 @@ If Input <> Output then
       begin
         DoProgress(0.0);
         // read header
-        Input.ReadBuffer(Header{%H-},SizeOf(Header));
+        Input.ReadBuffer(Header,SizeOf(Header));
         ActualReg := Int64(Header.Seed);
         fSeed := Header.Seed;        
         // output preallocation

@@ -66,6 +66,11 @@ implementation
 uses
   SysUtils, StrRect, BinaryStreaming, ExplicitStringListsParser;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                   T*StringList

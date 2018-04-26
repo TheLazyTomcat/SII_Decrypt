@@ -76,7 +76,7 @@ type
     class procedure Error(const Msg: string; Data: array of const); virtual;
     class Function GetSystemEndianness: TStringEndianness; virtual;
     class procedure WideSwapEndian(Data: PWideChar; Count: TStrSize); virtual;
-    procedure SetUpdateState({%H-}Updating: Boolean); virtual;
+    procedure SetUpdateState(Updating: Boolean); virtual;
     Function CompareItems(Index1,Index2: Integer): Integer; virtual; abstract;
     Function GetWriteSize: UInt64; virtual; abstract;
     procedure WriteItemToStream(Stream: TStream; Index: Integer; Endianness: TStringEndianness); virtual; abstract;
@@ -121,6 +121,10 @@ implementation
 
 uses
   StrRect;
+
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
 
 {===============================================================================
     Auxiliary functions - implementation

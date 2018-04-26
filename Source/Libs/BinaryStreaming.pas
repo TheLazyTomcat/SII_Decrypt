@@ -22,6 +22,7 @@ unit BinaryStreaming;
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$DEFINE FPC_DisableWarns}
 {$ENDIF}
 
 interface
@@ -570,6 +571,13 @@ implementation
 uses
   SysUtils, StrRect;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF}  // Conversion between ordinals and pointers is not portable
+  {$WARN 4056 OFF}  // Conversion between ordinals and pointers is not portable
+  {$WARN 5057 OFF}  // Local variable "$1" does not seem to be initialized
+  {$WARN 5058 OFF}  // Variable "$1" does not seem to be initialized
+{$ENDIF}
+
 const
   PARAM_ANSISTRING    = -1;
   PARAM_UNICODESTRING = -2;
@@ -586,6 +594,7 @@ const
 {------------------------------------------------------------------------------}
 
 {$IFDEF ENDIAN_BIG}
+
 type
   Int32Rec = packed record
     LoWord: UInt16;
@@ -689,12 +698,11 @@ begin
 Result := 0;
 For i := 1 to Length do
   begin
-    Inc(Result,TMemSize(Stream.Read({%H-}Buff,SizeOf(UInt16))));
+    Inc(Result,TMemSize(Stream.Read(Buff,SizeOf(UInt16))));
     Data^ := SwapEndian(Buff);
     Inc(Data);
   end;
 end;
-
 
 {$ENDIF ENDIAN_BIG}
 
@@ -708,14 +716,14 @@ Function Ptr_WriteBool(var Dest: Pointer; Value: ByteBool; Advance: Boolean): TM
 begin
 ByteBool(Dest^) := Value;
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteBool(Dest: Pointer; Value: ByteBool): TMemSize;
 begin
-Result := Ptr_WriteBool({%H-}Dest,Value,False);
+Result := Ptr_WriteBool(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -738,14 +746,14 @@ Function Ptr_WriteInt8(var Dest: Pointer; Value: Int8; Advance: Boolean): TMemSi
 begin
 Int8(Dest^) := Value;
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteInt8(Dest: Pointer; Value: Int8): TMemSize;
 begin
-Result := Ptr_WriteInt8({%H-}Dest,Value,False);
+Result := Ptr_WriteInt8(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -754,14 +762,14 @@ Function Ptr_WriteUInt8(var Dest: Pointer; Value: UInt8; Advance: Boolean): TMem
 begin
 UInt8(Dest^) := Value;
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
  
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteUInt8(Dest: Pointer; Value: UInt8): TMemSize;   
 begin
-Result := Ptr_WriteUInt8({%H-}Dest,Value,False);
+Result := Ptr_WriteUInt8(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -774,14 +782,14 @@ Int16(Dest^) := Int16(SwapEndian(UInt16(Value)));
 Int16(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
   
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteInt16(Dest: Pointer; Value: Int16): TMemSize;  
 begin
-Result := Ptr_WriteInt16({%H-}Dest,Value,False);
+Result := Ptr_WriteInt16(Dest,Value,False);
 end;
  
 //------------------------------------------------------------------------------
@@ -794,14 +802,14 @@ UInt16(Dest^) := SwapEndian(Value);
 UInt16(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
   
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteUInt16(Dest: Pointer; Value: UInt16): TMemSize;       
 begin
-Result := Ptr_WriteUInt16({%H-}Dest,Value,False);
+Result := Ptr_WriteUInt16(Dest,Value,False);
 end;
  
 //------------------------------------------------------------------------------
@@ -814,14 +822,14 @@ Int32(Dest^) := Int32(SwapEndian(UInt32(Value)));
 Int32(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
  
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteInt32(Dest: Pointer; Value: Int32): TMemSize;    
 begin
-Result := Ptr_WriteInt32({%H-}Dest,Value,False);
+Result := Ptr_WriteInt32(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -834,14 +842,14 @@ UInt32(Dest^) := SwapEndian(Value);
 UInt32(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
  
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteUInt32(Dest: Pointer; Value: UInt32): TMemSize;
 begin
-Result := Ptr_WriteUInt32({%H-}Dest,Value,False);
+Result := Ptr_WriteUInt32(Dest,Value,False);
 end;
   
 //------------------------------------------------------------------------------
@@ -854,14 +862,14 @@ Int64(Dest^) := Int64(SwapEndian(UInt64(Value)));
 Int64(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
   
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteInt64(Dest: Pointer; Value: Int64): TMemSize; 
 begin
-Result := Ptr_WriteInt64({%H-}Dest,Value,False);
+Result := Ptr_WriteInt64(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -874,14 +882,14 @@ UInt64(Dest^) := SwapEndian(Value);
 UInt64(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteUInt64(Dest: Pointer; Value: UInt64): TMemSize;
 begin
-Result := Ptr_WriteUInt64({%H-}Dest,Value,False);
+Result := Ptr_WriteUInt64(Dest,Value,False);
 end;
 
 //==============================================================================
@@ -894,14 +902,14 @@ Float32(Dest^) := SwapEndian(Value);
 Float32(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteFloat32(Dest: Pointer; Value: Float32): TMemSize;
 begin
-Result := Ptr_WriteFloat32({%H-}Dest,Value,False);
+Result := Ptr_WriteFloat32(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -914,14 +922,14 @@ Float64(Dest^) := SwapEndian(Value);
 Float64(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteFloat64(Dest: Pointer; Value: Float64): TMemSize;
 begin
-Result := Ptr_WriteFloat32({%H-}Dest,Value,False);
+Result := Ptr_WriteFloat32(Dest,Value,False);
 end;
 
 //==============================================================================
@@ -930,14 +938,14 @@ Function Ptr_WriteAnsiChar(var Dest: Pointer; Value: AnsiChar; Advance: Boolean)
 begin
 AnsiChar(Dest^) := Value;
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteAnsiChar(Dest: Pointer; Value: AnsiChar): TMemSize;
 begin
-Result := Ptr_WriteAnsiChar({%H-}Dest,Value,False);
+Result := Ptr_WriteAnsiChar(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -946,14 +954,14 @@ Function Ptr_WriteUTF8Char(var Dest: Pointer; Value: UTF8Char; Advance: Boolean)
 begin
 UTF8Char(Dest^) := Value;
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteUTF8Char(Dest: Pointer; Value: UTF8Char): TMemSize;
 begin
-Result := Ptr_WriteUTF8Char({%H-}Dest,Value,False);
+Result := Ptr_WriteUTF8Char(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -966,14 +974,14 @@ WideChar(Dest^) := WideChar(SwapEndian(UInt16(Value)));
 WideChar(Dest^) := Value;
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteWideChar(Dest: Pointer; Value: WideChar): TMemSize;
 begin
-Result := Ptr_WriteWideChar({%H-}Dest,Value,False);
+Result := Ptr_WriteWideChar(Dest,Value,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -991,7 +999,7 @@ end;
 
 Function Ptr_WriteChar(Dest: Pointer; Value: Char): TMemSize;
 begin
-Result := Ptr_WriteChar({%H-}Dest,Value,False);
+Result := Ptr_WriteChar(Dest,Value,False);
 end;
 
 //==============================================================================
@@ -1000,8 +1008,8 @@ Function Ptr_WriteShortString(var Dest: Pointer; const Str: ShortString; Advance
 begin
 If Assigned(Dest) then
   begin
-    Result := Ptr_WriteBuffer(Dest,{%H-}Pointer({%H-}PtrUInt(Addr(Str[1])) - 1)^,Length(Str) + 1, Advance);
-    If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+    Result := Ptr_WriteBuffer(Dest,Pointer(PtrUInt(Addr(Str[1])) - 1)^,Length(Str) + 1, Advance);
+    If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
   end
 else
   Result := Length(Str) + 1;
@@ -1011,7 +1019,7 @@ end;
 
 Function Ptr_WriteShortString(Dest: Pointer; const Str: ShortString): TMemSize;
 begin
-Result := Ptr_WriteShortString({%H-}Dest,Str,False);
+Result := Ptr_WriteShortString(Dest,Str,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1034,7 +1042,7 @@ end;
 
 Function Ptr_WriteAnsiString(Dest: Pointer; const Str: AnsiString): TMemSize;
 begin
-Result := Ptr_WriteAnsiString({%H-}Dest,Str,False);
+Result := Ptr_WriteAnsiString(Dest,Str,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1062,7 +1070,7 @@ end;
 
 Function Ptr_WriteUnicodeString(Dest: Pointer; const Str: UnicodeString): TMemSize;
 begin
-Result := Ptr_WriteUnicodeString({%H-}Dest,Str,False);
+Result := Ptr_WriteUnicodeString(Dest,Str,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1089,7 +1097,7 @@ end;
 
 Function Ptr_WriteWideString(Dest: Pointer; const Str: WideString): TMemSize;
 begin
-Result := Ptr_WriteWideString({%H-}Dest,Str,False);
+Result := Ptr_WriteWideString(Dest,Str,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1112,7 +1120,7 @@ end;
 
 Function Ptr_WriteUTF8String(Dest: Pointer; const Str: UTF8String): TMemSize;
 begin
-Result := Ptr_WriteUTF8String({%H-}Dest,Str,False);
+Result := Ptr_WriteUTF8String(Dest,Str,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1126,7 +1134,7 @@ end;
 
 Function Ptr_WriteString(Dest: Pointer; const Str: String): TMemSize;
 begin
-Result := Ptr_WriteString({%H-}Dest,Str,False);
+Result := Ptr_WriteString(Dest,Str,False);
 end;
 
 //==============================================================================
@@ -1135,14 +1143,14 @@ Function Ptr_WriteBuffer(var Dest: Pointer; const Buffer; Size: TMemSize; Advanc
 begin
 Move(Buffer,Dest^,Size);
 Result := Size;
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteBuffer(Dest: Pointer; const Buffer; Size: TMemSize): TMemSize;
 begin
-Result := Ptr_WriteBuffer({%H-}Dest,Buffer,Size,False);
+Result := Ptr_WriteBuffer(Dest,Buffer,Size,False);
 end;
 
 //==============================================================================
@@ -1154,14 +1162,14 @@ begin
 Result := 0;
 For i := Low(Value) to High(Value) do
   Inc(Result,Ptr_WriteUInt8(Dest,Value[i],True));
-If not Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) - Result);
+If not Advance then Dest := Pointer(PtrUInt(Dest) - Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_WriteBytes(Dest: Pointer; const Value: array of UInt8): TMemSize;
 begin
-Result := Ptr_WriteBytes({%H-}Dest,Value,False);
+Result := Ptr_WriteBytes(Dest,Value,False);
 end;
 
 //==============================================================================
@@ -1170,14 +1178,14 @@ Function Ptr_FillBytes(var Dest: Pointer; Count: TMemSize; Value: UInt8; Advance
 begin
 FillChar(Dest^,Count,Value);
 Result := Count;
-If Advance then Dest := {%H-}Pointer({%H-}PtrUInt(Dest) + Result);
+If Advance then Dest := Pointer(PtrUInt(Dest) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_FillBytes(Dest: Pointer; Count: TMemSize; Value: UInt8): TMemSize;
 begin
-Result := Ptr_FillBytes({%H-}Dest,Count,Value,False);
+Result := Ptr_FillBytes(Dest,Count,Value,False);
 end;
 
 {------------------------------------------------------------------------------}
@@ -1190,14 +1198,14 @@ Function Ptr_ReadBool(var Src: Pointer; out Value: ByteBool; Advance: Boolean): 
 begin
 Value := ByteBool(Src^);
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadBool(Src: Pointer; out Value: ByteBool): TMemSize;
 begin
-Result := Ptr_ReadBool({%H-}Src,Value,False);
+Result := Ptr_ReadBool(Src,Value,False);
 end;
  
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1211,7 +1219,7 @@ end;
 
 Function Ptr_ReadBool(Src: Pointer): ByteBool;
 begin
-Ptr_ReadBool({%H-}Src,Result,False);
+Ptr_ReadBool(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1228,7 +1236,7 @@ end;
 
 Function Ptr_ReadBoolean(Src: Pointer; out Value: Boolean): TMemSize;
 begin
-Result := Ptr_ReadBoolean({%H-}Src,Value,False);
+Result := Ptr_ReadBoolean(Src,Value,False);
 end;
 
 //==============================================================================
@@ -1237,14 +1245,14 @@ Function Ptr_ReadInt8(var Src: Pointer; out Value: Int8; Advance: Boolean): TMem
 begin
 Value := Int8(Src^);
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadInt8(Src: Pointer; out Value: Int8): TMemSize;
 begin
-Result := Ptr_ReadInt8({%H-}Src,Value,False);
+Result := Ptr_ReadInt8(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1258,7 +1266,7 @@ end;
 
 Function Ptr_ReadInt8(Src: Pointer): Int8;
 begin
-Ptr_ReadInt8({%H-}Src,Result,False);
+Ptr_ReadInt8(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1267,14 +1275,14 @@ Function Ptr_ReadUInt8(var Src: Pointer; out Value: UInt8; Advance: Boolean): TM
 begin
 Value := UInt8(Src^);
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadUInt8(Src: Pointer; out Value: UInt8): TMemSize;
 begin
-Result := Ptr_ReadUInt8({%H-}Src,Value,False);
+Result := Ptr_ReadUInt8(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1288,7 +1296,7 @@ end;
 
 Function Ptr_ReadUInt8(Src: Pointer): UInt8;
 begin
-Ptr_ReadUInt8({%H-}Src,Result,False);
+Ptr_ReadUInt8(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1301,14 +1309,14 @@ Value := Int16(SwapEndian(UInt16(Src^)));
 Value := Int16(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadInt16(Src: Pointer; out Value: Int16): TMemSize;
 begin
-Result := Ptr_ReadInt16({%H-}Src,Value,False);
+Result := Ptr_ReadInt16(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1322,7 +1330,7 @@ end;
 
 Function Ptr_ReadInt16(Src: Pointer): Int16;
 begin
-Ptr_ReadInt16({%H-}Src,Result,False);
+Ptr_ReadInt16(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1335,14 +1343,14 @@ Value := SwapEndian(UInt16(Src^));
 Value := UInt16(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadUInt16(Src: Pointer; out Value: UInt16): TMemSize;
 begin
-Result := Ptr_ReadUInt16({%H-}Src,Value,False);
+Result := Ptr_ReadUInt16(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1356,7 +1364,7 @@ end;
 
 Function Ptr_ReadUInt16(Src: Pointer): UInt16;
 begin
-Ptr_ReadUInt16({%H-}Src,Result,False);
+Ptr_ReadUInt16(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1369,14 +1377,14 @@ Value := Int32(SwapEndian(UInt32(Src^)));
 Value := Int32(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadInt32(Src: Pointer; out Value: Int32): TMemSize;
 begin
-Result := Ptr_ReadInt32({%H-}Src,Value,False);
+Result := Ptr_ReadInt32(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1390,7 +1398,7 @@ end;
 
 Function Ptr_ReadInt32(Src: Pointer): Int32;
 begin
-Ptr_ReadInt32({%H-}Src,Result,False);
+Ptr_ReadInt32(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1403,14 +1411,14 @@ Value := SwapEndian(UInt32(Src^));
 Value := UInt32(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadUInt32(Src: Pointer; out Value: UInt32): TMemSize;
 begin
-Result := Ptr_ReadUInt32({%H-}Src,Value,False);
+Result := Ptr_ReadUInt32(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1424,7 +1432,7 @@ end;
 
 Function Ptr_ReadUInt32(Src: Pointer): UInt32;
 begin
-Ptr_ReadUInt32({%H-}Src,Result,False);
+Ptr_ReadUInt32(Src,Result,False);
 end;
  
 //------------------------------------------------------------------------------
@@ -1437,14 +1445,14 @@ Value := Int64(SwapEndian(UInt64(Src^)));
 Value := Int64(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadInt64(Src: Pointer; out Value: Int64): TMemSize;
 begin
-Result := Ptr_ReadInt64({%H-}Src,Value,False);
+Result := Ptr_ReadInt64(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1458,7 +1466,7 @@ end;
 
 Function Ptr_ReadInt64(Src: Pointer): Int64;
 begin
-Ptr_ReadInt64({%H-}Src,Result,False);
+Ptr_ReadInt64(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1471,14 +1479,14 @@ Value := SwapEndian(UInt64(Src^));
 Value := UInt64(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadUInt64(Src: Pointer; out Value: UInt64): TMemSize;
 begin
-Result := Ptr_ReadUInt64({%H-}Src,Value,False);
+Result := Ptr_ReadUInt64(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1492,7 +1500,7 @@ end;
 
 Function Ptr_ReadUInt64(Src: Pointer): UInt64;
 begin
-Ptr_ReadUInt64({%H-}Src,Result,False);
+Ptr_ReadUInt64(Src,Result,False);
 end;
 
 //==============================================================================
@@ -1505,14 +1513,14 @@ Value := SwapEndian(Float32(Src^));
 Value := Float32(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
  
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadFloat32(Src: Pointer; out Value: Float32): TMemSize;
 begin
-Result := Ptr_ReadFloat32({%H-}Src,Value,False);
+Result := Ptr_ReadFloat32(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1526,7 +1534,7 @@ end;
 
 Function Ptr_ReadFloat32(Src: Pointer): Float32;
 begin
-Ptr_ReadFloat32({%H-}Src,Result,False);
+Ptr_ReadFloat32(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1539,14 +1547,14 @@ Value := SwapEndian(Float64(Src^));
 Value := Float64(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadFloat64(Src: Pointer; out Value: Float64): TMemSize;
 begin
-Result := Ptr_ReadFloat64({%H-}Src,Value,False);
+Result := Ptr_ReadFloat64(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1560,7 +1568,7 @@ end;
 
 Function Ptr_ReadFloat64(Src: Pointer): Float64;
 begin
-Ptr_ReadFloat64({%H-}Src,Result,False);
+Ptr_ReadFloat64(Src,Result,False);
 end;
 
 //==============================================================================
@@ -1569,14 +1577,14 @@ Function Ptr_ReadAnsiChar(var Src: Pointer; out Value: AnsiChar; Advance: Boolea
 begin
 Value := AnsiChar(Src^);
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadAnsiChar(Src: Pointer; out Value: AnsiChar): TMemSize;
 begin
-Result := Ptr_ReadAnsiChar({%H-}Src,Value,False);
+Result := Ptr_ReadAnsiChar(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1590,7 +1598,7 @@ end;
 
 Function Ptr_ReadAnsiChar(Src: Pointer): AnsiChar;
 begin
-Ptr_ReadAnsiChar({%H-}Src,Result,False);
+Ptr_ReadAnsiChar(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1599,14 +1607,14 @@ Function Ptr_ReadUTF8Char(var Src: Pointer; out Value: UTF8Char; Advance: Boolea
 begin
 Value := UTF8Char(Src^);
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadUTF8Char(Src: Pointer; out Value: UTF8Char): TMemSize;
 begin
-Result := Ptr_ReadUTF8Char({%H-}Src,Value,False);
+Result := Ptr_ReadUTF8Char(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1620,7 +1628,7 @@ end;
 
 Function Ptr_ReadUTF8Char(Src: Pointer): UTF8Char;
 begin
-Ptr_ReadUTF8Char({%H-}Src,Result,False);
+Ptr_ReadUTF8Char(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1633,14 +1641,14 @@ Value := WideChar(SwapEndian(UInt16(Src^)));
 Value := WideChar(Src^);
 {$ENDIF}
 Result := SizeOf(Value);
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadWideChar(Src: Pointer; out Value: WideChar): TMemSize;
 begin
-Result := Ptr_ReadWideChar({%H-}Src,Value,False);
+Result := Ptr_ReadWideChar(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1654,7 +1662,7 @@ end;
 
 Function Ptr_ReadWideChar(Src: Pointer): WideChar;
 begin
-Ptr_ReadWideChar({%H-}Src,Result,False);
+Ptr_ReadWideChar(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1672,7 +1680,7 @@ end;
 
 Function Ptr_ReadChar(Src: Pointer; out Value: Char): TMemSize;
 begin
-Result := Ptr_ReadChar({%H-}Src,Value,False);
+Result := Ptr_ReadChar(Src,Value,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1686,7 +1694,7 @@ end;
 
 Function Ptr_ReadChar(Src: Pointer): Char;
 begin
-Ptr_ReadChar({%H-}Src,Result,False);
+Ptr_ReadChar(Src,Result,False);
 end;
 
 //==============================================================================
@@ -1707,7 +1715,7 @@ end;
 
 Function Ptr_ReadShortString(Src: Pointer; out Str: ShortString): TMemSize;
 begin
-Result := Ptr_ReadShortString({%H-}Src,Str,False);
+Result := Ptr_ReadShortString(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1721,7 +1729,7 @@ end;
 
 Function Ptr_ReadShortString(Src: Pointer): ShortString;
 begin
-Ptr_ReadShortString({%H-}Src,Result,False);
+Ptr_ReadShortString(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1742,7 +1750,7 @@ end;
 
 Function Ptr_ReadAnsiString(Src: Pointer; out Str: AnsiString): TMemSize;
 begin
-Result := Ptr_ReadAnsiString({%H-}Src,Str,False);
+Result := Ptr_ReadAnsiString(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1756,7 +1764,7 @@ end;
 
 Function Ptr_ReadAnsiString(Src: Pointer): AnsiString;
 begin
-Ptr_ReadAnsiString({%H-}Src,Result,False);
+Ptr_ReadAnsiString(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1781,7 +1789,7 @@ end;
 
 Function Ptr_ReadUnicodeString(Src: Pointer; out Str: UnicodeString): TMemSize;
 begin
-Result := Ptr_ReadUnicodeString({%H-}Src,Str,False);
+Result := Ptr_ReadUnicodeString(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1795,7 +1803,7 @@ end;
 
 Function Ptr_ReadUnicodeString(Src: Pointer): UnicodeString;
 begin
-Ptr_ReadUnicodeString({%H-}Src,Result,False);
+Ptr_ReadUnicodeString(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1820,7 +1828,7 @@ end;
 
 Function Ptr_ReadWideString(Src: Pointer; out Str: WideString): TMemSize;
 begin
-Result := Ptr_ReadWideString({%H-}Src,Str,False);
+Result := Ptr_ReadWideString(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1834,7 +1842,7 @@ end;
 
 Function Ptr_ReadWideString(Src: Pointer): WideString;
 begin
-Ptr_ReadWideString({%H-}Src,Result,False);
+Ptr_ReadWideString(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1855,7 +1863,7 @@ end;
 
 Function Ptr_ReadUTF8String(Src: Pointer; out Str: UTF8String): TMemSize;
 begin
-Result := Ptr_ReadUTF8String({%H-}Src,Str,False);
+Result := Ptr_ReadUTF8String(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1869,7 +1877,7 @@ end;
 
 Function Ptr_ReadUTF8String(Src: Pointer): UTF8String;
 begin
-Ptr_ReadUTF8String({%H-}Src,Result,False);
+Ptr_ReadUTF8String(Src,Result,False);
 end;
 
 //------------------------------------------------------------------------------
@@ -1886,7 +1894,7 @@ end;
 
 Function Ptr_ReadString(Src: Pointer; out Str: String): TMemSize;
 begin
-Result := Ptr_ReadString({%H-}Src,Str,False);
+Result := Ptr_ReadString(Src,Str,False);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -1900,7 +1908,7 @@ end;
 
 Function Ptr_ReadString(Src: Pointer): String;
 begin
-Ptr_ReadString({%H-}Src,Result,False);
+Ptr_ReadString(Src,Result,False);
 end;
 
 //==============================================================================
@@ -1909,14 +1917,14 @@ Function Ptr_ReadBuffer(var Src: Pointer; var Buffer; Size: TMemSize; Advance: B
 begin
 Move(Src^,Buffer,Size);
 Result := Size;
-If Advance then Src := {%H-}Pointer({%H-}PtrUInt(Src) + Result);
+If Advance then Src := Pointer(PtrUInt(Src) + Result);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
 Function Ptr_ReadBuffer(Src: Pointer; var Buffer; Size: TMemSize): TMemSize;
 begin
-Result := Ptr_ReadBuffer({%H-}Src,Buffer,Size,False);
+Result := Ptr_ReadBuffer(Src,Buffer,Size,False);
 end;
 
 {------------------------------------------------------------------------------}
@@ -2084,7 +2092,7 @@ end;
 
 Function Stream_WriteShortString(Stream: TStream; const Str: ShortString; Advance: Boolean = True): TMemSize;
 begin
-Result := Stream_WriteBuffer(Stream,{%H-}Pointer({%H-}PtrUInt(Addr(Str[1])) - 1)^,Length(Str) + 1, Advance);
+Result := Stream_WriteBuffer(Stream,Pointer(PtrUInt(Addr(Str[1])) - 1)^,Length(Str) + 1, Advance);
 If not Advance then Stream.Seek(-Int64(Result),soCurrent);
 end;
 
@@ -3235,7 +3243,7 @@ end;
 
 Function TMemoryStreamer.GetStartPtr: Pointer;
 begin
-Result := {%H-}Pointer(fStartPosition);
+Result := Pointer(fStartPosition);
 end;
 
 {------------------------------------------------------------------------------}
@@ -3251,14 +3259,14 @@ end;
 
 Function TMemoryStreamer.GetCurrentPosition: UInt64;
 begin
-Result := {%H-}UInt64(fCurrentPtr);
+Result := UInt64(fCurrentPtr);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMemoryStreamer.SetCurrentPosition(NewPosition: UInt64);
 begin
-fCurrentPtr := {%H-}Pointer(PtrUInt(NewPosition));
+fCurrentPtr := Pointer(PtrUInt(NewPosition));
 end;
 
 //------------------------------------------------------------------------------
@@ -3345,7 +3353,7 @@ inherited Initialize;
 fOwnsPointer := False;
 fPtrSize := 0;
 fCurrentPtr := Memory;
-fStartPosition := {%H-}UInt64(Memory);
+fStartPosition := UInt64(Memory);
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
@@ -3364,7 +3372,7 @@ else TempPtr := AllocMem(Size);
 fOwnsPointer := True;
 fPtrSize := Size;
 fCurrentPtr := TempPtr;
-fStartPosition := {%H-}UInt64(TempPtr);
+fStartPosition := UInt64(TempPtr);
 end;
 
 //------------------------------------------------------------------------------

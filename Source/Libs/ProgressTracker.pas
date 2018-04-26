@@ -9,9 +9,9 @@
 
   Progress tracker
 
-  ©František Milt 2018-04-05
+  ©František Milt 2018-04-06
 
-  Version 1.3.1
+  Version 1.3.2
 
 ===============================================================================}
 unit ProgressTracker;
@@ -92,7 +92,7 @@ type
     procedure DoStageProgress; virtual;
     procedure DoTrackerProgress; virtual;
     procedure DoProgress; virtual;
-    procedure StageProgressHandler(Sender: TObject; {%H-}Progress: Double); virtual;
+    procedure StageProgressHandler(Sender: TObject; Progress: Double); virtual;
     procedure ReindexStages; virtual;
     procedure PrepareNewStage(var NewStage: TProgressStage); virtual;
     property StageEvent: TProgressEvent read fOnStageProgress write fOnStageProgress;
@@ -193,7 +193,8 @@ end;
 
 procedure TProgressTracker.SetProgress(Value: Double);
 begin
-If (Value > fProgress) or not fStrictlyGrowing then
+If ((Value > fProgress) or ((fProgress = 0.0) and (Value = 0.0))) or
+  not fStrictlyGrowing then
   begin
     fProgress := Value;  
     If fLimitedRange then

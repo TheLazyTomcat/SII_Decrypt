@@ -95,6 +95,14 @@ uses
   SysUtils, BinaryStreaming, StrRect,
   SII_Decode_Helpers;
 
+{$IFDEF FPC_DisableWarns}
+  {$IF Defined(FPC) and (FPC_FULLVERSION >= 30000)}
+    {$WARN 5091 OFF} // Local variable "$1" of a managed type does not seem to be initialized
+  {$ELSE}
+    {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+  {$IFEND}
+{$ENDIF}
+
 {==============================================================================}
 {------------------------------------------------------------------------------}
 {                               TSIIBin_Decoder                                }

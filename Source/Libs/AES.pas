@@ -60,6 +60,7 @@ unit AES;
     {$ASMMODE Intel}
     {$DEFINE ASMSuppressSizeWarnings}
   {$ENDIF}
+  {$DEFINE FPC_DisableWarns}
 {$ENDIF}
 
 {$IF not Defined(FPC) and not Defined(x64)}
@@ -237,12 +238,12 @@ type
     procedure SetBlockLength(Value: TRijLength); override;
   public
     class Function AccelerationSupported: Boolean; virtual;
-    constructor Create(const Key; const InitVector; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
-    constructor Create(const Key; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    constructor Create(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    constructor Create(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
     constructor Create(const Key; const InitVector; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
     constructor Create(const Key; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
-    procedure Init(const Key; const InitVector; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
-    procedure Init(const Key; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;    
+    procedure Init(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    procedure Init(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
     procedure Init(const Key; const InitVector; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
     procedure Init(const Key; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
   end;
@@ -277,6 +278,13 @@ implementation
 
 uses
   SysUtils, Math, StrRect{$IFNDEF PurePascal}, SimpleCPUID{$ENDIF};
+
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 5024 OFF} // Parameter "$1" not used
+  {$WARN 5036 OFF} // Local variable "$1" does not seem to be initialized
+  {$WARN 5058 OFF} // Variable "$1" does not seem to be initialized
+{$ENDIF}
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -347,23 +355,23 @@ If fBlockBytes > 0 then
     If fBlockBytes and 7 = 0 then
       begin
         For i := 0 to Pred(fBlockBytes shr 3) do
-          {%H-}PUInt64({%H-}PtrUInt(@Dest) + (i shl 3))^ :=
-            {%H-}PUInt64({%H-}PtrUInt(@Src1) + (i shl 3))^ xor
-            {%H-}PUInt64({%H-}PtrUInt(@Src2) + (i shl 3))^
+          PUInt64(PtrUInt(@Dest) + (i shl 3))^ :=
+            PUInt64(PtrUInt(@Src1) + (i shl 3))^ xor
+            PUInt64(PtrUInt(@Src2) + (i shl 3))^
       end
     else{$ENDIF} If fBlockBytes and 3 = 0 then
       begin
         For i := 0 to Pred(fBlockBytes shr 2) do
-          {%H-}PUInt32({%H-}PtrUInt(@Dest) + (i shl 2))^ :=
-            {%H-}PUInt32({%H-}PtrUInt(@Src1) + (i shl 2))^ xor
-            {%H-}PUInt32({%H-}PtrUInt(@Src2) + (i shl 2))^
+          PUInt32(PtrUInt(@Dest) + (i shl 2))^ :=
+            PUInt32(PtrUInt(@Src1) + (i shl 2))^ xor
+            PUInt32(PtrUInt(@Src2) + (i shl 2))^
       end
     else
       begin
         For i := 0 to Pred(fBlockBytes) do
-          {%H-}PByte({%H-}PtrUInt(@Dest) + i)^ :=
-            {%H-}PByte({%H-}PtrUInt(@Src1) + i)^ xor
-            {%H-}PByte({%H-}PtrUInt(@Src2) + i)^;
+          PByte(PtrUInt(@Dest) + i)^ :=
+            PByte(PtrUInt(@Src1) + i)^ xor
+            PByte(PtrUInt(@Src2) + i)^;
       end;
   end;
 end;
@@ -372,7 +380,7 @@ end;
 
 procedure TBlockCipher.BlocksCopy(const Src; out Dest);
 begin
-Move(Src,{%H-}Dest,fBlockBytes);
+Move(Src,Dest,fBlockBytes);
 end;
 
 //------------------------------------------------------------------------------
@@ -489,12 +497,12 @@ begin
 If Size >= fBlockBytes then
   For i := 0 to Pred(Size div fBlockBytes) do
     begin
-      WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
+      WorkPtr := Pointer(PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
       Update(WorkPtr^,WorkPtr^);
     end;
 If (Size mod fBlockBytes) <> 0 then
   begin
-    WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt((Size div fBlockBytes) * fBlockBytes));
+    WorkPtr := Pointer(PtrUInt(Buffer) + PtrUInt((Size div fBlockBytes) * fBlockBytes));
     Final(WorkPtr^,Size mod fBlockBytes,WorkPtr^);
   end;
 end;
@@ -610,6 +618,9 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPC_DisableWarns}
+  {$PUSH}{$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+{$ENDIF}
 procedure TBlockCipher.Final(const Input; InputSize: TMemSize; out Output);
 var
   i:          Integer;
@@ -627,18 +638,18 @@ If InputSize <= fBlockBytes then
             padANSIX923:  {ANSI X.923}
               begin
                 FillChar(TempBlock^,fBlockBytes,0);
-                {%H-}PByte({%H-}PtrUInt(TempBlock) + Pred(fBlockBytes))^ := Byte(fBlockBytes - InputSize);
+                PByte(PtrUInt(TempBlock) + Pred(fBlockBytes))^ := Byte(fBlockBytes - InputSize);
               end;
             padISO10126:  {ISO 10126}
               begin
               Randomize;
                 For i := InputSize to Pred(fBlockBytes) do
-                  {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(i))^ := Byte(Random(256));
+                  PByte(PtrUInt(TempBlock) + PtrUInt(i))^ := Byte(Random(256));
               end;
             padISOIEC7816_4:  {ISO/IEC 7816-4}
               begin
                 FillChar(TempBlock^,fBlockBytes,0);
-                {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(InputSize))^ := $80;
+                PByte(PtrUInt(TempBlock) + PtrUInt(InputSize))^ := $80;
               end;
           else
             {padZeroes}
@@ -676,13 +687,13 @@ If InputSize > 0 then
     DoProgress(0.0);
     while BytesLeft >= fBlockBytes do
       begin
-        Update({%H-}Pointer({%H-}PtrUInt(@Input) + Offset)^,{%H-}Pointer({%H-}PtrUInt(@Output) + Offset)^);
+        Update(Pointer(PtrUInt(@Input) + Offset)^,Pointer(PtrUInt(@Output) + Offset)^);
         Dec(BytesLeft,fBlockBytes);
         Inc(Offset,fBlockBytes);
         DoProgress(Offset / InputSize);
       end;
     If BytesLeft > 0 then
-      Final({%H-}Pointer({%H-}PtrUInt(@Input) + Offset)^,BytesLeft,{%H-}Pointer({%H-}PtrUInt(@Output) + Offset)^);
+      Final(Pointer(PtrUInt(@Input) + Offset)^,BytesLeft,Pointer(PtrUInt(@Output) + Offset)^);
     DoProgress(1.0);
   end;
 end;
@@ -1476,7 +1487,7 @@ begin
   further computations.
 *)
 For i := 0 to Pred(fNk) do
-  fKeySchedule[i] := {%H-}PRijWord({%H-}PtrUInt(Key) + PtrUInt(4 * i))^;
+  fKeySchedule[i] := PRijWord(PtrUInt(Key) + PtrUInt(4 * i))^;
 (*
   RotWord rotates bytes in input 32bit word one place up as this:
 
@@ -1754,7 +1765,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := 1 to (fNr - 1) do
   begin
-    TempState := {%H-}State;
+    TempState := State;
     For i := 0 to Pred(fNb) do
       State[i] := EncTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   EncTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1787,7 +1798,7 @@ For i := 0 to Pred(fNb) do
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)] and $FF) shl 16) or
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)] and $FF) shl 24) xor
                   fKeySchedule[fNr * fNb + i];
-Move({%H-}TempState,{%H-}Output,BlockBytes);
+Move(TempState,Output,BlockBytes);
 end;
 
 //------------------------------------------------------------------------------
@@ -1942,7 +1953,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := (fNr - 1) downto 1 do
   begin
-    TempState := {%H-}State;
+    TempState := State;
     For i := 0 to Pred(fNb) do
       State[i] := DecTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   DecTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1971,7 +1982,7 @@ For i := 0 to Pred(fNb) do
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)]) shl 16) or
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)]) shl 24) xor
                   fKeySchedule[i];
-Move({%H-}TempState,{%H-}Output,BlockBytes);
+Move(TempState,Output,BlockBytes);
 end;
 
 {------------------------------------------------------------------------------}
@@ -2465,7 +2476,7 @@ end;
 procedure TAESCipherAccelerated.CipherInit;
 begin
 fAccelerated := AccelerationSupported;
-fKeySchedulePtr := {%H-}Pointer(({%H-}PtrUInt(Addr(fKeySchedule)) + $F) and not PtrUInt($F));
+fKeySchedulePtr := Pointer((PtrUInt(Addr(fKeySchedule)) + $F) and not PtrUInt($F));
 If fAccelerated then
   begin
     case fKeyLength of
@@ -2484,7 +2495,7 @@ else inherited CipherInit;
   not at the beginning
 }
 If (Mode = cmDecrypt) and not (ModeOfOperation in [moCFB,moOFB,moCTR]) then
-  fKeySchedulePtr := {%H-}Pointer({%H-}PtrUInt(fKeySchedulePtr) + PtrUInt(fNr * fNb * SizeOf(TRijWord)));
+  fKeySchedulePtr := Pointer(PtrUInt(fKeySchedulePtr) + PtrUInt(fNr * fNb * SizeOf(TRijWord)));
 end;
 
 //------------------------------------------------------------------------------

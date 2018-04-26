@@ -119,6 +119,11 @@ uses
   , LazFileUtils
 {$ENDIF};
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5024 OFF} // Parameter "$1" not used
+  {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
+
 {==============================================================================}
 {   Auxiliary functions                                                        }
 {==============================================================================}
@@ -367,7 +372,7 @@ try
       InitOutPos := Output.Position;
       If (Input.Size - Input.Position) >= SizeOf(TSIIHeader) then
         begin
-          Input.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
+          Input.ReadBuffer(Header,SizeOf(TSIIHeader));
           TempStream := TMemoryStream.Create;
           try
             DecryptStreamInternal(Input,TempStream,Header);
@@ -612,7 +617,7 @@ try
           InitOutPos := Input.Position;
           If (Input.Size - Input.Position >= SizeOf(TSIIHeader)) then
             begin
-              Input.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
+              Input.ReadBuffer(Header,SizeOf(TSIIHeader));
               DecryptStreamInternal(Input,TempStream,Header);
               TempStream.Seek(0,soBeginning);
               Result := GetStreamFormat(TempStream);

@@ -26,6 +26,7 @@ unit StaticMemoryStream;
 
 {$IFDEF FPC}
   {$MODE Delphi}
+  {$DEFINE FPC_DisableWarns}
 {$ENDIF}
 
 interface
@@ -51,11 +52,11 @@ type
     fPosition:  Int64;
   protected
     Function GetSize: Int64; override;
-    procedure SetSize(const {%H-}NewValue: Int64); override;
+    procedure SetSize(const NewValue: Int64); override;
   public
     constructor Create(Memory: Pointer; Size: TMemSize); overload;
     Function Read(var Buffer; Count: LongInt): LongInt; override;
-    Function Write(const {%H-}Buffer; {%H-}Count: LongInt): LongInt; override;
+    Function Write(const Buffer; Count: LongInt): LongInt; override;
     Function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
     property Memory: Pointer read fMemory;
     property Size: TMemSize read fSize;
@@ -80,6 +81,11 @@ implementation
 
 uses
   SysUtils;
+
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -130,7 +136,7 @@ If (Count > 0) and (fPosition >= 0) then
       begin
         If Result > Count then
           Result := Count;
-        Move({%H-}Pointer({%H-}PtrUInt(fMemory) + PtrUInt(fPosition))^,Buffer,Result);
+        Move(Pointer(PtrUInt(fMemory) + PtrUInt(fPosition))^,Buffer,Result);
         Inc(fPosition,Result);
       end
     else Result := 0;
@@ -140,8 +146,11 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TStaticMemoryStream.{%H-}Write(const Buffer; Count: LongInt): LongInt;
+Function TStaticMemoryStream.Write(const Buffer; Count: LongInt): LongInt;
 begin
+{$IFDEF FPC}
+Result := 0;
+{$ENDIF}
 raise EWriteError.Create('TStaticMemoryStream.Write: Write operation not allowed on static memory.');
 end;
 
@@ -181,7 +190,7 @@ If (Count > 0) and (fPosition >= 0) then
       begin
         If Result > Count then
           Result := Count;
-        Move(Buffer,{%H-}Pointer({%H-}PtrUInt(fMemory) + PtrUInt(fPosition))^,Result);
+        Move(Buffer,Pointer(PtrUInt(fMemory) + PtrUInt(fPosition))^,Result);
         Inc(fPosition,Result);
       end
     else Result := 0;

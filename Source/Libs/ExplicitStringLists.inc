@@ -42,9 +42,9 @@
     Function CompareItems(Index1,Index2: Integer): Integer; override;
     Function IndexForSortedAddition(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
     Function GetWriteSize: UInt64; override;
-    procedure WriteItemToStream(Stream: TStream; Index: Integer; {%H-}Endianness: TStringEndianness); override;
-    procedure WriteLineBreakToStream(Stream: TStream; {%H-}Endianness: TStringEndianness); override;
-    procedure WriteBOMToStream({%H-}Stream: TStream; {%H-}Endianness: TStringEndianness); override;
+    procedure WriteItemToStream(Stream: TStream; Index: Integer; Endianness: TStringEndianness); override;
+    procedure WriteLineBreakToStream(Stream: TStream; Endianness: TStringEndianness); override;
+    procedure WriteBOMToStream(Stream: TStream; Endianness: TStringEndianness); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create;
@@ -79,7 +79,7 @@
     procedure SetStringsDef(Strings: TStrings); overload; virtual;
     procedure SetStringsDef(Strings: array of String); overload; virtual;
     procedure Assign(Source: TPersistent); override;
-    procedure LoadFromStream(Stream: TStream; out {%H-}Endianness: TStringEndianness); override;
+    procedure LoadFromStream(Stream: TStream; out Endianness: TStringEndianness); override;
     property Items[Index: Integer]: {$I 'ESL_inc\ESL_StringType.inc'} read GetItem write SetItem; default;
     property Strings[Index: Integer]: String read GetString write SetString;
   published
@@ -263,21 +263,21 @@ try
 {$ELSE}
   C := {$I 'ESL_inc\ESL_PCharType.inc'}(Value);
 {$IFEND}
-  E := {%H-}{$I 'ESL_inc\ESL_PCharType.inc'}({%H-}PtrUInt(C) + PtrUInt(Length(Value) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'})));
+  E := {$I 'ESL_inc\ESL_PCharType.inc'}(PtrUInt(C) + PtrUInt(Length(Value) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'})));
   If C <> nil then
-    while {%H-}PtrUInt(C) < {%H-}PtrUInt(E) do
+    while PtrUInt(C) < PtrUInt(E) do
       begin
         S := C;
-        while ({%H-}PtrUInt(C) < {%H-}PtrUInt(E)) do
+        while (PtrUInt(C) < PtrUInt(E)) do
           If IsBreak(C^) then Break{while (PtrUInt(C) < PtrUInt(E))}
             else Inc(C);
-        If ({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) > 0 then
+        If (PtrUInt(C) - PtrUInt(S)) > 0 then
           begin
           {
              for shortstrings, input itself cannot be longer than 255, so no
              need to check for limit when setting length of buffer
           }
-            SetLength(Buff,({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) div SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+            SetLength(Buff,(PtrUInt(C) - PtrUInt(S)) div SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
           {$IF Defined(ESL_Short) or Defined(ESL_ShortDefault)}
             System.Move(S^,Buff[1],Length(Buff) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
           {$ELSE}
@@ -286,9 +286,9 @@ try
             Add(Buff);
           end
         else Add('');
-        If {%H-}PtrUInt(C) < {%H-}PtrUInt(E) then
+        If PtrUInt(C) < PtrUInt(E) then
           If Ord(C^) = 13 then Inc(C);
-        If {%H-}PtrUInt(C) < {%H-}PtrUInt(E) then
+        If PtrUInt(C) < PtrUInt(E) then
           If Ord(C^) = 10 then Inc(C);
       end;
 finally
@@ -789,7 +789,9 @@ If Dest is TStrings then
       TStrings(Dest).Add(Strings[i]);
   {$IF Defined(FPC) or (CompilerVersion >= 31)}
     TStrings(Dest).StrictDelimiter := fStrictDelimiter;
+    {$IF Defined(FPC) and (FPC_FULLVERSION >= 30000)}
     TStrings(Dest).LineBreak := ConvertStringFrom(fLineBreak);
+    {$IFEND}
   {$IFNDEF FPC}
     TStrings(Dest).TrailingLineBreak := fTrailingLineBreak;
   {$ENDIF}
@@ -1299,7 +1301,9 @@ try
     }
     {$IF Defined(FPC) or (CompilerVersion >= 31)}
       fStrictDelimiter := TStrings(Source).StrictDelimiter;
+    {$IF Defined(FPC) and (FPC_FULLVERSION >= 30000)}
       fLineBreak := ConvertStringTo(TStrings(Source).LineBreak);
+    {$IFEND}
     {$IFNDEF FPC}
       fTrailingLineBreak := TStrings(Source).TrailingLineBreak;
     {$ENDIF}

@@ -1,4 +1,5 @@
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
   {$MODESWITCH CLASSICPROCVARS+}
+  {$DEFINE FPC_DisableWarns}
 {$ENDIF}

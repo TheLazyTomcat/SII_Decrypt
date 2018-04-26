@@ -62,6 +62,10 @@ implementation
 uses
   SysUtils, Math;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                            TSII_DecryptProcessThread

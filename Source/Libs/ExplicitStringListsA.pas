@@ -80,6 +80,11 @@ uses
 {$IFEND}
   SysUtils, StrRect, ExplicitStringListsParser;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                TAnsiParsingHelper
@@ -171,9 +176,9 @@ try
       begin
         S := C;
         while not IsBreak(C^) do Inc(C);
-        If ({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) > 0 then
+        If (PtrUInt(C) - PtrUInt(S)) > 0 then
           begin
-            SetLength(Buff,({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) div SizeOf(AnsiChar));
+            SetLength(Buff,(PtrUInt(C) - PtrUInt(S)) div SizeOf(AnsiChar));
             System.Move(S^,PAnsiChar(Buff)^,Length(Buff) * SizeOf(AnsiChar));        
             Add(ShortString(Buff));
           end

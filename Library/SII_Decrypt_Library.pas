@@ -47,6 +47,10 @@ uses
   SysUtils, Classes, StrRect, StaticMemoryStream,
   SII_Decrypt_Decryptor, SII_Decrypt_Header;
 
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
+
 {===============================================================================
     Auxiliary functions
 ===============================================================================}
@@ -197,7 +201,7 @@ try
           Result := GetResultAsInt(GetStreamFormat(InMemStream));
           If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
             begin
-              InMemStream.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
+              InMemStream.ReadBuffer(Header,SizeOf(TSIIHeader));
               InMemStream.Seek(0,soBeginning);
               If Assigned(Output) then
                 begin

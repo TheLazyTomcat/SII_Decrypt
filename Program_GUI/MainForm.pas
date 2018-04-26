@@ -63,7 +63,11 @@ implementation
 {$ENDIF}
 
 uses
-  TaskbarProgress, WinFileInfo;
+  WinTaskbarProgress, WinFileInfo;
+
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5024 OFF} // Parameter "$1" not used
+{$ENDIF}
 
 procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Double);
 var

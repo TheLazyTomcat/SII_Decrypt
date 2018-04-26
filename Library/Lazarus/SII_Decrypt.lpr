@@ -7,7 +7,11 @@
 -------------------------------------------------------------------------------}
 library SII_Decrypt;
 
-{$mode objfpc}{$H+}
+{$INCLUDE '..\..\Source\SII_3nK_defs.inc'}
+
+{$IFDEF FPC_DisableWarns}
+  {$WARN 5023 OFF} // Unit "$1" not used in $2
+{$ENDIF}
 
 uses
   SII_Decrypt_Library;
