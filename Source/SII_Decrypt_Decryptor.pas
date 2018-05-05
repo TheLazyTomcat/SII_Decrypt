@@ -120,8 +120,9 @@ uses
 {$ENDIF};
 
 {$IFDEF FPC_DisableWarns}
-  {$WARN 5024 OFF} // Parameter "$1" not used
-  {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+  {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
 {$ENDIF}
 
 {==============================================================================}
@@ -183,6 +184,7 @@ end;
 {   TSII_Decryptor - protected methods                                         }
 {------------------------------------------------------------------------------}
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Double);
 begin
 If fReportProgress then
@@ -193,20 +195,25 @@ If fReportProgress then
       fOnProgressCallback(Self,Progress);
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -357,6 +364,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_Decryptor.DecryptStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   InitOutPos: Int64;
@@ -398,6 +406,7 @@ finally
   fReportProgress := True;
 end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -599,6 +608,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_Decryptor.DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   TempStream: TMemoryStream;
@@ -656,6 +666,7 @@ finally
   fReportProgress := True;
 end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

@@ -63,7 +63,8 @@ uses
   SysUtils, Math;
 
 {$IFDEF FPC_DisableWarns}
-  {$WARN 5024 OFF} // Parameter "$1" not used
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
 
 {===============================================================================
@@ -101,6 +102,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TSII_DecryptProcessThread.DecryptorProgressHandler(Sender: TObject; Progress: Double);
 begin
 // limit number of synchronization to 1000
@@ -110,6 +112,7 @@ If not SameValue(Progress,fProgress_sync,1e-3) then
     Synchronize(sync_DoProgress);
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

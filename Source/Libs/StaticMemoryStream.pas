@@ -27,6 +27,7 @@ unit StaticMemoryStream;
 {$IFDEF FPC}
   {$MODE Delphi}
   {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 interface
@@ -83,8 +84,9 @@ uses
   SysUtils;
 
 {$IFDEF FPC_DisableWarns}
-  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
-  {$WARN 5024 OFF} // Parameter "$1" not used
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
 
 {==============================================================================}
@@ -108,10 +110,12 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TStaticMemoryStream.SetSize(const NewValue: Int64);
 begin
 raise Exception.Create('TStaticMemoryStream.SetSize: Cannot change size of static memory.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {------------------------------------------------------------------------------}
 {   TStaticMemoryStream - public methods                                       }
@@ -136,8 +140,10 @@ If (Count > 0) and (fPosition >= 0) then
       begin
         If Result > Count then
           Result := Count;
+      {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
         Move(Pointer(PtrUInt(fMemory) + PtrUInt(fPosition))^,Buffer,Result);
         Inc(fPosition,Result);
+      {$IFDEF FPCDWM}{$POP}{$ENDIF}
       end
     else Result := 0;
   end
@@ -146,6 +152,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 Function TStaticMemoryStream.Write(const Buffer; Count: LongInt): LongInt;
 begin
 {$IFDEF FPC}
@@ -153,6 +160,7 @@ Result := 0;
 {$ENDIF}
 raise EWriteError.Create('TStaticMemoryStream.Write: Write operation not allowed on static memory.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -190,8 +198,10 @@ If (Count > 0) and (fPosition >= 0) then
       begin
         If Result > Count then
           Result := Count;
+      {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
         Move(Buffer,Pointer(PtrUInt(fMemory) + PtrUInt(fPosition))^,Result);
         Inc(fPosition,Result);
+      {$IFDEF FPCDWM}{$POP}{$ENDIF}
       end
     else Result := 0;
   end

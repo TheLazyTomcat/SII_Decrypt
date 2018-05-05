@@ -9,9 +9,9 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2017-07-26
+  ©František Milt 2018-05-03
 
-  Version 1.1
+  Version 1.1.2
 
   This file contains code fragments used in assembly implementation of
   hardware-accelerated AES cipher.

@@ -17,6 +17,9 @@
 
   Version 1.0
 
+  Dependencies:
+    AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
+
 ===============================================================================}
 unit WinTaskbarProgress;
 
@@ -33,7 +36,7 @@ unit WinTaskbarProgress;
 interface
 
 uses
-  Windows {$IFNDEF FPC}, AuxTypes{$ENDIF};
+  Windows{$IFNDEF FPC}, AuxTypes{$ENDIF};
 
 
 type

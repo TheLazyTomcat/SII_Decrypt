@@ -11,12 +11,13 @@
 
   Part O - lists working with strings not explicitly based on ansi or widechars.
 
-  ©František Milt 2017-09-10
+  ©František Milt 2018-04-30
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
+    AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
 
@@ -67,8 +68,9 @@ uses
   SysUtils, StrRect, BinaryStreaming, ExplicitStringListsParser;
 
 {$IFDEF FPC_DisableWarns}
-  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
-  {$WARN 5024 OFF} // Parameter "$1" not used
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
 
 {===============================================================================

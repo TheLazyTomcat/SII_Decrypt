@@ -142,7 +142,7 @@
         <PackageName Value="LazUtils"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="2">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -151,30 +151,6 @@
         <Filename Value="..\SII_Decrypt_Program.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="..\..\Source\SII_Decrypt_Decryptor.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\..\Source\SII_Decode_Nodes.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\..\Source\SII_Decode_Common.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\..\Source\SII_Decode_Decoder.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\..\Source\SII_Decode_Helpers.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\..\Source\SII_3nK_Transcoder.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

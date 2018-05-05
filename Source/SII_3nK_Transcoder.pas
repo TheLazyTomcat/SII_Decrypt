@@ -101,8 +101,9 @@ uses
   StrRect, BinaryStreaming, MemoryBuffer;
 
 {$IFDEF FPC_DisableWarns}
-  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
-  {$WARN 5057 OFF} // Local variable "$1" does not seem to be initialized
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
 {$ENDIF}
 
 {===============================================================================
@@ -147,8 +148,10 @@ var
 begin
 If Size > 0 then
   For i := 0 to Pred(Size) do
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
     PByte(PtrUInt(@Buff) + PtrUInt(i))^ :=
       PByte(PtrUInt(@Buff) + PtrUInt(i))^ xor SII_3nK_KeyTable[Byte(Seed + i)];
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
 end;
 
 //------------------------------------------------------------------------------
@@ -206,6 +209,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_3nK_Transcoder.Is3nKStream(Stream: TStream): Boolean;
 var
   Header: SII_3nK_Header;
@@ -219,6 +223,7 @@ If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
   end
 else Result := False;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -291,6 +296,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TSII_3nK_Transcoder.DecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False);
 var
   Header:         SII_3nK_Header;
@@ -344,6 +350,7 @@ If Input <> Output then
   end
 else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input and output streams are the same, data would be corrupted.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

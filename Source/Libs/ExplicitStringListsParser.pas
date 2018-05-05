@@ -11,12 +11,13 @@
 
   Delimited text parsers.
 
-  ©František Milt 2017-09-10
+  ©František Milt 2018-04-30
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
+    AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
 
@@ -91,6 +92,7 @@ type
 
 {$DEFINE ESL_Default}
   {$I 'ESL_inc\ESL_DTParserEventType.inc'} = procedure(const Str: {$I 'ESL_inc\ESL_StringType.inc'}) of object;
+  
   {$I 'ESL_inc\ESL_DTParserType.inc'} = class(TObject)
     {$I ExplicitStringListsParser.inc}
   end;

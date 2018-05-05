@@ -22,8 +22,8 @@
     Function GetString(Index: Integer): String;
     procedure SetString(Index: Integer; const Value: String);
     procedure SetLineBreakStyle(Value: TLineBreakStyle);
-    Function GetCapacity: Integer;
-    procedure SetCapacity(Value: Integer);
+    Function GetCapacity: Integer; override;
+    procedure SetCapacity(Value: Integer); override;
     procedure SetSorted(Value: Boolean);
     Function GetText: {$I 'ESL_inc\ESL_StringType.inc'};
     procedure SetText(const Value: {$I 'ESL_inc\ESL_StringType.inc'});
@@ -36,8 +36,6 @@
     class Function ConvertStringTo(const Str: String): {$I 'ESL_inc\ESL_StringType.inc'}; virtual;
     class Function ConvertStringFrom(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): String; virtual;
     // normal protected methods
-    procedure Grow(Delta: Integer = 1); virtual;
-    Function CheckIndex(Index: Integer): Boolean; virtual;
     Function CompareStrings(const Str1, Str2: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
     Function CompareItems(Index1,Index2: Integer): Integer; override;
     Function IndexForSortedAddition(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
@@ -83,7 +81,6 @@
     property Items[Index: Integer]: {$I 'ESL_inc\ESL_StringType.inc'} read GetItem write SetItem; default;
     property Strings[Index: Integer]: String read GetString write SetString;
   published
-    property Capacity: Integer read GetCapacity write SetCapacity;
     property Delimiter: {$I 'ESL_inc\ESL_CharType.inc'} read fDelimiter write fDelimiter;
     property LineBreak: {$I 'ESL_inc\ESL_StringType.inc'} read fLineBreak write fLineBreak;
     property LineBreakStyle: TLineBreakStyle write SetLineBreakStyle;
@@ -255,6 +252,7 @@ var
   C,S,E:  {$I 'ESL_inc\ESL_PCharType.inc'};
   Buff:   {$I 'ESL_inc\ESL_StringType.inc'};
 begin
+{$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
 BeginUpdate;
 try
   Clear;
@@ -294,6 +292,7 @@ try
 finally
   EndUpdate;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 end;
 
 //------------------------------------------------------------------------------
@@ -509,33 +508,6 @@ end;
 
 //==============================================================================
 
-procedure {$I 'ESL_inc\ESL_ListType.inc'}.Grow(Delta: Integer = 1);
-var
-  NewLength:  Integer;
-begin
-If (Delta > 0) and ((fCount + Delta) > Length(fStrings)) then
-  begin
-    NewLength := Length(fStrings);
-    while (fCount + Delta) > NewLength do
-      begin
-        If NewLength < 16 then
-          NewLength := 16
-        else
-          NewLength := NewLength * 2;
-      end;
-    SetLength(fStrings,NewLength);
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-Function {$I 'ESL_inc\ESL_ListType.inc'}.CheckIndex(Index: Integer): Boolean;
-begin
-Result := (Index >= Low(fStrings)) and (Index < fCount); 
-end;
-
-//------------------------------------------------------------------------------
-
 Function {$I 'ESL_inc\ESL_ListType.inc'}.CompareStrings(const Str1, Str2: {$I 'ESL_inc\ESL_StringType.inc'}): Integer;
 begin
 If fCaseSensitive then
@@ -686,6 +658,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure {$I 'ESL_inc\ESL_ListType.inc'}.WriteItemToStream(Stream: TStream; Index: Integer; Endianness: TStringEndianness);
 {$IF Defined(ESL_Wide) or Defined(ESL_Unicode) or (Defined(ESL_Default) and Defined(Unicode))}
 var
@@ -714,9 +687,11 @@ If CheckIndex(Index) then
   end
 else Error('WriteItem: Index (%d) out of bounds.',[Index]);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure {$I 'ESL_inc\ESL_ListType.inc'}.WriteLineBreakToStream(Stream: TStream; Endianness: TStringEndianness);
 {$IF Defined(ESL_Wide) or Defined(ESL_Unicode) or (Defined(ESL_Default) and Defined(Unicode))}
 var
@@ -741,9 +716,11 @@ If Length(fLineBreak) > 0 then
   {$IFEND}
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure {$I 'ESL_inc\ESL_ListType.inc'}.WriteBOMToStream(Stream: TStream; Endianness: TStringEndianness);
 begin
 {$IF Defined(ESL_UTF8)}
@@ -763,10 +740,11 @@ begin
                 Stream_WriteUInt8(Stream,$FF);
               end;
   else
-    Error('WriteBOMToStream: Unknonw endianness (%d).',[Ord(Endianness)]);
+    Error('WriteBOMToStream: Unknown endianness (%d).',[Ord(Endianness)]);
   end;
 {$IFEND}
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -779,8 +757,8 @@ If Dest is TStrings then
     If Dest is TStringList then
       begin
         TStringList(Dest).Sorted := False;
-        fCaseSensitive := TStringList(Dest).CaseSensitive;
-        fDuplicates := TStringList(Dest).Duplicates;
+        TStringList(Dest).CaseSensitive := fCaseSensitive;
+        TStringList(Dest).Duplicates := fDuplicates;
       end;
     TStrings(Dest).Delimiter := Char(fDelimiter);
     TStrings(Dest).QuoteChar := Char(fQuoteChar);
@@ -1051,7 +1029,6 @@ If SrcIdx <> DstIdx then
       Error('Exchange: Source index (%d) out of bounds.',[SrcIdx]);
     If not CheckIndex(DstIdx) then
       Error('Exchange: Destination index (%d) out of bounds.',[DstIdx]);
-    Grow;
     DoChanging;
     Temp := fStrings[SrcIdx];
     If SrcIdx > DstIdx then
@@ -1123,6 +1100,7 @@ If CheckIndex(Index) then
       fStrings[i - 1] := fStrings[i];
     fStrings[fCount] := '';
     Dec(fCount);
+    Shrink;
     DoChange;
   end
 else Error('Delete: Index (%d) out of bounds.',[Index]);
@@ -1138,6 +1116,7 @@ DoChanging;
 For i := LowIndex to HighIndex do
   fStrings[i] := '';
 fCount := 0;
+Shrink;
 DoChange;
 end;
 
