@@ -32,6 +32,8 @@ unit FloatHex;
   {$IFNDEF PurePascal}
     {$ASMMODE Intel}
   {$ENDIF}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 {$IFDEF ENDIAN_BIG}
@@ -88,6 +90,18 @@ implementation
 
 uses
   SysUtils;
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$PUSH}{$WARN 2005 OFF} // Comment level $1 found
+  {$IF Defined(FPC) and (FPC_FULLVERSION >= 30000)}
+    {$DEFINE W5092:={$WARN 5092 OFF}} // Variable "$1" of a managed type does not seem to be initialized
+  {$ELSE}
+    {$DEFINE W5092:=}
+  {$IFEND}
+  {$POP}
+{$ENDIF}
 
 {$IFDEF PurePascal}
 const
@@ -147,7 +161,9 @@ var
 
   procedure BuildExtendedResult(Upper: UInt16; Lower: UInt64);
   begin
-    {%H-}PUInt16({%H-}PtrUInt(ExtendedPtr) + 8)^ := Upper;
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    PUInt16(PtrUInt(ExtendedPtr) + 8)^ := Upper;
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
     UInt64(ExtendedPtr^) := Lower;
   end;
 
@@ -283,8 +299,10 @@ ControlWord := Get8087CW;
 ControlWord := CW_Default;
 {$IFEND}
 RoundMode := (ControlWord shr 10) and 3;
-Sign := UInt64({%H-}PUInt8({%H-}PtrUInt(ExtendedPtr) + 9)^ and $80) shl 56;
-Exponent := Int32({%H-}PUInt16({%H-}PtrUInt(ExtendedPtr) + 8)^) and $7FFF;
+{$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+Sign := UInt64(PUInt8(PtrUInt(ExtendedPtr) + 9)^ and $80) shl 56;
+Exponent := Int32(PUInt16(PtrUInt(ExtendedPtr) + 8)^) and $7FFF;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 Mantissa := (UInt64(ExtendedPtr^) and UInt64($7FFFFFFFFFFFFFFF));
 If ((UInt64(ExtendedPtr^) and UInt64($8000000000000000)) = 0) and ((Exponent > 0) and (Exponent < $7FFF)) then
   begin
@@ -414,6 +432,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5092{$ENDIF}
 Function HexToHalf(HexString: String): Half;
 var
   Overlay:  UInt16 absolute Result;
@@ -421,6 +440,7 @@ begin
 RectifyHexString(HexString,4);
 Overlay := UInt16(StrToInt(HexString));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -453,6 +473,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5092{$ENDIF}
 Function HexToSingle(HexString: String): Single;
 var
   Overlay:  UInt32 absolute Result;
@@ -460,6 +481,7 @@ begin
 RectifyHexString(HexString,8);
 Overlay := UInt32(StrToInt(HexString));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -492,6 +514,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5092{$ENDIF}
 Function HexToDouble(HexString: String): Double;
 var
   Overlay:  UInt64 absolute Result;
@@ -499,6 +522,7 @@ begin
 RectifyHexString(HexString,16);
 Overlay := UInt64(StrToInt64(HexString));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -534,6 +558,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5092{$ENDIF}
 Function HexToExtended(HexString: String): Extended;
 var
   Overlay:  TExtendedOverlay {$IFNDEF Extended64}absolute Result{$ENDIF};
@@ -545,6 +570,7 @@ Overlay.Part_64 := UInt64(StrToInt64('$' + Copy(HexString,6,16)));
 ConvertFloat80ToFloat64(@Overlay,@Result);
 {$ENDIF}
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

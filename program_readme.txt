@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  90
-  Known problems and limitations .......................... 123
-  Repositories ............................................ 130
-  Licensing ............................................... 143
-  Authors, contacts ....................................... 151
-  Copyright ............................................... 164
+  Known problems and limitations .......................... 124
+  Repositories ............................................ 131
+  Licensing ............................................... 144
+  Authors, contacts ....................................... 152
+  Copyright ............................................... 165
 
 
 Description
@@ -95,6 +95,7 @@ SII Decrypt program 1.3.2 -> SII Decrypt program 1.4.0
   - added program with graphical user interface (window)
   - added support for decoding of 3nK-encoded files
   - reduced memory use by implementing streaming conversion
+  - changed behaviour of the DLL library, added new functions
 
 
 SII Decrypt program 1.3.1 -> SII Decrypt program 1.3.2

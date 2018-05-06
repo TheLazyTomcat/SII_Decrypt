@@ -9,15 +9,16 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2017-07-26
+  ©František Milt 2018-05-03
 
-  Version 1.1
+  Version 1.1.2
 
   All combinations of allowed key and block sizes are implemented and should be
   compatible with reference Rijndael cipher.
 
   Dependencies:
     AuxTypes    - github.com/ncs-sniper/Lib.AuxTypes
+    AuxClasses  - github.com/ncs-sniper/Lib.AuxClasses
     StrRect     - github.com/ncs-sniper/Lib.StrRect
   * SimpleCPUID - github.com/ncs-sniper/Lib.SimpleCPUID
 
@@ -60,6 +61,8 @@ unit AES;
     {$ASMMODE Intel}
     {$DEFINE ASMSuppressSizeWarnings}
   {$ENDIF}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 {$IF not Defined(FPC) and not Defined(x64)}
@@ -74,7 +77,7 @@ interface
 
 uses
   Classes,
-  AuxTypes;
+  AuxTypes, AuxClasses;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -99,9 +102,9 @@ type
   TBCPadding         = (padZeroes,padPKCS7,padANSIX923,padISO10126,padISOIEC7816_4);
 
   TBCUpdateProc = procedure(const Input; out Output) of object;
-  TBCProgressEvent = procedure(Sender: TObject; Progress: Single) of object;
+  TBCProgressEvent = procedure(Sender: TObject; Progress: Double) of object;
 
-  TBlockCipher = class(TObject)
+  TBlockCipher = class(TCustomObject)
   private
     fMode:            TBCMode;
     fModeOfOperation: TBCModeOfOperation;
@@ -131,7 +134,7 @@ type
     procedure Update_CTR(const Input; out Output); virtual;
     procedure ProcessBuffer(Buffer: Pointer; Size: TMemSize); virtual;
     procedure PrepareUpdateProc; virtual;
-    procedure DoProgress(Progress: Single); virtual;
+    procedure DoProgress(Progress: Double); virtual;
     procedure CipherInit; virtual; abstract;
     procedure CipherFinal; virtual; abstract;
     procedure CipherEncrypt(const Input; out Output); virtual; abstract;
@@ -235,14 +238,16 @@ type
   protected
     procedure SetKeyLength(Value: TRijLength); override;
     procedure SetBlockLength(Value: TRijLength); override;
+    procedure CipherEncrypt(const Input; out Output); override;
+    procedure CipherDecrypt(const Input; out Output); override;
   public
     class Function AccelerationSupported: Boolean; virtual;
-    constructor Create(const Key; const InitVector; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
-    constructor Create(const Key; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    constructor Create(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    constructor Create(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
     constructor Create(const Key; const InitVector; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
     constructor Create(const Key; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
-    procedure Init(const Key; const InitVector; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;
-    procedure Init(const Key; KeyLength, {%H-}BlockLength: TRijLength; Mode: TBCMode); overload; override;    
+    procedure Init(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
+    procedure Init(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; override;
     procedure Init(const Key; const InitVector; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
     procedure Init(const Key; KeyLength: TRijLength; Mode: TBCMode); overload; virtual;
   end;
@@ -277,6 +282,14 @@ implementation
 
 uses
   SysUtils, Math, StrRect{$IFNDEF PurePascal}, SimpleCPUID{$ENDIF};
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+  {$DEFINE W5036:={$WARN 5036 OFF}} // Local variable "$1" does not seem to be initialized
+  {$DEFINE W5058:={$WARN 5058 OFF}} // Variable "$1" does not seem to be initialized
+{$ENDIF}
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -343,37 +356,41 @@ var
 begin
 If fBlockBytes > 0 then
   begin
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
   {$IFDEF 64bit}
     If fBlockBytes and 7 = 0 then
       begin
         For i := 0 to Pred(fBlockBytes shr 3) do
-          {%H-}PUInt64({%H-}PtrUInt(@Dest) + (i shl 3))^ :=
-            {%H-}PUInt64({%H-}PtrUInt(@Src1) + (i shl 3))^ xor
-            {%H-}PUInt64({%H-}PtrUInt(@Src2) + (i shl 3))^
+          PUInt64(PtrUInt(@Dest) + (i shl 3))^ :=
+            PUInt64(PtrUInt(@Src1) + (i shl 3))^ xor
+            PUInt64(PtrUInt(@Src2) + (i shl 3))^
       end
     else{$ENDIF} If fBlockBytes and 3 = 0 then
       begin
         For i := 0 to Pred(fBlockBytes shr 2) do
-          {%H-}PUInt32({%H-}PtrUInt(@Dest) + (i shl 2))^ :=
-            {%H-}PUInt32({%H-}PtrUInt(@Src1) + (i shl 2))^ xor
-            {%H-}PUInt32({%H-}PtrUInt(@Src2) + (i shl 2))^
+          PUInt32(PtrUInt(@Dest) + (i shl 2))^ :=
+            PUInt32(PtrUInt(@Src1) + (i shl 2))^ xor
+            PUInt32(PtrUInt(@Src2) + (i shl 2))^
       end
     else
       begin
         For i := 0 to Pred(fBlockBytes) do
-          {%H-}PByte({%H-}PtrUInt(@Dest) + i)^ :=
-            {%H-}PByte({%H-}PtrUInt(@Src1) + i)^ xor
-            {%H-}PByte({%H-}PtrUInt(@Src2) + i)^;
+          PByte(PtrUInt(@Dest) + i)^ :=
+            PByte(PtrUInt(@Src1) + i)^ xor
+            PByte(PtrUInt(@Src2) + i)^;
       end;
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
   end;
 end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5058{$ENDIF}
 procedure TBlockCipher.BlocksCopy(const Src; out Dest);
 begin
-Move(Src,{%H-}Dest,fBlockBytes);
+Move(Src,Dest,fBlockBytes);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -489,12 +506,16 @@ begin
 If Size >= fBlockBytes then
   For i := 0 to Pred(Size div fBlockBytes) do
     begin
-      WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
+    {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+      WorkPtr := Pointer(PtrUInt(Buffer) + PtrUInt(TMemSize(i) * fBlockBytes));
+    {$IFDEF FPCDWM}{$POP}{$ENDIF}
       Update(WorkPtr^,WorkPtr^);
     end;
 If (Size mod fBlockBytes) <> 0 then
   begin
-    WorkPtr := {%H-}Pointer({%H-}PtrUInt(Buffer) + PtrUInt((Size div fBlockBytes) * fBlockBytes));
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    WorkPtr := Pointer(PtrUInt(Buffer) + PtrUInt((Size div fBlockBytes) * fBlockBytes));
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
     Final(WorkPtr^,Size mod fBlockBytes,WorkPtr^);
   end;
 end;
@@ -517,7 +538,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TBlockCipher.DoProgress(Progress: Single);
+procedure TBlockCipher.DoProgress(Progress: Double);
 begin
 If Assigned(fOnProgress) then fOnProgress(Self,Progress);
 end;
@@ -610,6 +631,9 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPC_DisableWarns}
+  {$PUSH}{$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+{$ENDIF}
 procedure TBlockCipher.Final(const Input; InputSize: TMemSize; out Output);
 var
   i:          Integer;
@@ -627,18 +651,18 @@ If InputSize <= fBlockBytes then
             padANSIX923:  {ANSI X.923}
               begin
                 FillChar(TempBlock^,fBlockBytes,0);
-                {%H-}PByte({%H-}PtrUInt(TempBlock) + Pred(fBlockBytes))^ := Byte(fBlockBytes - InputSize);
+                PByte(PtrUInt(TempBlock) + Pred(fBlockBytes))^ := Byte(fBlockBytes - InputSize);
               end;
             padISO10126:  {ISO 10126}
               begin
               Randomize;
                 For i := InputSize to Pred(fBlockBytes) do
-                  {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(i))^ := Byte(Random(256));
+                  PByte(PtrUInt(TempBlock) + PtrUInt(i))^ := Byte(Random(256));
               end;
             padISOIEC7816_4:  {ISO/IEC 7816-4}
               begin
                 FillChar(TempBlock^,fBlockBytes,0);
-                {%H-}PByte({%H-}PtrUInt(TempBlock) + PtrUInt(InputSize))^ := $80;
+                PByte(PtrUInt(TempBlock) + PtrUInt(InputSize))^ := $80;
               end;
           else
             {padZeroes}
@@ -676,13 +700,13 @@ If InputSize > 0 then
     DoProgress(0.0);
     while BytesLeft >= fBlockBytes do
       begin
-        Update({%H-}Pointer({%H-}PtrUInt(@Input) + Offset)^,{%H-}Pointer({%H-}PtrUInt(@Output) + Offset)^);
+        Update(Pointer(PtrUInt(@Input) + Offset)^,Pointer(PtrUInt(@Output) + Offset)^);
         Dec(BytesLeft,fBlockBytes);
         Inc(Offset,fBlockBytes);
         DoProgress(Offset / InputSize);
       end;
     If BytesLeft > 0 then
-      Final({%H-}Pointer({%H-}PtrUInt(@Input) + Offset)^,BytesLeft,{%H-}Pointer({%H-}PtrUInt(@Output) + Offset)^);
+      Final(Pointer(PtrUInt(@Input) + Offset)^,BytesLeft,Pointer(PtrUInt(@Output) + Offset)^);
     DoProgress(1.0);
   end;
 end;
@@ -1476,7 +1500,7 @@ begin
   further computations.
 *)
 For i := 0 to Pred(fNk) do
-  fKeySchedule[i] := {%H-}PRijWord({%H-}PtrUInt(Key) + PtrUInt(4 * i))^;
+  fKeySchedule[i] := PRijWord(PtrUInt(Key) + PtrUInt(4 * i))^;
 (*
   RotWord rotates bytes in input 32bit word one place up as this:
 
@@ -1596,6 +1620,7 @@ end;
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 *)
+{$IFDEF FPCDWM}{$PUSH}W5036 W5058{$ENDIF}
 procedure TRijndaelCipher.CipherEncrypt(const Input; out Output);
 var
   i,j:        Integer;
@@ -1754,7 +1779,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := 1 to (fNr - 1) do
   begin
-    TempState := {%H-}State;
+    TempState := State;
     For i := 0 to Pred(fNb) do
       State[i] := EncTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   EncTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1787,8 +1812,9 @@ For i := 0 to Pred(fNb) do
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)] and $FF) shl 16) or
                  ((EncTab4[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)] and $FF) shl 24) xor
                   fKeySchedule[fNr * fNb + i];
-Move({%H-}TempState,{%H-}Output,BlockBytes);
+Move(TempState,Output,BlockBytes);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -1822,6 +1848,7 @@ end;
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 *)
+{$IFDEF FPCDWM}{$PUSH}W5036 W5058{$ENDIF}
 procedure TRijndaelCipher.CipherDecrypt(const Input; out Output);
 var
   i,j:        Integer;
@@ -1942,7 +1969,7 @@ For i := 0 to Pred(fNb) do
 *)
 For j := (fNr - 1) downto 1 do
   begin
-    TempState := {%H-}State;
+    TempState := State;
     For i := 0 to Pred(fNb) do
       State[i] := DecTab1[Byte(TempState[RoundIdx(i,fRowShiftOff[0])])] xor
                   DecTab2[Byte(TempState[RoundIdx(i,fRowShiftOff[1])] shr 8)] xor
@@ -1971,8 +1998,9 @@ For i := 0 to Pred(fNb) do
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[2])] shr 16)]) shl 16) or
                  (TRijWord(InvSub[Byte(State[RoundIdx(i,fRowShiftOff[3])] shr 24)]) shl 24) xor
                   fKeySchedule[i];
-Move({%H-}TempState,{%H-}Output,BlockBytes);
+Move(TempState,Output,BlockBytes);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {------------------------------------------------------------------------------}
 {   TRijndaelCipher - public methods                                           }
@@ -2043,6 +2071,68 @@ else
   raise Exception.CreateFmt('TAESCipher.SetBlockLength: Unsupported block length (%d).',[Ord(Value)]);
 end;
 
+//------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W5036 W5058{$ENDIF}
+procedure TAESCipher.CipherEncrypt(const Input; out Output);
+var
+  i,j:        Integer;
+  State:      TRijState;
+  TempState:  TRijState;
+begin
+For i := 0 to Pred(fNb) do
+  State[i] := TRijState(Input)[i] xor fKeySchedule[i];
+For j := 1 to (fNr - 1) do
+  begin
+    TempState := State;
+    For i := 0 to Pred(fNb) do
+      State[i] := EncTab1[Byte(TempState[i and 3])] xor
+                  EncTab2[Byte(TempState[(i + 1) and 3] shr 8)] xor
+                  EncTab3[Byte(TempState[(i + 2) and 3] shr 16)] xor
+                  EncTab4[Byte(TempState[(i + 3) and 3] shr 24)] xor
+                  fKeySchedule[j * fNb + i];
+  end;
+For i := 0 to Pred(fNb) do
+  TempState[i] := (EncTab4[Byte(State[i and 3])] and $FF) or
+                 ((EncTab4[Byte(State[(i + 1) and 3] shr 8)] and $FF) shl 8) or
+                 ((EncTab4[Byte(State[(i + 2) and 3] shr 16)] and $FF) shl 16) or
+                 ((EncTab4[Byte(State[(i + 3) and 3] shr 24)] and $FF) shl 24) xor
+                  fKeySchedule[fNr * fNb + i];
+Move(TempState,Output,BlockBytes);
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+//------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W5036 W5058{$ENDIF}
+procedure TAESCipher.CipherDecrypt(const Input; out Output);
+var
+  i,j:        Integer;
+  State:      TRijState;
+  TempState:  TRijState;
+begin
+For i := 0 to Pred(fNb) do
+  State[i] := TRijState(Input)[i] xor fKeySchedule[fNr * fNb + i];
+For j := (fNr - 1) downto 1 do
+  begin
+    TempState := State;
+    For i := 0 to Pred(fNb) do
+      State[i] := DecTab1[Byte(TempState[i and 3])] xor
+                  DecTab2[Byte(TempState[(i - 1) and 3] shr 8)] xor
+                  DecTab3[Byte(TempState[(i - 2) and 3] shr 16)] xor
+                  DecTab4[Byte(TempState[(i - 3) and 3] shr 24)] xor
+                  fKeySchedule[j * fNb + i];
+  end;
+For i := 0 to Pred(fNb) do
+  TempState[i] := TRijWord(InvSub[Byte(State[i and 3])]) or
+                 (TRijWord(InvSub[Byte(State[(i - 1) and 3] shr 8)]) shl 8) or
+                 (TRijWord(InvSub[Byte(State[(i - 2) and 3] shr 16)]) shl 16) or
+                 (TRijWord(InvSub[Byte(State[(i - 3) and 3] shr 24)]) shl 24) xor
+                  fKeySchedule[i];
+Move(TempState,Output,BlockBytes);
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
 {------------------------------------------------------------------------------}
 {   TAESCipher - public methods                                                }
 {------------------------------------------------------------------------------}
@@ -2054,17 +2144,21 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 constructor TAESCipher.Create(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode);
 begin
 inherited Create(Key,InitVector,KeyLength,r128bit,Mode);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 constructor TAESCipher.Create(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode);
 begin
 inherited Create(Key,KeyLength,r128bit,Mode);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
@@ -2082,17 +2176,21 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TAESCipher.Init(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode);
 begin
 inherited Init(Key,InitVector,KeyLength,r128bit,Mode);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TAESCipher.Init(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode);
 begin
 inherited Init(Key,KeyLength,r128bit,Mode);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
@@ -2465,7 +2563,9 @@ end;
 procedure TAESCipherAccelerated.CipherInit;
 begin
 fAccelerated := AccelerationSupported;
-fKeySchedulePtr := {%H-}Pointer(({%H-}PtrUInt(Addr(fKeySchedule)) + $F) and not PtrUInt($F));
+{$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+fKeySchedulePtr := Pointer((PtrUInt(Addr(fKeySchedule)) + $F) and not PtrUInt($F));
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 If fAccelerated then
   begin
     case fKeyLength of
@@ -2484,7 +2584,9 @@ else inherited CipherInit;
   not at the beginning
 }
 If (Mode = cmDecrypt) and not (ModeOfOperation in [moCFB,moOFB,moCTR]) then
-  fKeySchedulePtr := {%H-}Pointer({%H-}PtrUInt(fKeySchedulePtr) + PtrUInt(fNr * fNb * SizeOf(TRijWord)));
+{$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+  fKeySchedulePtr := Pointer(PtrUInt(fKeySchedulePtr) + PtrUInt(fNr * fNb * SizeOf(TRijWord)));
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 end;
 
 //------------------------------------------------------------------------------

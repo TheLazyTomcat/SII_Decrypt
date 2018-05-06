@@ -11,12 +11,13 @@
 
   Part A - lists working with ansichar-based strings.
 
-  ©František Milt 2017-09-10
+  ©František Milt 2018-04-30
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
+    AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
 
@@ -79,6 +80,12 @@ uses
   {$IFDEF Windows} Windows,{$ENDIF} AnsiStrings,
 {$IFEND}
   SysUtils, StrRect, ExplicitStringListsParser;
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -171,9 +178,11 @@ try
       begin
         S := C;
         while not IsBreak(C^) do Inc(C);
-        If ({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) > 0 then
+      {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+        If (PtrUInt(C) - PtrUInt(S)) > 0 then
           begin
-            SetLength(Buff,({%H-}PtrUInt(C) - {%H-}PtrUInt(S)) div SizeOf(AnsiChar));
+            SetLength(Buff,(PtrUInt(C) - PtrUInt(S)) div SizeOf(AnsiChar));
+      {$IFDEF FPCDWM}{$POP}{$ENDIF}
             System.Move(S^,PAnsiChar(Buff)^,Length(Buff) * SizeOf(AnsiChar));        
             Add(ShortString(Buff));
           end

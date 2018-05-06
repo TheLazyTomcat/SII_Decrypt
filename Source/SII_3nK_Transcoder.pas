@@ -57,8 +57,8 @@ const
 type
   TSII_3nK_ProcRoutine = procedure(Input, Output: TStream; RectifySize: Boolean = True) of object;
 
-  TSII_3nK_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
-  TSII_3nK_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+  TSII_3nK_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
+  TSII_3nK_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
 {===============================================================================
     TSII_3nK_Transcoder - declaration
@@ -70,7 +70,7 @@ type
     fOnProgressCallback:  TSII_3nK_ProgressCallback;
     Function GetKey(Index: Integer): Byte;
   protected
-    procedure DoProgress(Progress: Single); virtual;
+    procedure DoProgress(Progress: Double); virtual;
     procedure TranscodeBuffer(var Buff; Size: TMemSize; Seed: Int64); virtual;
     procedure ProcessFile(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
     procedure ProcessFileInMemory(const InFileName, OutFileName: String; Routine: TSII_3nK_ProcRoutine); virtual;
@@ -100,6 +100,12 @@ uses
   SysUtils,
   StrRect, BinaryStreaming, MemoryBuffer;
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                TSII_3nK_Transcoder
@@ -126,7 +132,7 @@ end;
     TSII_3nK_Transcoder - protected methods
 -------------------------------------------------------------------------------}
 
-procedure TSII_3nK_Transcoder.DoProgress(Progress: Single);
+procedure TSII_3nK_Transcoder.DoProgress(Progress: Double);
 begin
 If Assigned(fOnProgressEvent) then
   fOnProgressEvent(Self,Progress);
@@ -142,8 +148,10 @@ var
 begin
 If Size > 0 then
   For i := 0 to Pred(Size) do
-    {%H-}PByte({%H-}PtrUInt(@Buff) + PtrUInt(i))^ :=
-      {%H-}PByte({%H-}PtrUInt(@Buff) + PtrUInt(i))^ xor SII_3nK_KeyTable[Byte(Seed + i)];
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    PByte(PtrUInt(@Buff) + PtrUInt(i))^ :=
+      PByte(PtrUInt(@Buff) + PtrUInt(i))^ xor SII_3nK_KeyTable[Byte(Seed + i)];
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
 end;
 
 //------------------------------------------------------------------------------
@@ -201,19 +209,21 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_3nK_Transcoder.Is3nKStream(Stream: TStream): Boolean;
 var
   Header: SII_3nK_Header;
 begin
 If (Stream.Size - Stream.Position) >= SII_3nK_MinSize then
   begin
-    Stream_ReadBuffer(Stream,Header{%H-},SizeOf(Header),False);
+    Stream_ReadBuffer(Stream,Header,SizeOf(Header),False);
     Result := Header.Signature = SII_3nK_Signature;
     If Result then
       fSeed := Header.Seed;
   end
 else Result := False;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -286,6 +296,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TSII_3nK_Transcoder.DecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False);
 var
   Header:         SII_3nK_Header;
@@ -300,7 +311,7 @@ If Input <> Output then
       begin
         DoProgress(0.0);
         // read header
-        Input.ReadBuffer(Header{%H-},SizeOf(Header));
+        Input.ReadBuffer(Header,SizeOf(Header));
         ActualReg := Int64(Header.Seed);
         fSeed := Header.Seed;        
         // output preallocation
@@ -339,6 +350,7 @@ If Input <> Output then
   end
 else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input and output streams are the same, data would be corrupted.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

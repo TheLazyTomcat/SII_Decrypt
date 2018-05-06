@@ -44,15 +44,9 @@ type
   end;
   PSIIHeader = ^TSIIHeader;
 
-  TSIIResult = (rGenericError    = -1,
-                rSuccess         = 0,
-                rFormatPlainText = 1,
-                rFormatEncrypted = 2,
-                rFormatBinary    = 3,
-                rFormat3nK       = 4,
-                rFormatUnknown   = 10,
-                rTooFewData      = 11,
-                rBufferTooSmall  = 12);
+  TSIIResult = (rGenericError, rSuccess, rFormatPlainText, rFormatEncrypted,
+                rFormatBinary, rFormat3nK, rFormatUnknown, rTooFewData,
+                rBufferTooSmall);
 
 {==============================================================================}
 {   TSII_Decryptor - declaration                                               }
@@ -65,8 +59,8 @@ const
   SII_PRGS_STAGELEN_DECODE  = 90;
 
 type
-  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
-  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Single);
+  TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
+  TSII_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
   TSII_Decryptor = class(TObject)
   private
@@ -77,9 +71,9 @@ type
     fOnProgressEvent:     TSII_ProgressEvent;
     fOnProgressCallback:  TSII_ProgressCallback;
   protected
-    procedure DoProgress(Sender: TObject; Progress: Single); virtual;
-    procedure DecryptProgressHandler(Sender: TObject; Progress: Single); virtual;
-    procedure DecodeProgressHandler(Sender: TObject; Progress: Single); virtual;
+    procedure DoProgress(Sender: TObject; Progress: Double); virtual;
+    procedure DecryptProgressHandler(Sender: TObject; Progress: Double); virtual;
+    procedure DecodeProgressHandler(Sender: TObject; Progress: Double); virtual;
     procedure DecryptStreamInternal(Input: TStream; Temp: TMemoryStream; const Header: TSIIHeader); virtual;
   public
     constructor Create;
@@ -113,16 +107,23 @@ type
 {   Auxiliary functions                                                        }
 {==============================================================================}
 
-Function GetResultAsText(ResultCode: TSIIResult): String;  
+Function GetResultAsInt(ResultCode: TSIIResult): Int32;
+Function GetResultAsText(ResultCode: TSIIResult): String;
 
 implementation
 
 uses
-  SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, SII_Decode_Decoder,
-  SII_3nK_Transcoder, ZLibCommon, ZLibStatic
+  SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, ZLibCommon, ZLibStatic,
+  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Header
 {$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazFileUtils
 {$ENDIF};
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+  {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
 
 {==============================================================================}
 {   Auxiliary functions                                                        }
@@ -135,6 +136,25 @@ begin
 {$ELSE}
   Result := SysUtils.ExpandFileName(Path);
 {$ENDIF}
+end;
+
+//------------------------------------------------------------------------------
+
+Function GetResultAsInt(ResultCode: TSIIResult): Int32;
+begin
+case ResultCode of
+  rSuccess:         Result := SIIDEC_RESULT_SUCCESS;
+  rFormatPlainText: Result := SIIDEC_RESULT_FORMAT_PLAINTEXT;
+  rFormatEncrypted: Result := SIIDEC_RESULT_FORMAT_ENCRYPTED;
+  rFormatBinary:    Result := SIIDEC_RESULT_FORMAT_BINARY;
+  rFormat3nK:       Result := SIIDEC_RESULT_FORMAT_3NK;
+  rFormatUnknown:   Result := SIIDEC_RESULT_FORMAT_UNKNOWN;
+  rTooFewData:      Result := SIIDEC_RESULT_TOO_FEW_DATA;
+  rBufferTooSmall:  Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
+else
+  {rGenericError}
+  Result := SIIDEC_RESULT_GENERIC_ERROR;
+end;
 end;
 
 //------------------------------------------------------------------------------
@@ -164,7 +184,8 @@ end;
 {   TSII_Decryptor - protected methods                                         }
 {------------------------------------------------------------------------------}
 
-procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Single);
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TSII_Decryptor.DoProgress(Sender: TObject; Progress: Double);
 begin
 If fReportProgress then
   begin
@@ -174,20 +195,25 @@ If fReportProgress then
       fOnProgressCallback(Self,Progress);
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
-procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Single);
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TSII_Decryptor.DecryptProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECRYPT,Progress);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
-procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Single);
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TSII_Decryptor.DecodeProgressHandler(Sender: TObject; Progress: Double);
 begin
 fProgressTracker.SetStageIDProgress(SII_PRGS_STAGEID_DECODE,Progress);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -338,6 +364,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_Decryptor.DecryptStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   InitOutPos: Int64;
@@ -353,7 +380,7 @@ try
       InitOutPos := Output.Position;
       If (Input.Size - Input.Position) >= SizeOf(TSIIHeader) then
         begin
-          Input.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
+          Input.ReadBuffer(Header,SizeOf(TSIIHeader));
           TempStream := TMemoryStream.Create;
           try
             DecryptStreamInternal(Input,TempStream,Header);
@@ -379,6 +406,7 @@ finally
   fReportProgress := True;
 end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -580,6 +608,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TSII_Decryptor.DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult;
 var
   TempStream: TMemoryStream;
@@ -598,7 +627,7 @@ try
           InitOutPos := Input.Position;
           If (Input.Size - Input.Position >= SizeOf(TSIIHeader)) then
             begin
-              Input.ReadBuffer({%H-}Header,SizeOf(TSIIHeader));
+              Input.ReadBuffer(Header,SizeOf(TSIIHeader));
               DecryptStreamInternal(Input,TempStream,Header);
               TempStream.Seek(0,soBeginning);
               Result := GetStreamFormat(TempStream);
@@ -637,6 +666,7 @@ finally
   fReportProgress := True;
 end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

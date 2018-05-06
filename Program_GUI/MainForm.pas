@@ -45,7 +45,7 @@ type
     { Private declarations }
   protected
     ProcessingThread: TSII_DecryptProcessThread;
-    procedure ProgressHandler(Sender: TObject; Progress: Single);
+    procedure ProgressHandler(Sender: TObject; Progress: Double);
     procedure EnableOptions(Enable: Boolean);
   public
     { Public declarations }
@@ -63,9 +63,15 @@ implementation
 {$ENDIF}
 
 uses
-  TaskbarProgress, WinFileInfo;
+  WinTaskbarProgress, WinFileInfo;
 
-procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Single);
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
+
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Double);
 var
   TempStr:  String;
   NewPos:   Integer;
@@ -106,6 +112,7 @@ else
       end;
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -119,6 +126,7 @@ end;
 
 //==============================================================================
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.FormCreate(Sender: TObject);
 begin
 stbStatusBar.DoubleBuffered := True;
@@ -135,9 +143,11 @@ with TWinFileInfo.Create(WFI_LS_LoadVersionInfo or WFI_LS_LoadFixedFileInfo or W
     Free;
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
@@ -156,25 +166,31 @@ If Assigned(ProcessingThread) then
   end
 else CanClose := True;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
-
+ 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.btnBrowseInFileClick(Sender: TObject);
 begin
 If diaOpenInputFile.Execute then
   leInputFile.Text := diaOpenInputFile.FileName;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
-
+ 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.btnBrowseOutFileClick(Sender: TObject);
 begin
 If diaSaveOutputFile.Execute then
   leOutputFile.Text := diaSaveOutputFile.FileName;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
-
+   
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.btnStartProcessingClick(Sender: TObject);
 begin
 If leInputFile.Text <> '' then
@@ -198,6 +214,7 @@ If leInputFile.Text <> '' then
   end
 else MessageDlg('No input file selected.',mtError,[mbOk],0);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 end.
 

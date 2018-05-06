@@ -9,20 +9,29 @@
 
   Progress tracker
 
-  ©František Milt 2018-03-21
+  ©František Milt 2018-04-29
 
-  Version 1.1
+  Version 1.3.3
+
+  Dependencies:
+    AuxTypes   - github.com/ncs-sniper/Lib.AuxTypes
+    AuxClasses - github.com/ncs-sniper/Lib.AuxClasses
 
 ===============================================================================}
 unit ProgressTracker;
 
 {$IFDEF FPC}
   {$MODE Delphi}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 {$TYPEINFO ON}
 
 interface
+
+uses
+  AuxClasses;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -31,17 +40,15 @@ interface
 ===============================================================================}
 
 type
-  TProgressEvent    = procedure(Sender: TObject; Progress: Single) of object;
-  TProgressCallback = procedure(Sender: TObject; Progress: Single);
-
   TProgressTracker = class; // forward declaration
 
   TProgressStage = record
-    StageID:        Integer;
-    AbsoluteLength: Single;
-    RelativeLength: Single;
-    RelativeStart:  Single;
-    StageObject:    TProgressTracker;
+    StageID:          Integer;
+    AbsoluteLength:   Double;
+    RelativeLength:   Double;
+    RelativeStart:    Double;
+    StageObject:      TProgressTracker;
+    RelativeProgress: Double;
   end;
 
   TProgressStages = record
@@ -53,42 +60,50 @@ type
     TProgressTracker - declaration
 ===============================================================================}
 
-  TProgressTracker = class(TObject)
+  TProgressTracker = class(TCustomListObject)
   private
     fUpdateCounter:       Integer;
     fConsecutiveStages:   Boolean;
-    fGrowOnly:            Boolean;
-    fProgress:            Single;
+    fConsStagesActiveIdx: Integer;
+    fStrictlyGrowing:     Boolean;
+    fLimitedRange:        Boolean;
+    fMinProgressDelta:    Double;
+    fPrevProgress:        Double;
+    fProgress:            Double;
     fMaximum:             Int64;
     fPosition:            Int64;
+    fStageIndex:          Integer;
     fStages:              TProgressStages;
-    fOnStageProgress:     TProgressEvent;
-    fOnTrackerProgress:   TProgressEvent;
-    fOnTrackerProgressCB: TProgressCallback;
-    fUserPtrData:         Pointer;
-    fUserIntData:         Integer;
+    fOnStageProgress:     TFloatEvent;
+    fOnTrackerProgress:   TFloatEvent;
+    fOnTrackerProgressCB: TFloatCallback;
     Function GetUpdating: Boolean;
     procedure SetConsecutiveStages(Value: Boolean);
-    procedure SetProgress(Value: Single);
+    procedure SetProgress(Value: Double);
     procedure SetMaximum(Value: Int64);
     procedure SetPosition(Value: Int64);
     Function GetStage(Index: Integer): TProgressStage;
     Function GetStageObject(Index: Integer): TProgressTracker;
   protected
-    Function CheckIndex(Index: Integer): Boolean; virtual;
-    procedure Grow; virtual;
+    Function GetCapacity: Integer; override;
+    procedure SetCapacity(Value: Integer); override;
+    Function GetCount: Integer; override;
+    procedure SetCount(Value: Integer); override;
     procedure DoStageProgress; virtual;
     procedure DoTrackerProgress; virtual;
-    procedure DoProgressEvents; virtual;
-    procedure StageProgressHandler(Sender: TObject; {%H-}Progress: Single); virtual;
-    property StageEvent: TProgressEvent read fOnStageProgress write fOnStageProgress;
+    procedure DoProgress; virtual;
+    procedure StageProgressHandler(Sender: TObject; Progress: Double); virtual;
+    procedure ReindexStages; virtual;
+    procedure PrepareNewStage(var NewStage: TProgressStage); virtual;
+    property StageEvent: TFloatEvent read fOnStageProgress write fOnStageProgress;
+    property StageIndex: Integer read fStageIndex write fStageIndex;
   public
     constructor Create;
     destructor Destroy; override;
     Function BeginUpdate: Integer; virtual;
     Function EndUpdate: Integer; virtual;
-    Function LowIndex: Integer; virtual;
-    Function HighIndex: Integer; virtual;
+    Function LowIndex: Integer; override;
+    Function HighIndex: Integer; override;
     Function First: TProgressStage; virtual;
     Function Last: TProgressStage; virtual;
     Function IndexOf(StageObject: TProgressTracker): Integer; overload; virtual;
@@ -97,8 +112,8 @@ type
     Function Find(StageID: Integer; out Index: Integer): Boolean; overload; virtual;
     Function Find(StageObject: TProgressTracker; out Stage: TProgressStage): Boolean; overload; virtual;
     Function Find(StageID: Integer; out Stage: TProgressStage): Boolean; overload; virtual;
-    Function Add(AbsoluteLength: Single; StageID: Integer = 0): Integer; virtual;
-    procedure Insert(Index: Integer; AbsoluteLength: Single; StageID: Integer = 0); virtual;
+    Function Add(AbsoluteLength: Double; StageID: Integer = 0): Integer; virtual;
+    procedure Insert(Index: Integer; AbsoluteLength: Double; StageID: Integer = 0); virtual;
     procedure Move(SrcIdx, DstIdx: Integer); virtual;
     procedure Exchange(Idx1, Idx2: Integer); virtual;
     Function Extract(StageObject: TProgressTracker): TProgressTracker; virtual;
@@ -106,29 +121,28 @@ type
     Function Remove(StageID: Integer): Integer; overload; virtual;
     procedure Delete(Index: Integer); virtual;
     procedure Clear; virtual;
-    Function Recalculate(ProgressOnly: Boolean): Single; virtual;
+    Function Recalculate(LocalProgressOnly: Boolean): Double; virtual;
     procedure RecalculateStages; virtual;
-    procedure SetStageProgress(Index: Integer; NewValue: Single); virtual;
+    procedure SetStageProgress(Index: Integer; NewValue: Double); virtual;
     procedure SetStageMaximum(Index: Integer; NewValue: Int64); virtual;
     procedure SetStagePosition(Index: Integer; NewValue: Int64); virtual;
-    Function SetStageIDProgress(StageID: Integer; NewValue: Single): Boolean; virtual;
+    Function SetStageIDProgress(StageID: Integer; NewValue: Double): Boolean; virtual;
     Function SetStageIDMaximum(StageID: Integer; NewValue: Int64): Boolean; virtual;
     Function SetStageIDPosition(StageID: Integer; NewValue: Int64): Boolean; virtual;
     property Stages[Index: Integer]: TProgressStage read GetStage; default;
     property StageObjects[Index: Integer]: TProgressTracker read GetStageObject;
-    property OnProgressCallBack: TProgressCallback read fOnTrackerProgressCB write fOnTrackerProgressCB;
-    property UserPtrData: Pointer read fUserPtrData write fUserPtrData;
+    property OnProgressCallBack: TFloatCallback read fOnTrackerProgressCB write fOnTrackerProgressCB;
   published
     property Updating: Boolean read GetUpdating;
     property ConsecutiveStages: Boolean read fConsecutiveStages write SetConsecutiveStages;
-    property GrowOnly: Boolean read fGrowOnly write fGrowOnly;
-    property Progress: Single read fProgress write SetProgress;
+    property StrictlyGrowing: Boolean read fStrictlyGrowing write fStrictlyGrowing;
+    property LimitedRange: Boolean read fLimitedRange write fLimitedRange;
+    property MinProgressDelta: Double read fMinProgressDelta write fMinProgressDelta;
+    property Progress: Double read fProgress write SetProgress;
     property Maximum: Int64 read fMaximum write SetMaximum;
     property Position: Int64 read fPosition write SetPosition;
-    property Count: Integer read fStages.Count;
-    property OnProgress: TProgressEvent read fOnTrackerProgress write fOnTrackerProgress;
-    property UserIntData: Integer read fUserIntData write fUserIntData;
-    property UserData: Integer read fUserIntData write fUserIntData;
+    property OnProgressEvent: TFloatEvent read fOnTrackerProgress write fOnTrackerProgress;
+    property OnProgress: TFloatEvent read fOnTrackerProgress write fOnTrackerProgress;
   end;
 
 implementation
@@ -136,15 +150,16 @@ implementation
 uses
   SysUtils;
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                 TProgressTracker
 --------------------------------------------------------------------------------
 ===============================================================================}
-
-const
-  PT_GROW_DELTA = 32;
-
 {===============================================================================
     TProgressTracker - implementation
 ===============================================================================}
@@ -170,12 +185,16 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.SetProgress(Value: Single);
+procedure TProgressTracker.SetProgress(Value: Double);
 begin
-If (Value > fProgress) or not fGrowOnly then
+If ((Value > fProgress) or ((fProgress = 0.0) and (Value = 0.0))) or
+  not fStrictlyGrowing then
   begin
-    fProgress := Value;
-    DoProgressEvents;
+    fProgress := Value;  
+    If fLimitedRange then
+      If fProgress < 0.0 then fProgress := 0.0
+        else If fProgress > 1.0 then fProgress := 1.0;
+    DoProgress;
   end;
 end;
 
@@ -223,18 +242,42 @@ end;
     TProgressTracker - protected methods
 -------------------------------------------------------------------------------}
 
-Function TProgressTracker.CheckIndex(Index: Integer): Boolean;
+Function TProgressTracker.GetCapacity: Integer;
 begin
-Result := (Index >= Low(fStages.Arr)) and (Index < fStages.Count);
+Result := Length(fStages.Arr);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.Grow;
+procedure TProgressTracker.SetCapacity(Value: Integer);
+var
+  i:  Integer;
 begin
-If fStages.Count >= Length(fStages.Arr) then
-  SetLength(fStages.Arr,Length(fSTages.Arr) + PT_GROW_DELTA);
+If Value < fStages.Count then
+  begin
+    For i := Value to Pred(fStages.Count) do
+      FreeAndNil(fStages.Arr[i].StageObject);
+    fStages.Count := Value;
+    Recalculate(False);
+  end;
+SetLength(fStages.Arr,Value);
 end;
+
+//------------------------------------------------------------------------------
+
+Function TProgressTracker.GetCount: Integer;
+begin
+Result := fStages.Count;
+end;
+
+//------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TProgressTracker.SetCount(Value: Integer);
+begin
+// do nothing
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -259,22 +302,83 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.DoProgressEvents;
+procedure TProgressTracker.DoProgress;
 begin
-If (fUpdateCounter <= 0) then
+If (Abs(fProgress - fPrevProgress) >= fMinProgressDelta) or
+   ((fProgress = 0.0) or (fProgress = 1.0)) then
   begin
-    DoStageProgress;
-    DoTrackerProgress;
+    fPrevProgress := fProgress;
+    If (fUpdateCounter <= 0) then
+      begin
+        DoStageProgress;
+        DoTrackerProgress;
+      end;
   end;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.StageProgressHandler(Sender: TObject; Progress: Single);
+procedure TProgressTracker.StageProgressHandler(Sender: TObject; Progress: Double);
+var
+  NewRelativeProgress:  Double;
 begin
-Recalculate(True);
+If CheckIndex((Sender as TProgressTracker).StageIndex) then
+  with fStages.Arr[TProgressTracker(Sender).StageIndex] do
+    begin
+      NewRelativeProgress := (Progress * RelativeLength);
+      If fConsecutiveStages then
+        begin
+          If TProgressTracker(Sender).StageIndex >= fConsStagesActiveIdx then
+            begin
+              If NewRelativeProgress <> 0.0 then
+                begin
+                  fConsStagesActiveIdx := TProgressTracker(Sender).StageIndex;
+                  fProgress := RelativeStart + NewRelativeProgress
+                end
+              else If RelativeProgress <> 0.0 then Recalculate(True);
+            end;
+          RelativeProgress := NewRelativeProgress;
+        end
+      else
+        begin
+          If RelativeProgress <> NewRelativeProgress then
+            begin
+              fProgress := (fProgress - RelativeProgress) + NewRelativeProgress;
+              RelativeProgress := NewRelativeProgress;
+            end;
+        end;
+      If fLimitedRange then
+        If fProgress < 0.0 then fProgress := 0.0
+          else If fProgress > 1.0 then fProgress := 1.0;
+      DoProgress;
+    end;
 end;
 
+//------------------------------------------------------------------------------
+
+procedure TProgressTracker.ReindexStages;
+var
+  i:  Integer;
+begin
+If fUpdateCounter <= 0 then
+  For i := LowIndex to HighIndex do
+    fStages.Arr[i].StageObject.StageIndex := i;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TProgressTracker.PrepareNewStage(var NewStage: TProgressStage);
+begin
+NewStage.RelativeLength := 0.0;
+NewStage.StageObject := TProgressTracker.Create;
+NewStage.StageObject.StageEvent := StageProgressHandler;
+NewStage.StageObject.ConsecutiveStages := fConsecutiveStages;
+NewStage.StageObject.StrictlyGrowing := fStrictlyGrowing;
+NewStage.StageObject.LimitedRange := fLimitedRange;
+NewStage.StageObject.MinProgressDelta := fMinProgressDelta;
+NewStage.StageObject.CopyGrowSettings(Self);
+NewStage.RelativeProgress := 0.0;
+end;
 
 {-------------------------------------------------------------------------------
     TProgressTracker - public methods
@@ -285,17 +389,22 @@ begin
 inherited;
 fUpdateCounter := 0;
 fConsecutiveStages := True;
-fGrowOnly := False;
+fConsStagesActiveIdx := -1;
+fStrictlyGrowing := False;
+fLimitedRange := True;
+fMinProgressDelta := 0.0;
+fPrevProgress := 0.0;
 fProgress := 0.0;
 fMaximum := 0;
 fPosition := 0;
+fStageIndex := -1;
 SetLength(fStages.Arr,0);
 fStages.Count := 0;
 fOnStageProgress := nil;
 fOnTrackerProgress := nil;
 fOnTrackerProgressCB := nil;
-fUserPtrData := nil;
-fUserIntData := 0;
+// change grow limit (orginal is set to 128M, that is too high)
+GrowLimit := 64 * 1024;
 end;
 
 //------------------------------------------------------------------------------
@@ -326,8 +435,9 @@ Dec(fUpdateCounter);
 Result := fUpdateCounter;
 If fUpdateCounter <= 0 then
   begin
+    fUpdateCounter := 0;  
+    ReindexStages;
     Recalculate(False);
-    fUpdateCounter := 0;
   end;
 end;
 
@@ -437,41 +547,40 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TProgressTracker.Add(AbsoluteLength: Single; StageID: Integer = 0): Integer;
+Function TProgressTracker.Add(AbsoluteLength: Double; StageID: Integer = 0): Integer;
 var
-  NewItem:  TProgressStage;
+  NewStage: TProgressStage;
 begin
 Grow;
-NewItem.StageID := StageID;
-NewItem.AbsoluteLength := AbsoluteLength;
-NewItem.RelativeLength := 0.0;
-NewItem.StageObject := TProgressTracker.Create;
-NewItem.StageObject.StageEvent := StageProgressHandler;
+NewStage.StageID := StageID;
+NewStage.AbsoluteLength := AbsoluteLength;
+PrepareNewStage(NewStage);
+NewStage.StageObject.StageIndex := fStages.Count;
 Result := fStages.Count;
-fStages.Arr[Result] := NewItem;
+fStages.Arr[Result] := NewStage;
 Inc(fStages.Count);
 Recalculate(False);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.Insert(Index: Integer; AbsoluteLength: Single; StageID: Integer = 0);
+procedure TProgressTracker.Insert(Index: Integer; AbsoluteLength: Double; StageID: Integer = 0);
 var
   i:        Integer;
-  NewItem:  TProgressStage;
+  NewStage:  TProgressStage;
 begin
 If CheckIndex(Index) then
   begin
     Grow;
     For i := HighIndex downto Index do
       fStages.Arr[i + 1] := fStages.Arr[i];
-    NewItem.StageID := StageID;
-    NewItem.AbsoluteLength := AbsoluteLength;
-    NewItem.RelativeLength := 0.0;
-    NewItem.StageObject := TProgressTracker.Create;
-    NewItem.StageObject.StageEvent := StageProgressHandler;
-    fStages.Arr[Index] := NewItem;
+    NewStage.StageID := StageID;
+    NewStage.AbsoluteLength := AbsoluteLength;
+    PrepareNewStage(NewStage);
+    NewStage.StageObject.StageIndex := Index;    
+    fStages.Arr[Index] := NewStage;
     Inc(fStages.Count);
+    ReindexStages;
     Recalculate(False);
   end
 else If Index = fStages.Count then
@@ -501,6 +610,7 @@ If SrcIdx <> DstIdx then
       For i := SrcIdx downto Succ(DstIdx) do
         fStages.Arr[i] := fStages.Arr[i - 1];
     fStages.Arr[DstIdx] := Temp;
+    ReindexStages;
     Recalculate(False);
   end;
 end;
@@ -520,6 +630,7 @@ If Idx1 <> Idx2 then
     Temp := fStages.Arr[Idx1];
     fStages.Arr[Idx1] := fStages.Arr[Idx2];
     fStages.Arr[Idx2] := Temp;
+    ReindexStages;
     Recalculate(False);
   end;
 end;
@@ -538,7 +649,9 @@ If CheckIndex(Index) then
     For i := Succ(Index) to Pred(fStages.Count) do
       fStages.Arr[i - 1] := fStages.Arr[i];
     Dec(fStages.Count);
+    ReindexStages;
     Recalculate(False);
+    Shrink;
   end
 else Result := nil;
 end;
@@ -573,7 +686,9 @@ If CheckIndex(Index) then
     For i := Succ(Index) to Pred(fStages.Count) do
       fStages.Arr[i - 1] := fStages.Arr[i];
     Dec(fStages.Count);
+    ReindexStages;
     Recalculate(False);
+    Shrink;
   end
 else raise Exception.CreateFmt('TProgressTracker.Delete: Index (%d) out of bounds..',[Index]);
 end;
@@ -587,59 +702,71 @@ begin
 For i := LowIndex to HighIndex do
   FreeAndNil(fStages.Arr[i].StageObject);
 fStages.Count := 0;
+ReindexStages;
 Recalculate(False);
+Shrink;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TProgressTracker.Recalculate(ProgressOnly: Boolean): Single;
+Function TProgressTracker.Recalculate(LocalProgressOnly: Boolean): Double;
 var
   i:    Integer;
-  Temp: Single;
+  Temp: Double;
 begin
-If fStages.Count > 0 then
+If fUpdateCounter <= 0 then
   begin
-    If not ProgressOnly then
+    If fStages.Count > 0 then
       begin
-        Temp := 0.0;
-        For i := LowIndex to HighIndex do
-          Temp := Temp + fStages.Arr[i].AbsoluteLength;
-        For i := LowIndex to HighIndex do
+        If not LocalProgressOnly then
           begin
-            If Temp <> 0.0 then
-              fStages.Arr[i].RelativeLength := fStages.Arr[i].AbsoluteLength / Temp
-            else
-              fStages.Arr[i].RelativeLength := 0.0;
-            If i > LowIndex then
-              fStages.Arr[i].RelativeStart := fStages.Arr[i - 1].RelativeStart + fStages.Arr[i - 1].RelativeLength
-            else
-              fStages.Arr[i].RelativeStart := 0.0;
+            Temp := 0.0;
+            For i := LowIndex to HighIndex do
+              Temp := Temp + fStages.Arr[i].AbsoluteLength;
+            For i := LowIndex to HighIndex do
+              with fStages.Arr[i] do
+                begin
+                  If Temp <> 0.0 then
+                    RelativeLength := AbsoluteLength / Temp
+                  else
+                    RelativeLength := 0.0;
+                  If i > LowIndex then
+                    RelativeStart := fStages.Arr[i - 1].RelativeStart + fStages.Arr[i - 1].RelativeLength
+                  else
+                    RelativeStart := 0.0;
+                  RelativeProgress := RelativeLength * StageObject.Progress;
+               end;
           end;
-      end;
-    fProgress := 0.0;
-    If fConsecutiveStages then
-      begin
-        For i := HighIndex downto LowIndex  do
-          If fStages.Arr[i].StageObject.Progress <> 0.0 then
-            begin
-              fProgress := fStages.Arr[i].RelativeStart + (fStages.Arr[i].StageObject.Progress * fStages.Arr[i].RelativeLength);
-              Break{For i};
-            end;
+        fProgress := 0.0;
+        If fConsecutiveStages then
+          begin
+            fConsStagesActiveIdx := -1;
+            For i := HighIndex downto LowIndex  do
+              If fStages.Arr[i].StageObject.Progress <> 0.0 then
+                begin
+                  fConsStagesActiveIdx := i;
+                  fProgress := fStages.Arr[i].RelativeStart + (fStages.Arr[i].StageObject.Progress * fStages.Arr[i].RelativeLength);
+                  Break{For i};
+                end;
+          end
+        else
+          begin
+            For i := LowIndex to HighIndex do
+              fProgress := fProgress + (fStages.Arr[i].StageObject.Progress * fStages.Arr[i].RelativeLength);
+          end;
       end
     else
       begin
-        For i := LowIndex to HighIndex do
-          fProgress := fProgress + (fStages.Arr[i].StageObject.Progress * fStages.Arr[i].RelativeLength);
+        If fMaximum <> 0 then
+          fProgress := fPosition / fMaximum
+        else
+          fProgress := 0.0;
       end;
-  end
-else
-  begin
-    If fMaximum <> 0 then
-      fProgress := fPosition / fMaximum
-    else
-      fProgress := 0.0;
+    If fLimitedRange then
+      If fProgress < 0.0 then fProgress := 0.0
+        else If fProgress > 1.0 then fProgress := 1.0;
+    DoProgress;
   end;
-DoProgressEvents;
 Result := fProgress;
 end;
 
@@ -663,7 +790,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TProgressTracker.SetStageProgress(Index: Integer; NewValue: Single);
+procedure TProgressTracker.SetStageProgress(Index: Integer; NewValue: Double);
 begin
 If CheckIndex(Index) then
   fStages.Arr[Index].StageObject.Progress := NewValue
@@ -693,7 +820,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TProgressTracker.SetStageIDProgress(StageID: Integer; NewValue: Single): Boolean;
+Function TProgressTracker.SetStageIDProgress(StageID: Integer; NewValue: Double): Boolean;
 var
   Index:  Integer;
 begin

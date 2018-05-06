@@ -86,7 +86,7 @@ try
                 OutFileName := InFileName
               end;
             ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
-            ExitCode := Ord(ProcResult);
+            ExitCode := GetResultAsInt(ProcResult);
             WriteLn;
             WriteLn(Format('Result: %s (%d)',[GetResultAsText(ProcResult),ExitCode]));
           finally
@@ -132,7 +132,7 @@ try
                 else
                   ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
               end;
-            ExitCode := Ord(ProcResult);
+            ExitCode := GetResultAsInt(ProcResult);
             WriteLn;
             WriteLn(Format('Result: %s (%d)',[GetResultAsText(ProcResult),ExitCode]));
           finally

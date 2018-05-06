@@ -35,6 +35,8 @@ unit WinFileInfo;
   }
   {.$DEFINE BARE_FPC}
   {$MODE ObjFPC}{$H+}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 {$IF Defined(FPC) and not Defined(Unicode) and (FPC_FULLVERSION < 20701) and not Defined(BARE_FPC)}
@@ -398,6 +400,13 @@ implementation
 uses
   Classes, StrRect{$IFDEF UTF8Wrappers}, LazFileUtils{$ENDIF};
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+  {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
+{$ENDIF}
+
 {$IF not Declared(GetFileSizeEx)}
 Function GetFileSizeEx(hFile: THandle; lpFileSize: PInt64): BOOL; stdcall; external 'kernel32.dll';
 {$IFEND}
@@ -497,7 +506,8 @@ const
   CP_THREAD_ACP = 3;
 {$IFEND}
 
-Function WideToString(const WStr: WideString; {%H-}AnsiCodePage: UINT = CP_THREAD_ACP): String;
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+Function WideToString(const WStr: WideString; AnsiCodePage: UINT = CP_THREAD_ACP): String;
 begin
 {$IFDEF Unicode}
 Result := WStr;
@@ -513,6 +523,7 @@ If (AnsiCodePage <> CP_THREAD_ACP) and (Length(Result) <= 0) and (Length(WStr) >
 {$ENDIF}
 {$ENDIF}
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -621,6 +632,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function TWinFileInfo.GetVersionInfoValue(const Language,Key: String): String;
 var
   StrPtr:   Pointer;
@@ -628,9 +640,10 @@ var
 begin
 Result := '';
 If fVersionInfoPresent and (Language <> '') and (Key <> '') then
-  If VerQueryValue(fVerInfoData,PChar(Format('\StringFileInfo\%s\%s',[Language,Key])),{%H-}StrPtr,{%H-}StrSize) then
+  If VerQueryValue(fVerInfoData,PChar(Format('\StringFileInfo\%s\%s',[Language,Key])),StrPtr,StrSize) then
     Result := WinToStr(PChar(StrPtr));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {------------------------------------------------------------------------------}
 {   TWinFileInfo - protected methods                                           }
@@ -643,6 +656,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TWinFileInfo.VersionInfo_LoadStrings;
 var
   Table:    Integer;
@@ -655,7 +669,7 @@ For Table := Low(fVersionInfoStringTables) to High(fVersionInfoStringTables) do
     begin
       For i := High(Strings) downto Low(Strings) do
         begin
-          If VerQueryValue(fVerInfoData,PChar(Format('\StringFileInfo\%s\%s',[Translation.LanguageStr,StrToWin(Strings[i].Key)])),{%H-}StrPtr,{%H-}StrSize) then
+          If VerQueryValue(fVerInfoData,PChar(Format('\StringFileInfo\%s\%s',[Translation.LanguageStr,StrToWin(Strings[i].Key)])),StrPtr,StrSize) then
             Strings[i].Value := WinToStr(PChar(StrPtr))
           else
             begin
@@ -666,6 +680,7 @@ For Table := Low(fVersionInfoStringTables) to High(fVersionInfoStringTables) do
         end;
     end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -751,10 +766,12 @@ var
 
   Function Align32bit(Ptr: Pointer): Pointer;
   begin
-    If (({%H-}PtrUInt(Ptr) and $3) <> 0) then
-      Result := {%H-}Pointer(({%H-}PtrUInt(Ptr) and not PtrUInt($3)) + 4)
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    If ((PtrUInt(Ptr) and $3) <> 0) then
+      Result := Pointer((PtrUInt(Ptr) and not PtrUInt($3)) + 4)
     else
       Result := Ptr;
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
   end;
 
 //--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
@@ -763,16 +780,20 @@ var
   begin
     PVIS_Base(BlockBase)^.Address := Ptr;
     PVIS_Base(BlockBase)^.Size := PUInt16(PVIS_Base(BlockBase)^.Address)^;
-    PVIS_Base(BlockBase)^.Key := {%H-}PWideChar({%H-}PtrUInt(PVIS_Base(BlockBase)^.Address) + 6);
-    Ptr := Align32bit({%H-}Pointer({%H-}PtrUInt(PVIS_Base(BlockBase)^.Address) + 6 + PtrUInt((Length(PVIS_Base(BlockBase)^.Key) + 1) * 2)));
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    PVIS_Base(BlockBase)^.Key := PWideChar(PtrUInt(PVIS_Base(BlockBase)^.Address) + 6);
+    Ptr := Align32bit(Pointer(PtrUInt(PVIS_Base(BlockBase)^.Address) + 6 + PtrUInt((Length(PVIS_Base(BlockBase)^.Key) + 1) * 2)));
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
   end;
 
 //--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
 
   Function CheckPointer(var Ptr: Pointer; BlockBase: Pointer): Boolean;
   begin
-    Result := ({%H-}PtrUInt(Ptr) >= {%H-}PtrUInt(PVIS_Base(BlockBase)^.Address)) and
-              ({%H-}PtrUInt(Ptr) < ({%H-}PtrUInt(PVIS_Base(BlockBase)^.Address) + PVIS_Base(BlockBase)^.Size));
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    Result := (PtrUInt(Ptr) >= PtrUInt(PVIS_Base(BlockBase)^.Address)) and
+              (PtrUInt(Ptr) < (PtrUInt(PVIS_Base(BlockBase)^.Address) + PVIS_Base(BlockBase)^.Size));
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
   end;
 
 //--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
@@ -782,9 +803,11 @@ If (fVerInfoSize >= 6) and (fVerInfoSize >= PUInt16(fVerInfoData)^) then
   try
     CurrentAddress := fVerInfoData;
     ParseBlock(CurrentAddress,@fVersionInfoStruct);
-    fVersionInfoStruct.FixedFileInfoSize := {%H-}PUInt16({%H-}PtrUInt(fVersionInfoStruct.Address) + 2)^;
+  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+    fVersionInfoStruct.FixedFileInfoSize := PUInt16(PtrUInt(fVersionInfoStruct.Address) + 2)^;
     fVersionInfoStruct.FixedFileInfo := CurrentAddress;
-    CurrentAddress := Align32bit({%H-}Pointer({%H-}PtrUInt(CurrentAddress) + fVersionInfoStruct.FixedFileInfoSize));
+    CurrentAddress := Align32bit(Pointer(PtrUInt(CurrentAddress) + fVersionInfoStruct.FixedFileInfoSize));
+  {$IFDEF FPCDWM}{$POP}{$ENDIF}
     while CheckPointer(CurrentAddress,@fVersionInfoStruct) do
       begin
         ParseBlock(CurrentAddress,@TempBlock);
@@ -805,9 +828,11 @@ If (fVerInfoSize >= 6) and (fVerInfoSize >= PUInt16(fVerInfoData)^) then
                         begin
                           SetLength(Strings,Length(Strings) + 1);
                           ParseBlock(CurrentAddress,@Strings[High(Strings)]);
-                          Strings[High(Strings)].ValueSize := {%H-}PUInt16({%H-}PtrUInt(Strings[High(Strings)].Address) + 2)^;
+                        {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+                          Strings[High(Strings)].ValueSize := PUInt16(PtrUInt(Strings[High(Strings)].Address) + 2)^;
                           Strings[High(Strings)].Value := CurrentAddress;
-                          CurrentAddress := Align32bit({%H-}Pointer({%H-}PtrUInt(Strings[High(Strings)].Address) + Strings[High(Strings)].Size));
+                          CurrentAddress := Align32bit(Pointer(PtrUInt(Strings[High(Strings)].Address) + Strings[High(Strings)].Size));
+                        {$IFDEF FPCDWM}{$POP}{$ENDIF}
                         end;
                   end;
               end
@@ -824,9 +849,11 @@ If (fVerInfoSize >= 6) and (fVerInfoSize >= PUInt16(fVerInfoData)^) then
                   begin
                     SetLength(Vars,Length(Vars) + 1);
                     ParseBlock(CurrentAddress,@Vars[High(Vars)]);
-                    Vars[High(Vars)].ValueSize := {%H-}PUInt16({%H-}PtrUInt(Vars[High(Vars)].Address) + 2)^;
+                  {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+                    Vars[High(Vars)].ValueSize := PUInt16(PtrUInt(Vars[High(Vars)].Address) + 2)^;
                     Vars[High(Vars)].Value := CurrentAddress;
-                    CurrentAddress := Align32bit({%H-}Pointer({%H-}PtrUInt(Vars[High(Vars)].Address) + Vars[High(Vars)].Size));
+                    CurrentAddress := Align32bit(Pointer(PtrUInt(Vars[High(Vars)].Address) + Vars[High(Vars)].Size));
+                  {$IFDEF FPCDWM}{$POP}{$ENDIF}
                   end;
               end;
           end
@@ -845,19 +872,22 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TWinFileInfo.VersionInfo_LoadTranslations;
 var
   TrsPtr:   Pointer;
   TrsSize:  UInt32;
   i:        Integer;
 begin
-If VerQueryValue(fVerInfoData,'\VarFileInfo\Translation',{%H-}TrsPtr,{%H-}TrsSize) then
+If VerQueryValue(fVerInfoData,'\VarFileInfo\Translation',TrsPtr,TrsSize) then
   begin
     SetLength(fVersionInfoStringTables,TrsSize div SizeOf(UInt32));
     For i := Low(fVersionInfoStringTables) to High(fVersionInfoStringTables) do
       with fVersionInfoStringTables[i].Translation do
         begin
-          Translation := {%H-}PUInt32({%H-}PtrUInt(TrsPtr) + (UInt32(i) * SizeOf(UInt32)))^;
+        {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+          Translation := PUInt32(PtrUInt(TrsPtr) + (UInt32(i) * SizeOf(UInt32)))^;
+        {$IFDEF FPCDWM}{$POP}{$ENDIF}
           SetLength(LanguageName,256);
           SetLength(LanguageName,VerLanguageName(Translation,PChar(LanguageName),Length(LanguageName)));
           LanguageName := WinToStr(LanguageName);
@@ -865,9 +895,11 @@ If VerQueryValue(fVerInfoData,'\VarFileInfo\Translation',{%H-}TrsPtr,{%H-}TrsSiz
         end;
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TWinFileInfo.VersionInfo_LoadFixedFileInfo;
 var
   FFIPtr:           Pointer;
@@ -899,7 +931,7 @@ var
 //--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
 
 begin
-fVersionInfoFFIPresent := VerQueryValue(fVerInfoData,'\',{%H-}FFIPtr,{%H-}FFISize);
+fVersionInfoFFIPresent := VerQueryValue(fVerInfoData,'\',FFIPtr,FFISize);
 If fVersionInfoFFIPresent then
   begin
     If FFISize = SizeOf(TVSFixedFileInfo) then
@@ -941,14 +973,16 @@ If fVersionInfoFFIPresent then
     else raise Exception.CreateFmt('TWinFileInfo.VersionInfo_LoadFixedFileInfo: Wrong size of fixed file information (got %d, expected %d).',[FFISize,SizeOf(TVSFixedFileInfo)]);
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TWinFileInfo.LoadVersionInfo;
 var
   Dummy:  DWord;
 begin
-fVerInfoSize := GetFileVersionInfoSize(PChar(StrToWin(fLongName)),{%H-}Dummy);
+fVerInfoSize := GetFileVersionInfoSize(PChar(StrToWin(fLongName)),Dummy);
 fVersionInfoPresent := fVerInfoSize > 0;
 If fVersionInfoPresent then
   begin
@@ -976,6 +1010,7 @@ If fVersionInfoPresent then
       end;
   end;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -1023,6 +1058,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 procedure TWinFileInfo.LoadTime;
 var
   Creation:   TFileTime;
@@ -1034,9 +1070,9 @@ var
     LocalTime:  TFileTime;
     SystemTime: TSystemTime;
   begin
-    If FileTimeToLocalFileTime(FileTime,{%H-}LocalTime) then
+    If FileTimeToLocalFileTime(FileTime,LocalTime) then
       begin
-        If FileTimeToSystemTime(LocalTime,{%H-}SystemTime) then
+        If FileTimeToSystemTime(LocalTime,SystemTime) then
           Result := SystemTimeToDateTime(SystemTime)
         else raise Exception.CreateFmt('TWinFileInfo.LoadTime.FileTimeToDateTime: Unable to convert to system time ("%s", 0x%.8x).',[fLongName,GetLastError]);
       end
@@ -1052,6 +1088,7 @@ If GetFileTime(fFileHandle,@Creation,@LastAccess,@LastWrite) then
   end
 else raise Exception.CreateFmt('TWinFileInfo.LoadTime: Unable to obtain file time ("%s", 0x%.8x).',[fLongName,GetLastError]);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -1166,7 +1203,7 @@ fLoadingStrategy := LoadingStrategy;
 {$IF not Defined(FPC) and (CompilerVersion >= 18)} // Delphi 2006+
 fFormatSettings := TFormatSettings.Create(LOCALE_USER_DEFAULT);
 {$ELSE}
-{%H-}GetLocaleFormatSettings(LOCALE_USER_DEFAULT,fFormatSettings);
+GetLocaleFormatSettings(LOCALE_USER_DEFAULT,fFormatSettings);
 {$IFEND}
 {$WARN SYMBOL_PLATFORM ON}
 Initialize(FileName);

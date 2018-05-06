@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="4"/>
-      <BuildNr Value="32"/>
+      <BuildNr Value="35"/>
       <Language Value="0405"/>
       <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.4.0"/>
     </VersionInfo>
@@ -37,7 +37,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -75,7 +75,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -120,7 +120,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -163,27 +163,15 @@
         <PackageName Value="LazUtils"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="2">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="..\LibExport.pas"/>
+        <Filename Value="..\SII_Decrypt_Library.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="..\..\Source\Decryptor.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\..\Headers\SII_Decrypt_Header.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\..\Source\SII_3nK_Transcoder.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -194,7 +182,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Source;..\..\Source\Libs;..\..\Headers"/>
+      <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

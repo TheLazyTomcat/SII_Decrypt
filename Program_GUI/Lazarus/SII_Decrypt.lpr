@@ -15,8 +15,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms,
-  MainForm,
-  SII_Decrypt_ProcessingThread;
+  MainForm;
 
 {$R *.res}
 
