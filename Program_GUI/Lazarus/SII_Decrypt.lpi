@@ -19,9 +19,10 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="4"/>
+      <RevisionNr Value="1"/>
       <BuildNr Value="19"/>
       <Language Value="0405"/>
-      <StringTable Comments="Tool for SII files decryption/decoding" CompanyName="František Milt" FileDescription="SII Decrypt - GUI program" InternalName="SII Decrypt" LegalCopyright="© 2016 - 2018 František Milt" LegalTrademarks="SII Decrypt" OriginalFilename="SII_Decrypt.exe" ProductName="SII Decrypt" ProductVersion="1.4.0"/>
+      <StringTable Comments="Tool for SII files decryption/decoding" CompanyName="František Milt" FileDescription="SII Decrypt - GUI program" InternalName="SII Decrypt" LegalCopyright="© 2016 - 2018 František Milt" LegalTrademarks="SII Decrypt" OriginalFilename="SII_Decrypt.exe" ProductName="SII Decrypt" ProductVersion="1.4.1"/>
     </VersionInfo>
     <BuildModes Count="4">
       <Item1 Name="Debug_win_x86" Default="True"/>
@@ -219,14 +220,6 @@
 -dWindows
 -dx86
 -dDebug"/>
-      <OtherDefines Count="6">
-        <Define0 Value="FPC"/>
-        <Define1 Value="Windows"/>
-        <Define2 Value="x86"/>
-        <Define3 Value="x64"/>
-        <Define4 Value="Debug"/>
-        <Define5 Value="Release"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
