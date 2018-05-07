@@ -111,7 +111,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=4
 Release=0
-Build=6
+Build=7
 Debug=0
 PreRelease=0
 Special=0
@@ -122,7 +122,7 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=SII Decrypt - GUI program
-FileVersion=1.4.0.6
+FileVersion=1.4.0.7
 InternalName=SII Decrypt
 LegalCopyright=© 2016 - 2018 František Milt
 LegalTrademarks=SII Decrypt
