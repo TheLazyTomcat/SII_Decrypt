@@ -87,7 +87,7 @@ procedure SIIBin_RectifyString(var Str: AnsiString);
 implementation
 
 uses
-  SysUtils,
+  SysUtils, Math,
   BinaryStreaming, FloatHex, StrRect;
 
 {==============================================================================}
@@ -203,10 +203,14 @@ end;
 
 Function SIIBin_SingleToStr(Value: Single): AnsiString;
 begin
-If (Frac(Value) <> 0) or (Value >= 1e7) then
-  Result := StrToAnsi('&' + AnsiLowerCase(SingleToHex(Value)))
-else
-  Result := StrToAnsi(Format('%.0f',[Value]));
+If not IsNaN(Value) then
+  begin
+    If (Frac(Value) <> 0) or (Value >= 1e7) then
+      Result := StrToAnsi('&' + AnsiLowerCase(SingleToHex(Value)))
+    else
+      Result := StrToAnsi(Format('%.0f',[Value]));
+  end
+else Result := StrToAnsi('&' + AnsiLowerCase(SingleToHex(Value)));
 end;
 
 //------------------------------------------------------------------------------
