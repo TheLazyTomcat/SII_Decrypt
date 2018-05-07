@@ -63,7 +63,7 @@ implementation
 {$ENDIF}
 
 uses
-  WinTaskbarProgress, WinFileInfo;
+  WinTaskbarProgress, WinFileInfo, StrRect;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -142,6 +142,9 @@ with TWinFileInfo.Create(WFI_LS_LoadVersionInfo or WFI_LS_LoadFixedFileInfo or W
       {$IFDEF Debug}+ ' debug'{$ENDIF} + ')';
     Free;
   end;
+// set up initial folders for dialogs
+diaOpenInputFile.InitialDir := ExtractFileDir(RTLToStr(ParamStr(0)));
+diaSaveOutputFile.InitialDir := ExtractFileDir(RTLToStr(ParamStr(0)));
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
