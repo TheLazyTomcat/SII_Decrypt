@@ -2,7 +2,7 @@
 
                          SII Decrypt project - programs
 
-                                  version 1.4
+                                version 1.4.1
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  90
-  Known problems and limitations .......................... 124
-  Repositories ............................................ 131
-  Licensing ............................................... 144
-  Authors, contacts ....................................... 152
-  Copyright ............................................... 165
+  Known problems and limitations .......................... 128
+  Repositories ............................................ 135
+  Licensing ............................................... 148
+  Authors, contacts ....................................... 156
+  Copyright ............................................... 169
 
 
 Description
@@ -90,6 +90,10 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.4.0 -> SII Decrypt program 1.4.1
+  - corrected behaviour in case a value in binary format contains NaN
+
 
 SII Decrypt program 1.3.2 -> SII Decrypt program 1.4.0
   - added program with graphical user interface (window)
