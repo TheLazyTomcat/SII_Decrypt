@@ -63,7 +63,7 @@ implementation
 {$ENDIF}
 
 uses
-  WinTaskbarProgress, WinFileInfo, StrRect;
+  WinTaskbarProgress, WinFileInfo, StrRect, SimpleCMDLineParser;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -128,6 +128,8 @@ end;
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.FormCreate(Sender: TObject);
+var
+  CMDParser:  TCLPParser;
 begin
 stbStatusBar.DoubleBuffered := True;
 SetTaskbarProgressState(tpsNoProgress);
@@ -145,6 +147,16 @@ with TWinFileInfo.Create(WFI_LS_LoadVersionInfo or WFI_LS_LoadFixedFileInfo or W
 // set up initial folders for dialogs
 diaOpenInputFile.InitialDir := ExtractFileDir(RTLToStr(ParamStr(0)));
 diaSaveOutputFile.InitialDir := ExtractFileDir(RTLToStr(ParamStr(0)));
+// get input/output file from parameters if present
+CMDParser := TCLPParser.Create;
+try
+  If CMDParser.Count > 1 then
+    leInputFile.Text := CMDParser[1].Str;
+  If CMDParser.Count > 2 then
+    leOutputFile.Text := CMDParser[2].Str;
+finally
+  CMDParser.Free;
+end;
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 

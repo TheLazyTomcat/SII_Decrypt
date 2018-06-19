@@ -32,7 +32,7 @@
     Function GetCommaText: {$I 'ESL_inc\ESL_StringType.inc'};
     procedure SetCommaText(const Value: {$I 'ESL_inc\ESL_StringType.inc'});
     // protected class methods 
-    class Function IsBreak(C: {$I 'ESL_inc\ESL_CharType.inc'}): Boolean; virtual;
+    class Function IsBreak(C: {$I 'ESL_inc\ESL_CharType.inc'}; IncludeZero: Boolean = True): Boolean; virtual;
     class Function ConvertStringTo(const Str: String): {$I 'ESL_inc\ESL_StringType.inc'}; virtual;
     class Function ConvertStringFrom(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): String; virtual;
     // normal protected methods
@@ -152,11 +152,12 @@ end;
 procedure {$I 'ESL_inc\ESL_ListType.inc'}.SetLineBreakStyle(Value: TLineBreakStyle);
 begin
 case Value of
-  lbsWIN,lbsCRLF: fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#13#10);
-  lbsUNIX,lbsLF:  fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#10);
-  lbsMAC,lbsCR:   fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#13);
+  lbsWIN,lbsCRLF:   fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#13#10);
+  lbsUNIX,lbsLF:    fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#10);
+  lbsMAC,lbsCR:     fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#13);
+  lbsRISC,lbsLFCR:  fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(#10#13);
 else
-  Error('SetLineBreakStyle: Invalid style (%d).',[Ord(Value)])
+  Error('SetLineBreakStyle: Invalid style (%d).',[Ord(Value)]);
 end;
 end;
 
@@ -220,12 +221,15 @@ For i := LowIndex to HighIndex do
   {$IF Defined(ESL_Short) or Defined(ESL_ShortDefault)}
     If (Len + Length(fStrings[i]) - 1) > Length(Result) then
       begin
-        System.Move(fStrings[i][1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+        If (Length(Result) - Len + 1) > 0 then
+          System.Move(fStrings[i][1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
         Break{For i};
       end
-    else System.Move(fStrings[i][1],Addr(Result[Len])^,Length(fStrings[i]) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+    else If Length(fStrings[i]) > 0 then
+      System.Move(fStrings[i][1],Addr(Result[Len])^,Length(fStrings[i]) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
   {$ELSE}
-    System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(fStrings[i])^,Addr(Result[Len])^,Length(fStrings[i]) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+    If Length(fStrings[i]) > 0 then
+      System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(fStrings[i])^,Addr(Result[Len])^,Length(fStrings[i]) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
   {$IFEND}
     Inc(Len,Length(fStrings[i]));
     If (i < HighIndex) or TrailingLineBreak and (Length(fLineBreak) > 0) then
@@ -233,12 +237,15 @@ For i := LowIndex to HighIndex do
       {$IF Defined(ESL_Short) or Defined(ESL_ShortDefault)}
         If (Len + Length(fLineBreak) - 1) > Length(Result) then
           begin
-            System.Move(fLineBreak[1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+            If (Length(Result) - Len + 1) > 0 then
+              System.Move(fLineBreak[1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
             Break{For i};
           end
-        else System.Move(fLineBreak[1],Addr(Result[Len])^,Length(fLineBreak) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+        else If Length(fLineBreak) > 0 then
+          System.Move(fLineBreak[1],Addr(Result[Len])^,Length(fLineBreak) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
       {$ELSE}
-        System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(fLineBreak)^,Addr(Result[Len])^,Length(fLineBreak) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+        If Length(fLineBreak) > 0 then
+          System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(fLineBreak)^,Addr(Result[Len])^,Length(fLineBreak) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
       {$IFEND}
         Inc(Len,Length(fLineBreak));
       end;
@@ -276,18 +283,34 @@ try
              need to check for limit when setting length of buffer
           }
             SetLength(Buff,(PtrUInt(C) - PtrUInt(S)) div SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+            If Length(Buff) > 0 then
           {$IF Defined(ESL_Short) or Defined(ESL_ShortDefault)}
-            System.Move(S^,Buff[1],Length(Buff) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+              System.Move(S^,Buff[1],Length(Buff) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
           {$ELSE}
-            System.Move(S^,{$I 'ESL_inc\ESL_PCharType.inc'}(Buff)^,Length(Buff) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+              System.Move(S^,{$I 'ESL_inc\ESL_PCharType.inc'}(Buff)^,Length(Buff) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
           {$IFEND}
             Add(Buff);
           end
         else Add('');
+        {
+          folloving are all valid linebreak sequences:
+
+            #10#13
+            #13#10
+            #10 not followed by #13 or #0
+            #13 not followed by #10 or #0
+            #0 not followed by #10 or #13
+        }
         If PtrUInt(C) < PtrUInt(E) then
-          If Ord(C^) = 13 then Inc(C);
-        If PtrUInt(C) < PtrUInt(E) then
-          If Ord(C^) = 10 then Inc(C);
+          If IsBreak(C^) then
+            begin
+              If (PtrUInt(C) + 1) < PtrUInt(E) then
+                // more than 1 char left in string
+                If (Ord(C^) <> Ord({$I 'ESL_inc\ESL_PCharType.inc'}(PtrUInt(C) + SizeOf({$I 'ESL_inc\ESL_CharType.inc'}))^)) and
+                  IsBreak({$I 'ESL_inc\ESL_PCharType.inc'}(PtrUInt(C) + SizeOf({$I 'ESL_inc\ESL_CharType.inc'}))^,False) and
+                  (Ord(C^) <> 0) then Inc(C);
+              Inc(C);
+            end;
       end;
 finally
   EndUpdate;
@@ -383,12 +406,15 @@ For i := LowIndex to HighIndex do
   {$IF Defined(ESL_Short) or Defined(ESL_ShortDefault)}
     If (Len + Length(Temp) - 1) > Length(Result) then
       begin
-        System.Move(Temp[1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+        If (Length(Result) - Len + 1) > 0 then
+          System.Move(Temp[1],Addr(Result[Len])^,(Length(Result) - Len + 1) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
         Break{For i};
       end
-    else System.Move(Temp[1],Addr(Result[Len])^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+    else If Length(Temp) > 0 then
+      System.Move(Temp[1],Addr(Result[Len])^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
   {$ELSE}
-    System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(Temp)^,Addr(Result[Len])^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+    If Length(Temp) > 0 then
+      System.Move({$I 'ESL_inc\ESL_PCharType.inc'}(Temp)^,Addr(Result[Len])^,Length(Temp) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
   {$IFEND}
     Inc(Len,Length(Temp));
     If i < HighIndex then
@@ -463,9 +489,12 @@ end;
 
 //==============================================================================
 
-class Function {$I 'ESL_inc\ESL_ListType.inc'}.IsBreak(C: {$I 'ESL_inc\ESL_CharType.inc'}): Boolean;
+class Function {$I 'ESL_inc\ESL_ListType.inc'}.IsBreak(C: {$I 'ESL_inc\ESL_CharType.inc'}; IncludeZero: Boolean = True): Boolean;
 begin
-Result := Ord(C) in [0,10,13];
+If IncludeZero then
+  Result := Ord(C) in [0,10,13]
+else
+  Result := Ord(C) in [10,13];
 end;
 
 //------------------------------------------------------------------------------
@@ -1387,7 +1416,8 @@ try
             CharsRead := BytesRead div SizeOf({$I 'ESL_inc\ESL_CharType.inc'});
             Stream.Seek(-(BytesRead mod SizeOf({$I 'ESL_inc\ESL_CharType.inc'})),soCurrent);
             SetLength(TempStr,TempStrLen + CharsRead);
-            System.Move(Buffer^,TempStr[TempStrLen + 1],(Length(TempStr) - TempStrLen) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
+            If (Length(TempStr) - TempStrLen) > 0 then
+              System.Move(Buffer^,TempStr[TempStrLen + 1],(Length(TempStr) - TempStrLen) * SizeOf({$I 'ESL_inc\ESL_CharType.inc'}));
             TempStrLen := 0;
             repeat
               Position := BreakPos(TempStr,TempStrLen + 1) - 1;
@@ -1401,13 +1431,11 @@ try
                     end;
                   If (Length(TempStr) - Position) >= 2 then
                     begin
-                      If Ord(TempStr[TempStrLen + 1]) = 13 then
+                      If IsBreak(TempStr[TempStrLen + 1]) then
                         begin
-                          Inc(TempStrLen);
-                          NewLine := True;
-                        end;
-                      If Ord(TempStr[TempStrLen + 1]) = 10 then
-                        begin
+                          If (Ord(TempStr[TempStrLen + 1]) <> Ord(TempStr[TempStrLen + 2])) and
+                            IsBreak(TempStr[TempStrLen + 2],False) and
+                            (Ord(TempStr[TempStrLen + 1]) <> 0) then Inc(TempStrLen);
                           Inc(TempStrLen);
                           NewLine := True;
                         end;

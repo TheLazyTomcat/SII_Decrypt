@@ -9,9 +9,9 @@
 
   Floating point numbers <-> HexString conversion routines
 
-  ©František Milt 2017-06-09
+  ©František Milt 2018-05-13
 
-  Version 1.5.3
+  Version 1.5.4
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -133,6 +133,9 @@ procedure RectifyHexString(var Str: String; RequiredLength: Integer);
   end;
 
 begin
+If not StartsWithHexMark(Str) then
+  Str := '$' + Str;
+Inc(RequiredLength);
 If Length(Str) <> RequiredLength then
   begin
     If Length(Str) < RequiredLength then
@@ -140,7 +143,6 @@ If Length(Str) <> RequiredLength then
     else
       Str := Copy(Str,1,RequiredLength);
   end;
-If not StartsWithHexMark(Str) then Str := '$' + Str;
 end;
 
 //------------------------------------------------------------------------------
