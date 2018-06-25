@@ -11,9 +11,9 @@
 
   Base class for all explicit string lists.
 
-  ©František Milt 2018-04-30
+  ©František Milt 2018-05-21
 
-  Version 1.0.1
+  Version 1.0.2
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
@@ -58,7 +58,7 @@ type
   TShrinkMode = (smKeepCap, smNormal, smToCount);
 
   TStringEndianness = (seSystem,seLittle,seBig);
-  TLineBreakStyle = (lbsWIN,lbsUNIX,lbsMAC,lbsCR,lbsLF,lbsCRLF);
+  TLineBreakStyle = (lbsWIN,lbsUNIX,lbsMAC,lbsRISC,lbsCRLF,lbsLF,lbsCR,lbsLFCR);
 
 {===============================================================================
     TExplicitStringList - declaration
