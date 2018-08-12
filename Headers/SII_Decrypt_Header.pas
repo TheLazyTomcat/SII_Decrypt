@@ -19,8 +19,8 @@
 
   Changelog:
 
-    1.4.2 - no change in the library
-    1.4.1 - no change in the library
+    1.4.2 - no change in the library API
+    1.4.1 - no change in the library API
     1.4.0 - started documenting changes
           - return values completely changed
           - added function APIVersion

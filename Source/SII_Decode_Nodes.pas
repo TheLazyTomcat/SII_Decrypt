@@ -181,6 +181,25 @@ type
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
+{                            TSIIBin_Value_0000000A                            }
+{------------------------------------------------------------------------------}
+{==============================================================================}
+{==============================================================================}
+{   TSIIBin_Value_0000000A - declaration                                       }
+{==============================================================================}
+  TSIIBin_Value_0000000A = class(TSIIBin_Value)
+  private
+    fValue: array of TSIIBin_Value_Vec3s;
+  protected
+    Function GetValueType: TSIIBin_ValueType; override;
+    procedure Load(Stream: TStream); override;
+  public
+    Function AsString: AnsiString; override;
+    Function AsLine(IndentCount: Integer = 0): AnsiString; override;
+  end;
+
+{==============================================================================}
+{------------------------------------------------------------------------------}
 {                            TSIIBin_Value_00000011                            }
 {------------------------------------------------------------------------------}
 {==============================================================================}
@@ -1031,6 +1050,78 @@ begin
 Result := StrToAnsi(Format('(%s, %s, %s)',[SIIBin_SingleToStr(fValue[0]),
                                            SIIBin_SingleToStr(fValue[1]),
                                            SIIBin_SingleToStr(fValue[2])]));;
+end;
+
+
+{==============================================================================}
+{------------------------------------------------------------------------------}
+{                            TSIIBin_Value_0000000A                            }
+{------------------------------------------------------------------------------}
+{==============================================================================}
+{==============================================================================}
+{   TSIIBin_Value_0000000A - implementation                                    }
+{==============================================================================}
+{------------------------------------------------------------------------------}
+{   TSIIBin_Value_0000000A - protected methods                                 }
+{------------------------------------------------------------------------------}
+
+
+Function TSIIBin_Value_0000000A.GetValueType: TSIIBin_ValueType;
+begin
+Result := $0000000A;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Value_0000000A.Load(Stream: TStream);
+var
+  i:  Integer;
+begin
+SetLength(fValue,Stream_ReadUInt32(Stream));
+For i := Low(fValue) to High(fValue) do
+  Stream_ReadBuffer(Stream,fValue[i],SizeOf(TSIIBin_Value_Vec3s));
+end;
+
+{------------------------------------------------------------------------------}
+{   TSIIBin_Value_0000000A - public methods                                    }
+{------------------------------------------------------------------------------}
+
+Function TSIIBin_Value_0000000A.AsString: AnsiString;
+begin
+Result := StrToAnsi(Format('%d',[Length(fValue)]));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TSIIBin_Value_0000000A.AsLine(IndentCount: Integer = 0): AnsiString;
+var
+  i:  Integer;
+begin
+If Length(fValue) > LARGE_ARRAY_OPTIMIZE_THRESHOLD then
+  begin
+    with TAnsiStringList.Create do
+    try
+      TrailingLineBreak := False;
+      AddDef(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+      For i := Low(fValue) to High(fValue) do
+        AddDef(StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,
+          Format('(%s, %s, %s)',[SIIBin_SingleToStr(fValue[i][0]),
+                                 SIIBin_SingleToStr(fValue[i][1]),
+                                 SIIBin_SingleToStr(fValue[i][2])])]));
+      Result := Text;
+    finally
+      Free;
+    end;
+  end
+else
+  begin
+    Result := StrToAnsi(StringOfChar(' ',IndentCount) + Format('%s: %d',[fName,Length(fValue)]));
+    For i := Low(fValue) to High(fValue) do
+      Result := Result + StrToAnsi(sLineBreak + StringOfChar(' ',IndentCount) + Format('%s[%d]: %s',[fName,i,
+                  Format('(%s, %s, %s)',[SIIBin_SingleToStr(fValue[i][0]),
+                                         SIIBin_SingleToStr(fValue[i][1]),
+                                         SIIBin_SingleToStr(fValue[i][2])])]));
+  end;
 end;
 
 
@@ -2136,7 +2227,7 @@ end;
 
 class Function TSIIBin_DataBlock.ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean;
 begin
-Result := ValueType in [$01..$06,$09,$11,$12,$18..$1A,$25..$28,$2B,$2C,$31,$33..$37,$39..$3D];
+Result := ValueType in [$01..$06,$09,$0A,$11,$12,$18..$1A,$25..$28,$2B,$2C,$31,$33..$37,$39..$3D];
 end;
 
 //------------------------------------------------------------------------------
@@ -2177,6 +2268,7 @@ For i := Low(fLayout.Fields) to High(fLayout.Fields) do
       $00000005:  FieldObj := TSIIBin_Value_00000005.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $00000006:  FieldObj := TSIIBin_Value_00000006.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $00000009:  FieldObj := TSIIBin_Value_00000009.Create(fFormatVersion,fLayout.Fields[i],Stream);
+      $0000000A:  FieldObj := TSIIBin_Value_0000000A.Create(fFormatVersion,fLayout.Fields[i],Stream);      
       $00000011:  FieldObj := TSIIBin_Value_00000011.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $00000012:  FieldObj := TSIIBin_Value_00000012.Create(fFormatVersion,fLayout.Fields[i],Stream);
       $00000018:  FieldObj := TSIIBin_Value_00000018.Create(fFormatVersion,fLayout.Fields[i],Stream);

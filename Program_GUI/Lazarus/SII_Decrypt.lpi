@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="21"/>
+      <BuildNr Value="22"/>
       <Language Value="0405"/>
       <StringTable Comments="Tool for SII files decryption/decoding" CompanyName="František Milt" FileDescription="SII Decrypt - GUI program" InternalName="SII Decrypt" LegalCopyright="© 2016 - 2018 František Milt" LegalTrademarks="SII Decrypt" OriginalFilename="SII_Decrypt.exe" ProductName="SII Decrypt" ProductVersion="1.4.2"/>
     </VersionInfo>
