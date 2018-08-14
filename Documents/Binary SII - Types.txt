@@ -19,7 +19,7 @@ to read that file first.
   0x00000007                  unknown (expecting double)
   0x00000008                  unknown (expecting array of double)
   0x00000009                  vec3s
-  0x0000000A                  unknown (probably array of vec3s)
+  0x0000000A                  array of vec3s
   0x0000000B - 0x00000010     unknown
   0x00000011                  vec3i
   0x00000012                  array of vec3i
@@ -160,6 +160,17 @@ Stored as a following structure:
     Single  (4B)  - first component of the vector (usually X)
     Single  (4B)  - second component of the vector (Y)
     Single  (4B)  - third component of the vector (Z)
+  end
+
+
+Array of Vec3s                                                        0x0000000A
+--------------------------------------------------------------------------------
+An array of 3-dimensional vectors of single-precision floating point numbers.
+Stored as a following structure:
+
+  begin
+    UInt32    (4B)             - length of the array
+    Vec3s[]   (variable size)  - array of 3s vectors
   end
 
 

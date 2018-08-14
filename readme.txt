@@ -32,7 +32,7 @@ is using while writing the saves.
 
 Since version 1.4, it is also possible to decode 3nK-encoded files. This
 encoding is usually used in localization SII files. See project 3nK Transcode
-(https://github.com/ncs-sniper/S3nK_Transcode) for further details on this
+(https://github.com/ncs-sniper/3nK_Transcode) for further details on this
 format.
 
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.8.x

@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  90
-  Known problems and limitations .......................... 133
-  Repositories ............................................ 140
-  Licensing ............................................... 153
-  Authors, contacts ....................................... 161
-  Copyright ............................................... 174
+  Known problems and limitations .......................... 134
+  Repositories ............................................ 141
+  Licensing ............................................... 154
+  Authors, contacts ....................................... 162
+  Copyright ............................................... 175
 
 
 Description
@@ -94,6 +94,7 @@ List of changes between individual versions of this program.
 SII Decrypt program 1.4.1 -> SII Decrypt program 1.4.2
   - GUI program now parses command line parameters and uses them to preset
     input and output files
+  - added support for decoding of value type 0x0A
 
 
 SII Decrypt program 1.4.0 -> SII Decrypt program 1.4.1
