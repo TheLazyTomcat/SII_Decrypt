@@ -11,6 +11,9 @@ library SII_Decrypt;
 
 {$R *.res}
 
+uses
+  SII_Decrypt_Library;
+
 begin
 end.
 
