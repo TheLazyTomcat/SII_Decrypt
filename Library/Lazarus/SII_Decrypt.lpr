@@ -11,6 +11,11 @@ library SII_Decrypt;
 
 {$R *.res}
 
+{$WARN 5023 OFF} // Unit "..." not used
+
+uses
+  SII_Decrypt_Library;
+
 begin
 end.
 
