@@ -34,7 +34,7 @@ unit ZLibStatic;
 {$INCLUDE '.\ZLib_defs.inc'}
 
 {$IFDEF PurePascal}
-  {$MESSAGE WARNING 'Cannot be compiled in PurePascal mode.'}
+  {$MESSAGE WARN 'Cannot be compiled in PurePascal mode.'}
 {$ENDIF}
 
 interface

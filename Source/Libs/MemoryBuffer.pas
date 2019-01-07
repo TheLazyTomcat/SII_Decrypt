@@ -9,9 +9,9 @@
 
   Memory buffer
 
-  ©František Milt 2018-01-22
+  ©František Milt 2018-12-15
 
-  Version 1.0.1
+  Version 1.0.2
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -21,6 +21,8 @@ unit MemoryBuffer;
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
 {$ENDIF}
 
 interface
@@ -36,6 +38,8 @@ type
   end;
   PMemoryBuffer = ^TMemoryBuffer;
 
+procedure InitBuffer(out Buff: TMemoryBuffer);
+
 procedure GetBuffer(var Buff: TMemoryBuffer); overload;
 procedure GetBuffer(out Buff: TMemoryBuffer; Size: TMemSize); overload;
 Function GetBuffer(Size: TMemSize): TMemoryBuffer; overload;
@@ -50,10 +54,25 @@ procedure ReallocBuffer(var Buff: TMemoryBuffer; NewSize: TMemSize);
 procedure ReallocBufferKeep(var Buff: TMemoryBuffer; NewSize: TMemSize; AllowShrink: Boolean = False);
 
 procedure CopyBuffer(const Src: TMemoryBuffer; out Copy: TMemoryBuffer);
+procedure CopyBufferInto(const Src: TMemoryBuffer; var Dest: TMemoryBuffer);
 
 Function BuildBuffer(Memory: Pointer; Size: TMemSize; Data: PtrInt = 0): TMemoryBuffer;
 
 implementation
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5058:={$WARN 5058 OFF}} // Variable "$1" does not seem to be initialized
+{$ENDIF}
+
+{$IFDEF FPCDWM}{$PUSH}W5058{$ENDIF}
+procedure InitBuffer(out Buff: TMemoryBuffer);
+begin
+FillChar(Buff,SizeOf(TMemoryBuffer),0);
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+//------------------------------------------------------------------------------
 
 procedure GetBuffer(var Buff: TMemoryBuffer);
 begin
@@ -146,6 +165,16 @@ begin
 Copy := GetBuffer(Src.Size);
 Move(Src.Memory^,Copy.Memory^,Src.Size);
 Copy.Data := Src.Data;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure CopyBufferInto(const Src: TMemoryBuffer; var Dest: TMemoryBuffer);
+begin
+// destination buffer must be properly initialized
+ReallocBuffer(Dest,Src.Size);
+Move(Src.Memory^,Dest.Memory^,Dest.Size);
+Dest.Data := Src.Data;
 end;
 
 //------------------------------------------------------------------------------

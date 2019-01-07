@@ -9,9 +9,9 @@
 
   Progress tracker
 
-  ©František Milt 2018-04-29
+  ©František Milt 2018-10-22
 
-  Version 1.3.3
+  Version 1.3.4
 
   Dependencies:
     AuxTypes   - github.com/ncs-sniper/Lib.AuxTypes
@@ -25,8 +25,6 @@ unit ProgressTracker;
   {$DEFINE FPC_DisableWarns}
   {$MACRO ON}
 {$ENDIF}
-
-{$TYPEINFO ON}
 
 interface
 
@@ -132,7 +130,6 @@ type
     property Stages[Index: Integer]: TProgressStage read GetStage; default;
     property StageObjects[Index: Integer]: TProgressTracker read GetStageObject;
     property OnProgressCallBack: TFloatCallback read fOnTrackerProgressCB write fOnTrackerProgressCB;
-  published
     property Updating: Boolean read GetUpdating;
     property ConsecutiveStages: Boolean read fConsecutiveStages write SetConsecutiveStages;
     property StrictlyGrowing: Boolean read fStrictlyGrowing write fStrictlyGrowing;

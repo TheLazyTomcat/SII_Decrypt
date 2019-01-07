@@ -98,7 +98,7 @@ implementation
 
 uses
   SysUtils,
-  StrRect, BinaryStreaming, MemoryBuffer;
+  StrRect, BinaryStreaming, MemoryBuffer, AuxExceptions;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -291,7 +291,7 @@ If Input <> Output then
       Output.Size := Output.Position;
     DoProgress(1.0);  
   end
-else raise Exception.Create('TSII_3nK_Transcoder.EncodeStream: Input and output streams are the same, data would be corrupted.');
+else raise EGeneralException.Create('Input and output streams are the same, data would be corrupted.',Self,'EncodeStream');
 end;
 
 //------------------------------------------------------------------------------
@@ -346,9 +346,9 @@ If Input <> Output then
           Output.Size := Output.Position;
         DoProgress(1.0);
       end
-    else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input stream is not a valid 3nK stream.');
+    else raise EGeneralException.Create('Input stream is not a valid 3nK stream.',Self,'DecodeStream');
   end
-else raise Exception.Create('TSII_3nK_Transcoder.DecodeStream: Input and output streams are the same, data would be corrupted.');
+else raise EGeneralException.Create('Input and output streams are the same, data would be corrupted.',Self,'DecodeStream');
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 

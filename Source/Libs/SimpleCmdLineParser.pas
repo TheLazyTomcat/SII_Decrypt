@@ -9,9 +9,9 @@
 
   SimpleCmdLineParser
 
-  ©František Milt 2017-09-11
+  ©František Milt 2018-10-22
 
-  Version 1.1.0
+  Version 1.1.1
 
   Dependencies:
     StrRect - github.com/ncs-sniper/Lib.StrRect
@@ -83,8 +83,6 @@ unit SimpleCmdLineParser;
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
 {$ENDIF}
-
-{$TYPEINFO ON}
 
 interface
 
@@ -158,7 +156,6 @@ type
     procedure Parse(const CommandLine: String); virtual;
     procedure ReParse; virtual;
     property Parameters[Index: Integer]: TCLPParameter read GetParameter; default;
-  published
     property CommandIntroChar: Char read fCommandIntroChar write fCommandIntroChar;
     property QuoteChar: Char read fQuoteChar write fQuoteChar;
     property DelimiterChar: Char read fDelimiterChar write fDelimiterChar;
@@ -269,7 +266,6 @@ type
     procedure Analyze(const CommandLine: String); virtual;
     procedure Clear; virtual;
     property Tokens[Index: Integer]: TCLPLexerToken read GetToken; default;
-  published
     property CommandIntroChar: Char read fCommandIntroChar write fCommandIntroChar;
     property QuoteChar: Char read fQuoteChar write fQuoteChar;
     property DelimiterChar: Char read fDelimiterChar write fDelimiterChar;

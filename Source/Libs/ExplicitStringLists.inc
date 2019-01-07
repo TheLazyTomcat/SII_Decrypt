@@ -12,10 +12,11 @@
 
 {$IFDEF ESL_Declaration}
   protected
-    fStrings:   array of {$I 'ESL_inc\ESL_StringType.inc'};
-    fDelimiter: {$I 'ESL_inc\ESL_CharType.inc'};
-    fLineBreak: {$I 'ESL_inc\ESL_StringType.inc'};
-    fQuoteChar: {$I 'ESL_inc\ESL_CharType.inc'};
+    fStrings:               array of {$I 'ESL_inc\ESL_StringType.inc'};
+    fDelimiter:             {$I 'ESL_inc\ESL_CharType.inc'};
+    fLineBreak:             {$I 'ESL_inc\ESL_StringType.inc'};
+    fQuoteChar:             {$I 'ESL_inc\ESL_CharType.inc'};
+    fCustomCompareFunction: {$I 'ESL_inc\ESL_CompFuncType.inc'};
     // getters, setters
     Function GetItem(Index: Integer): {$I 'ESL_inc\ESL_StringType.inc'};
     procedure SetItem(Index: Integer; const Value: {$I 'ESL_inc\ESL_StringType.inc'});
@@ -38,6 +39,7 @@
     // normal protected methods
     Function CompareStrings(const Str1, Str2: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
     Function CompareItems(Index1,Index2: Integer): Integer; override;
+    Function CustomCompareItems(Index1,Index2: Integer): Integer; virtual;
     Function IndexForSortedAddition(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): Integer; virtual;
     Function GetWriteSize: UInt64; override;
     procedure WriteItemToStream(Stream: TStream; Index: Integer; Endianness: TStringEndianness); override;
@@ -80,7 +82,6 @@
     procedure LoadFromStream(Stream: TStream; out Endianness: TStringEndianness); override;
     property Items[Index: Integer]: {$I 'ESL_inc\ESL_StringType.inc'} read GetItem write SetItem; default;
     property Strings[Index: Integer]: String read GetString write SetString;
-  published
     property Delimiter: {$I 'ESL_inc\ESL_CharType.inc'} read fDelimiter write fDelimiter;
     property LineBreak: {$I 'ESL_inc\ESL_StringType.inc'} read fLineBreak write fLineBreak;
     property LineBreakStyle: TLineBreakStyle write SetLineBreakStyle;
@@ -439,7 +440,7 @@ try
   Clear;
   with {$I 'ESL_inc\ESL_DTParserType.inc'}.Create(fDelimiter,fQuoteChar,fStrictDelimiter) do
   try
-    OnNewString := {$IFDEF FPC}@{$ENDIF}Self.Append;
+    OnNewString := Self.Append;
     Parse(Value);
   finally
     Free;
@@ -638,6 +639,17 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function {$I 'ESL_inc\ESL_ListType.inc'}.CustomCompareItems(Index1,Index2: Integer): Integer;
+begin
+If not CheckIndex(Index1) then
+  Error('CustomCompareItems: Index (%d) out of bounds.',[Index1]);
+If not CheckIndex(Index2) then
+  Error('CustomCompareItems: Index (%d) out of bounds.',[Index2]);
+Result := fCustomCompareFunction(fStrings[Index1],fStrings[Index2]);
+end;
+
+//------------------------------------------------------------------------------
+
 Function {$I 'ESL_inc\ESL_ListType.inc'}.IndexForSortedAddition(const Str: {$I 'ESL_inc\ESL_StringType.inc'}): Integer;
 var
   M,L,R,D:  Integer;
@@ -819,6 +831,7 @@ SetLength(fStrings,0);
 fDelimiter := def_Delimiter;
 fLineBreak := {$I 'ESL_inc\ESL_StringType.inc'}(def_LineBreak);
 fQuoteChar := def_QuoteChar;
+fCustomCompareFunction := nil;
 end;
 
 //------------------------------------------------------------------------------
@@ -1152,41 +1165,28 @@ end;
 //------------------------------------------------------------------------------
 
 procedure {$I 'ESL_inc\ESL_ListType.inc'}.CustomSort(CompareFunction: {$I 'ESL_inc\ESL_CompFuncType.inc'}; Reversed: Boolean = False);
-
-  procedure QuickSort(LeftIdx,RightIdx,Coef: Integer);
-  var
-    Idx,i:  Integer;
-  begin
-    If LeftIdx < RightIdx then
-      begin
-        Exchange((LeftIdx + RightIdx) shr 1,RightIdx);
-        Idx := LeftIdx;
-        For i := LeftIdx to Pred(RightIdx) do
-          If (CompareFunction(fStrings[RightIdx],fStrings[i]) * Coef) > 0 then
-            begin
-              Exchange(i,idx);
-              Inc(Idx);
-            end;
-        Exchange(Idx,RightIdx);
-        QuickSort(LeftIdx,Idx - 1,Coef);
-        QuickSort(Idx + 1,RightIdx,Coef);
-      end;
-  end;
-  
+var
+  Sorter: TListQuickSorter;
 begin
 If fCount > 1 then
   begin
+    fCustomCompareFunction := CompareFunction;
     BeginUpdate;
     try
-      If Reversed then
-        QuickSort(LowIndex,HighIndex,-1)
-      else
-        QuickSort(LowIndex,HighIndex,1);
-      Sorted := False;
+      Sorter := TListQuickSorter.Create(CustomCompareItems,Exchange);
+      try
+        Sorter.ReversedCompare := True;
+        Sorter.Reversed := Reversed;
+        Sorter.Sort(LowIndex,HighIndex);
+      finally
+        Sorter.Free;
+      end;
+      fSorted := not Reversed;
     finally
       EndUpdate;
     end;
-  end;
+  end
+else fSorted := True;
 end;
 
 //------------------------------------------------------------------------------

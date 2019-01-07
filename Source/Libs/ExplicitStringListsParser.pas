@@ -11,15 +11,16 @@
 
   Delimited text parsers.
 
-  ©František Milt 2018-05-21
+  ©František Milt 2018-10-21
 
-  Version 1.0.2
+  Version 1.0.4
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
     AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
+    ListSorters     - github.com/ncs-sniper/Lib.ListSorters
 
 ===============================================================================}
 unit ExplicitStringListsParser;

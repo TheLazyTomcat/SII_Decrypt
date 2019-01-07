@@ -9,9 +9,9 @@
 
   Auxiliary classes and classes-related material
 
-  ©František Milt 2018-04-29
+  ©František Milt 2018-12-23
 
-  Version 1.0
+  Version 1.0.1
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -36,8 +36,6 @@ unit AuxClasses;
   {$ASMMODE Intel}
 {$ENDIF}
 
-{$TYPEINFO ON}
-
 interface
 
 uses
@@ -52,14 +50,26 @@ type
   TNotifyEvent is declared in classes, but if including entire classes unit
   into the project is not desirable, this declaration can be used instead.
 }
-  TNotifyEvent    = procedure(Sended: TObject) of object;
-  TNotifyCallback = procedure(Sended: TObject);
+  TNotifyEvent    = procedure(Sender: TObject) of object;
+  TNotifyCallback = procedure(Sender: TObject);
 
-  TIntegerEvent    = procedure(Sended: TObject; Value: Integer) of object;
-  TIntegerCallback = procedure(Sended: TObject; Value: Integer);
+  TIntegerEvent    = procedure(Sender: TObject; Value: Integer) of object;
+  TIntegerCallback = procedure(Sender: TObject; Value: Integer);
 
-  TFloatEvent    = procedure(Sended: TObject; Value: Double) of object;
-  TFloatCallback = procedure(Sended: TObject; Value: Double);
+  TFloatEvent    = procedure(Sender: TObject; Value: Double) of object;
+  TFloatCallback = procedure(Sender: TObject; Value: Double);
+
+  TStringEvent    = procedure(Sender: TObject; const Value: String) of object;
+  TStringCallback = procedure(Sender: TObject; const Value: String);
+
+  TMemoryEvent    = procedure(Sender: TObject; Addr: Pointer) of object;
+  TMemoryCallback = procedure(Sender: TObject; Addr: Pointer);
+
+  TBufferEvent    = procedure(Sender: TObject; const Buffer; Size: TMemSize) of object;
+  TBufferCallback = procedure(Sender: TObject; const Buffer; Size: TMemSize);
+
+  TObjectEvent    = procedure(Sender: TObject; Obj: TObject) of object;
+  TObjectCallback = procedure(Sender: TObject; Obj: TObject);
 
 {===============================================================================
 --------------------------------------------------------------------------------

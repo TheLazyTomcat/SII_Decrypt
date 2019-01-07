@@ -4,6 +4,7 @@
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$MODESWITCH CLASSICPROCVARS+}
   {$INLINE ON}
   {$DEFINE CanInline}
   {$DEFINE FPC_DisableWarns}
@@ -15,8 +16,6 @@
     {$UNDEF CanInline}
   {$IFEND}
 {$ENDIF}
-
-{$TYPEINFO ON}
 
 // don't touch following
 {$UNDEF ESL_Short}

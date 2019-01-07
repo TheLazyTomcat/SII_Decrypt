@@ -11,15 +11,16 @@
 
   Base class for all explicit string lists.
 
-  ©František Milt 2018-05-21
+  ©František Milt 2018-10-21
 
-  Version 1.0.2
+  Version 1.0.4
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
     AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
+    ListSorters     - github.com/ncs-sniper/Lib.ListSorters
 
 ===============================================================================}
 unit ExplicitStringListsBase;
@@ -134,7 +135,6 @@ type
     property UserIntData: PtrInt read fUserIntData write fUserIntData;
     property UserPtrData: Pointer read fUserPtrData write fUserPtrData;
     property UserData: PtrInt read fUserIntData write fUserIntData;
-  published
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read fCount;
     property UpdateCount: Integer read fUpdateCount;
@@ -152,7 +152,7 @@ type
 implementation
 
 uses
-  StrRect;
+  StrRect, ListSorters;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -360,36 +360,21 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TExplicitStringList.Sort(Reversed: Boolean = False);
-
-  procedure QuickSort(LeftIdx,RightIdx,Coef: Integer);
-  var
-    Idx,i:  Integer;
-  begin
-    If LeftIdx < RightIdx then
-      begin
-        Exchange((LeftIdx + RightIdx) shr 1,RightIdx);
-        Idx := LeftIdx;
-        For i := LeftIdx to Pred(RightIdx) do
-          If (CompareItems(RightIdx,i) * Coef) > 0 then
-            begin
-              Exchange(i,idx);
-              Inc(Idx);
-            end;
-        Exchange(Idx,RightIdx);
-        QuickSort(LeftIdx,Idx - 1,Coef);
-        QuickSort(Idx + 1,RightIdx,Coef);
-      end;
-  end;
-  
+var
+  Sorter: TListQuickSorter;
 begin
 If fCount > 1 then
   begin
     BeginUpdate;
     try
-      If Reversed then
-        QuickSort(LowIndex,HighIndex,-1)
-      else
-        QuickSort(LowIndex,HighIndex,1);
+      Sorter := TListQuickSorter.Create(CompareItems,Exchange);
+      try
+        Sorter.ReversedCompare := True;
+        Sorter.Reversed := Reversed;
+        Sorter.Sort(LowIndex,HighIndex);
+      finally
+        Sorter.Free;
+      end;
       fSorted := not Reversed;
     finally
       EndUpdate;

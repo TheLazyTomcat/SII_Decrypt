@@ -13,9 +13,9 @@
     features) obtained by the CPUID instruction on x86(-64) processors.
     Should be compatible with any Windows and Unix system.
 
-  ©František Milt 2017-07-18
+  ©František Milt 2018-10-22
 
-  Version 1.1.3
+  Version 1.1.4
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -47,16 +47,22 @@ unit SimpleCPUID;
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$INLINE ON}
+  {$DEFINE CanInline}
   {$ASMMODE Intel}
   {$DEFINE FPC_DisableWarns}
   {$MACRO ON}
+{$ELSE}
+  {$IF CompilerVersion >= 17 then}  // Delphi 2005+
+    {$DEFINE CanInline}
+  {$ELSE}
+    {$UNDEF CanInline}
+  {$IFEND}
 {$ENDIF}
 
 {$IFDEF PurePascal}
   {$MESSAGE WARN 'This unit cannot be compiled without ASM.'}
 {$ENDIF}
-
-{$TYPEINFO ON}
 
 interface
 
@@ -70,7 +76,7 @@ uses
 Function CPUIDSupported: LongBool; register; assembler;
 
 procedure CPUID(Leaf, SubLeaf: UInt32; Result: Pointer); register; overload; assembler;
-procedure CPUID(Leaf: UInt32; Result: Pointer); overload;
+procedure CPUID(Leaf: UInt32; Result: Pointer); overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -405,7 +411,6 @@ type
     Function IndexOf(LeafID: UInt32): Integer; virtual;
     property Info: TCPUIDInfo read fInfo;
     property Leafs[Index: Integer]: TCPUIDLeaf read GetLeaf; default;
-  published
     property IncludeUnsupportedLeafs: Boolean read fIncUnsuppLeafs write fIncUnsuppLeafs;
     property Supported: Boolean read fSupported;
     property Count: Integer read GetLeafCount;
@@ -430,7 +435,6 @@ type
     class Function ProcessorAvailable(ProcessorID: Integer): Boolean; virtual;
     constructor Create(ProcessorID: Integer = 0; DoInitialize: Boolean = True; IncUnsupportedLeafs: Boolean = True);
     procedure Initialize; override;
-  published
     property ProcessorID: Integer read fProcessorID write fProcessorID;
   end;
 
@@ -477,7 +481,7 @@ Function getpid: pid_t; cdecl; external;
 
 //------------------------------------------------------------------------------
 
-procedure RaiseError(ResultValue: cint; FuncName: String);
+procedure RaiseError(ResultValue: cint; FuncName: String);{$IFDEF CanInline} inline; {$ENDIF}
 begin
 If ResultValue <> 0 then
   raise Exception.CreateFmt('%s failed with error %d.',[FuncName,ResultValue]);
@@ -487,28 +491,28 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function GetBit(Value: UInt32; Bit: Integer): Boolean; overload;
+Function GetBit(Value: UInt32; Bit: Integer): Boolean; overload;{$IFDEF CanInline} inline; {$ENDIF}
 begin
 Result := ((Value shr Bit) and 1) <> 0;
 end;
 
 //   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
 
-Function GetBit(Value: UInt64; Bit: Integer): Boolean; overload;
+Function GetBit(Value: UInt64; Bit: Integer): Boolean; overload;{$IFDEF CanInline} inline; {$ENDIF}
 begin
 Result := ((Value shr Bit) and 1) <> 0;
 end;
 
 //------------------------------------------------------------------------------
 
-Function SetBit(Value: UInt32; Bit: Integer): UInt32;
+Function SetBit(Value: UInt32; Bit: Integer): UInt32;{$IFDEF CanInline} inline; {$ENDIF}
 begin
 Result := Value or (UInt32(1) shl Bit);
 end;
 
 //------------------------------------------------------------------------------
 
-Function GetBits(Value: UInt32; FromBit, ToBit: Integer): UInt32;
+Function GetBits(Value: UInt32; FromBit, ToBit: Integer): UInt32;{$IFDEF CanInline} inline; {$ENDIF}
 begin
 Result := (Value and ($FFFFFFFF shr (31 - ToBit))) shr FromBit;
 end;
@@ -854,8 +858,8 @@ If Index >= 0 then
       fInfo.ProcessorFamily := GetBits(fLeafs[Index].Data.EAX,8,11) +
                                     GetBits(fLeafs[Index].Data.EAX,20,27);
     // processor model
-    If GetBits(fLeafs[Index].Data.EAX,8,11) in [$6,$F] then
-      fInfo.ProcessorModel := (GetBits(fLeafs[Index].Data.EAX,16,19) shr 4) or
+    if GetBits(fLeafs[Index].Data.EAX,8,11) in [$6,$F] then
+      fInfo.ProcessorModel := (GetBits(fLeafs[Index].Data.EAX,16,19) shl 4) +
                                     GetBits(fLeafs[Index].Data.EAX,4,7)
     else
       fInfo.ProcessorModel := GetBits(fLeafs[Index].Data.EAX,4,7);
