@@ -94,7 +94,7 @@ OutputDir=.\Release\win_x86
 UnitOutputDir=.\DCU
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\Source\Libs
+SearchPath=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
 Packages=vcl;rtl;vclx;VclSmp;vclshlctrls;AdvCircularProgressPkgD7;TMSMenusD7;AdvShaperPkgD7;alpb;sulab;butcmps;EZJTexturePanelD6;FormShapePkgD7;GradientLabelPkgD7;ic;l3d;lfr;fw;mmjl;ash;tqpb;shlab;vaf;ish;xib;TPNGButton;wbme;verinf;aled;DelphiX70
 Conditionals=
 DebugSourceDirs=
@@ -134,8 +134,11 @@ Comments=
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Source\Libs
+Count=4
+Item0=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
+Item1=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Header
+Item2=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source
+Item3=..\..\Source\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=.\DCU

@@ -17,7 +17,7 @@ implementation
 
 uses
   SysUtils,
-  SimpleCmdLineParser, StrRect,
+  SimpleCmdLineParser, StrRect, AuxExceptions,
   SII_Decrypt_Decryptor;
 
 procedure Main;
@@ -30,14 +30,15 @@ var
   ParamData:    TCLPParameter;
   InFileName:   String;
   OutFileName:  String;
+  MemProcess:   Boolean;
   ProcResult:   TSIIResult;
 begin
 try
   CMDParser := TCLPParser.Create;
   try
     WriteLn('************************************');
-    WriteLn('*    SII Decrypt program 1.4.2     *');
-    WriteLn('*   (c) 2016-2018 Frantisek Milt   *');
+    WriteLn('*     SII Decrypt program 1.5      *');
+    WriteLn('*   (c) 2016-2019 Frantisek Milt   *');
     WriteLn('************************************');
 
     If CMDParser.GetCommandCount > 0 then
@@ -62,10 +63,11 @@ try
           WriteLn;
           WriteLn('    Commands:');
           WriteLn;
-          WriteLn('      --no_decode  - decryption only, no decoding will be attempted');
-          WriteLn('      --sw_aes     - AES decryption will be done only in software');
-          WriteLn('      --on_file    - processing of files is done directly on them');
-          WriteLn('      --wait       - program will wait for user input after processing');
+          WriteLn('      --no_decode   - decryption only, no decoding will be attempted');
+          WriteLn('      --dec_unsupp  - enables experimental decoding of unsupported types');
+          WriteLn('      --aes_accel   - enables hardware AES acceleration when awailable');
+          WriteLn('      --in_mem      - file is processed entirely in memory');
+          WriteLn('      --wait        - program will wait for user input after processing');
         end;
 
       pmSimple:     //  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
@@ -101,37 +103,50 @@ try
           Decryptor := TSII_Decryptor.Create;
           try
             Decryptor.ReraiseExceptions := True;
-            Decryptor.AcceleratedAES := not CMDParser.CommandPresent('sw_aes');
+            If CMDParser.CommandPresent('aes_accel') then
+              Decryptor.AcceleratedAES := True
+            else
+              Decryptor.AcceleratedAES := not CMDParser.CommandPresent('sw_aes');
+            Decryptor.DecodeUnsuported := CMDParser.CommandPresent('dec_unsupp');
+
             If CMDParser.GetCommandData(Char('i'),ParamData) then
               begin
                 If Length(ParamData.Arguments) > 0 then
                   InFileName := ParamData.Arguments[0]
                 else
-                  raise Exception.Create('Input file not set.');
+                  raise EGeneralException.Create('Input file not set.',nil,'Main');
               end
-            else raise Exception.Create('Input file not set.');
+            else raise EGeneralException.Create('Input file not set.',nil,'Main');
+
             If CMDParser.GetCommandData(Char('o'),ParamData) then
               begin
                 If Length(ParamData.Arguments) > 0 then
                   OutFileName := ParamData.Arguments[0]
                 else
-                  raise Exception.Create('Error setting output file.');
-              end
+                  raise EGeneralException.Create('Error setting output file.',nil,'Main');
+               end
             else OutFileName := InFileName;
+
+            If CMDParser.CommandPresent('in_mem') then
+              MemProcess := True
+            else
+              MemProcess := not CMDParser.CommandPresent('on_file');
+              
             If CMDParser.CommandPresent('no_decode') then
               begin
-                If CMDParser.CommandPresent('on_file') then
-                  ProcResult := Decryptor.DecryptFile(InFileName,OutFileName)
+                If MemProcess then
+                  ProcResult := Decryptor.DecryptFileInMemory(InFileName,OutFileName)
                 else
-                  ProcResult := Decryptor.DecryptFileInMemory(InFileName,OutFileName);
+                  ProcResult := Decryptor.DecryptFile(InFileName,OutFileName);
               end
             else
               begin
-                If CMDParser.CommandPresent('on_file') then
-                  ProcResult := Decryptor.DecryptAndDecodeFile(InFileName,OutFileName)
+                If MemProcess then
+                  ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName)
                 else
-                  ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
+                  ProcResult := Decryptor.DecryptAndDecodeFile(InFileName,OutFileName);
               end;
+              
             ExitCode := GetResultAsInt(ProcResult);
             WriteLn;
             WriteLn(Format('Result: %s (%d)',[GetResultAsText(ProcResult),ExitCode]));

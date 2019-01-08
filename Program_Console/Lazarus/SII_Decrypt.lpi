@@ -28,7 +28,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -62,7 +62,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -103,7 +103,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -161,7 +161,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+      <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
