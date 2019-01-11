@@ -57,7 +57,8 @@ uses
 
 procedure TSIIBin_ValueNode_0000001A.Initialize;
 var
-  i,Coef: Integer;
+  i:    Integer;
+  Coef: Int64;
 begin
 If FormatVersion = 2 then
   For i := Low(fValue) to High(fValue) do

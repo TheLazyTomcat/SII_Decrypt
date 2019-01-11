@@ -56,7 +56,7 @@ uses
 
 procedure TSIIBin_ValueNode_00000019.Initialize;
 var
-  Coef: Integer;
+  Coef: Int64;
 begin
 If FormatVersion = 2 then
   begin

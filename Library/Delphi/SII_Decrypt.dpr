@@ -8,17 +8,9 @@
 library SII_Decrypt;
 
 uses
-  SII_Decrypt_Library in '..\SII_Decrypt_Library.pas',
-  SII_Decrypt_Header  in '..\..\Headers\SII_Decrypt_Header.pas',
-
-  SII_Decrypt_Decryptor in '..\..\Source\SII_Decrypt_Decryptor.pas',
-
-  SII_Decode_Common  in '..\..\Source\SII_Decode_Common.pas',
-  SII_Decode_Helpers in '..\..\Source\SII_Decode_Helpers.pas',
-  SII_Decode_Nodes   in '..\..\Source\SII_Decode_Nodes.pas',
-  SII_Decode_Decoder in '..\..\Source\SII_Decode_Decoder.pas',
-  
-  SII_3nK_Transcoder in '..\..\Source\SII_3nK_Transcoder.pas';
+  SII_Decrypt_Library_Common in '..\SII_Decrypt_Library_Common.pas',
+  SII_Decrypt_Library_Standalone in '..\SII_Decrypt_Library_Standalone.pas',
+  SII_Decrypt_Library_Decryptor in '..\SII_Decrypt_Library_Decryptor.pas';
 
 {$R *.res}
 

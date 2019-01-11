@@ -13,7 +13,7 @@ interface
 
 uses
   Classes,
-  AuxTypes, AES, ProgressTracker;
+  AuxTypes, AuxClasses, AES, ProgressTracker;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -62,7 +62,7 @@ type
   TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
   TSII_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
-  TSII_Decryptor = class(TObject)
+  TSII_Decryptor = class(TCustomObject)
   private
     fReraiseExceptions:   Boolean;
     fAcceleratedAES:      Boolean;

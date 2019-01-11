@@ -62,7 +62,7 @@ const
   Following are all possible values any library function can return.
   For meaning of individual values, refer to description of functions that
   returns them - only values the function can normally return are documented,
-  if it returns value that is not documented for that particular fucntion,
+  if it returns value that is not documented for that particular function,
   treat it as SIIDEC_RESULT_GENERIC_ERROR.
   If any function returns value that is not listed here, you should process it
   as if it returned SIIDEC_RESULT_GENERIC_ERROR.
@@ -84,7 +84,7 @@ var
 
   APIVersion
 
-  Returns version of API the library is providing. Lower 16 bits or returned
+  Returns version of API the library is providing. Lower 16 bits of returned
   value contains minor version, higher 16 bits contains major version.
 
   Returns:
@@ -143,7 +143,7 @@ var
     SIIDEC_RESULT_FORMAT_ENCRYPTED - encrypted SII file
     SIIDEC_RESULT_FORMAT_BINARY    - binary form of SII file
     SIIDEC_RESULT_FORMAT_3NK       - file is an 3nK-encoded SII file
-    SIIDEC_RESULT_FORMAT_UNKNOWN   - file of an uknown format
+    SIIDEC_RESULT_FORMAT_UNKNOWN   - file of an unknown format
     SIIDEC_RESULT_TOO_FEW_DATA     - file is too small to contain valid data for
                                      its format
 
@@ -653,6 +653,18 @@ var
 //==============================================================================
 
 const
+  SIIDEC_OPTIONID_ACCEL_AES  = 0;
+  SIIDEC_OPTIONID_DEC_UNSUPP = 1;
+
+type
+  TSIIDecProgressCallback = procedure(Context: Pointer; Progress: Double); stdcall;
+
+  TSIIDecContext = Pointer;
+  PSIIDecContext = ^TSIIDecContext; // pointer to TSIIDecContext type
+
+//==============================================================================
+
+const
   // Default file name of the dynamically loaded library (DLL).
   SIIDecrypt_LibFileName = 'SII_Decrypt.dll';
 
@@ -673,38 +685,46 @@ var
   LibHandle:  HMODULE;
 
 procedure Load_SII_Decrypt(const LibraryFile: String = SIIDecrypt_LibFileName);
+
+  Function GetAndCheckProcAddress(const ProcName: String): Pointer;
+  begin
+    Result := GetProcAddress(LibHandle,PChar(ProcName));
+    If not Assigned(Result) then
+      raise Exception.CreateFmt('Function %s not found.',[ProcName]);
+  end;
+
 begin
 If LibHandle = 0 then
   begin
     LibHandle := LoadLibrary(PChar(LibraryFile));
     If LibHandle <> 0 then
       begin
-        APIVersion         := GetProcAddress(LibHandle,'APIVersion');
+        APIVersion := GetAndCheckProcAddress('APIVersion');
 
-        GetMemoryFormat    := GetProcAddress(LibHandle,'GetMemoryFormat');
-        GetFileFormat      := GetProcAddress(LibHandle,'GetFileFormat');
-        IsEncryptedMemory  := GetProcAddress(LibHandle,'IsEncryptedMemory');
-        IsEncryptedFile    := GetProcAddress(LibHandle,'IsEncryptedFile');
-        IsEncodedMemory    := GetProcAddress(LibHandle,'IsEncodedMemory');
-        IsEncodedFile      := GetProcAddress(LibHandle,'IsEncodedFile');
-        Is3nKEncodedMemory := GetProcAddress(LibHandle,'Is3nKEncodedMemory');
-        Is3nKEncodedFile   := GetProcAddress(LibHandle,'Is3nKEncodedFile');
+        GetMemoryFormat    := GetAndCheckProcAddress('GetMemoryFormat');
+        GetFileFormat      := GetAndCheckProcAddress('GetFileFormat');
+        IsEncryptedMemory  := GetAndCheckProcAddress('IsEncryptedMemory');
+        IsEncryptedFile    := GetAndCheckProcAddress('IsEncryptedFile');
+        IsEncodedMemory    := GetAndCheckProcAddress('IsEncodedMemory');
+        IsEncodedFile      := GetAndCheckProcAddress('IsEncodedFile');
+        Is3nKEncodedMemory := GetAndCheckProcAddress('Is3nKEncodedMemory');
+        Is3nKEncodedFile   := GetAndCheckProcAddress('Is3nKEncodedFile');
 
-        DecryptMemory       := GetProcAddress(LibHandle,'DecryptMemory');
-        DecryptFile         := GetProcAddress(LibHandle,'DecryptFile');
-        DecryptFileInMemory := GetProcAddress(LibHandle,'DecryptFileInMemory');
+        DecryptMemory       := GetAndCheckProcAddress('DecryptMemory');
+        DecryptFile         := GetAndCheckProcAddress('DecryptFile');
+        DecryptFileInMemory := GetAndCheckProcAddress('DecryptFileInMemory');
 
-        DecodeMemoryHelper := GetProcAddress(LibHandle,'DecodeMemoryHelper');
-        DecodeMemory       := GetProcAddress(LibHandle,'DecodeMemory');
-        DecodeFile         := GetProcAddress(LibHandle,'DecodeFile');
-        DecodeFileInMemory := GetProcAddress(LibHandle,'DecodeFileInMemory');
+        DecodeMemoryHelper := GetAndCheckProcAddress('DecodeMemoryHelper');
+        DecodeMemory       := GetAndCheckProcAddress('DecodeMemory');
+        DecodeFile         := GetAndCheckProcAddress('DecodeFile');
+        DecodeFileInMemory := GetAndCheckProcAddress('DecodeFileInMemory');
 
-        DecryptAndDecodeMemoryHelper := GetProcAddress(LibHandle,'DecryptAndDecodeMemoryHelper');
-        DecryptAndDecodeMemory       := GetProcAddress(LibHandle,'DecryptAndDecodeMemory');
-        DecryptAndDecodeFile         := GetProcAddress(LibHandle,'DecryptAndDecodeFile');
-        DecryptAndDecodeFileInMemory := GetProcAddress(LibHandle,'DecryptAndDecodeFileInMemory');
+        DecryptAndDecodeMemoryHelper := GetAndCheckProcAddress('DecryptAndDecodeMemoryHelper');
+        DecryptAndDecodeMemory       := GetAndCheckProcAddress('DecryptAndDecodeMemory');
+        DecryptAndDecodeFile         := GetAndCheckProcAddress('DecryptAndDecodeFile');
+        DecryptAndDecodeFileInMemory := GetAndCheckProcAddress('DecryptAndDecodeFileInMemory');
 
-        FreeHelper := GetProcAddress(LibHandle,'FreeHelper');
+        FreeHelper := GetAndCheckProcAddress('FreeHelper');
       end
     else raise Exception.CreateFmt('Unable to load library %s.',[LibraryFile]);
   end;

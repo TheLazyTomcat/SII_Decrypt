@@ -5,7 +5,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------}
-unit SII_Decrypt_Library;
+unit SII_Decrypt_Library_Standalone;
 
 {$INCLUDE '..\Source\SII_Decrypt_defs.inc'}
 
@@ -44,33 +44,14 @@ procedure Exp_FreeHelper(Helper: PPointer); stdcall;
 implementation
 
 uses
-  SysUtils, Classes, StrRect, StaticMemoryStream,
-  SII_Decrypt_Decryptor, SII_Decrypt_Header;
+  SysUtils, Classes,
+  StaticMemoryStream,
+  SII_Decrypt_Decryptor, SII_Decrypt_Header, SII_Decrypt_Library_Common;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
   {$DEFINE W5057:={$WARN 5057 OFF}} // Local variable "$1" does not seem to be initialized
 {$ENDIF}
-
-{===============================================================================
-    Auxiliary functions
-===============================================================================}
-
-Function StrConv(Str: PUTF8Char): String;
-begin
-Result := UTF8ToStr(UTF8String(Str));
-end;
-
-//------------------------------------------------------------------------------
-
-Function BuildAPIVersion(Major,Minor: UInt16): UInt32;
-begin
-Result := (UInt32(Major) shl 16) or UInt32(Minor);
-end;
-
-{===============================================================================
-    Exported functions
-===============================================================================}
 
 Function Exp_APIVersion: UInt32; stdcall;
 begin
@@ -537,8 +518,8 @@ end;
 //==============================================================================
 
 exports
-
   Exp_APIVersion                   name 'APIVersion',
+
   Exp_GetMemoryFormat              name 'GetMemoryFormat',
   Exp_GetFileFormat                name 'GetFileFormat',
   Exp_IsEncryptedMemory            name 'IsEncryptedMemory',
@@ -547,17 +528,21 @@ exports
   Exp_IsEncodedFile                name 'IsEncodedFile',
   Exp_Is3nKEncodedMemory           name 'Is3nKEncodedMemory',
   Exp_Is3nKEncodedFile             name 'Is3nKEncodedFile',
+
   Exp_DecryptMemory                name 'DecryptMemory',
   Exp_DecryptFile                  name 'DecryptFile',
   Exp_DecryptFileInMemory          name 'DecryptFileInMemory',
+
   Exp_DecodeMemory                 name 'DecodeMemory',
   Exp_DecodeMemoryHelper           name 'DecodeMemoryHelper',
   Exp_DecodeFile                   name 'DecodeFile',
   Exp_DecodeFileInMemory           name 'DecodeFileInMemory',
+
   Exp_DecryptAndDecodeMemory       name 'DecryptAndDecodeMemory',
   Exp_DecryptAndDecodeMemoryHelper name 'DecryptAndDecodeMemoryHelper',
   Exp_DecryptAndDecodeFile         name 'DecryptAndDecodeFile',
   Exp_DecryptAndDecodeFileInMemory name 'DecryptAndDecodeFileInMemory',
+
   Exp_FreeHelper                   name 'FreeHelper';
 
 end.

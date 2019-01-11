@@ -30,7 +30,7 @@ var
   ParamData:    TCLPParameter;
   InFileName:   String;
   OutFileName:  String;
-  MemProcess:   Boolean;
+  FileProcess:  Boolean;
   ProcResult:   TSIIResult;
 begin
 try
@@ -65,8 +65,8 @@ try
           WriteLn;
           WriteLn('      --no_decode   - decryption only, no decoding will be attempted');
           WriteLn('      --dec_unsupp  - enables experimental decoding of unsupported types');
-          WriteLn('      --aes_accel   - enables hardware AES acceleration when awailable');
-          WriteLn('      --in_mem      - file is processed entirely in memory');
+          WriteLn('      --sw_aes      - AES decryption will be done only in software');
+          WriteLn('      --on_file     - processed files are streamed directly from disk');
           WriteLn('      --wait        - program will wait for user input after processing');
         end;
 
@@ -103,10 +103,7 @@ try
           Decryptor := TSII_Decryptor.Create;
           try
             Decryptor.ReraiseExceptions := True;
-            If CMDParser.CommandPresent('aes_accel') then
-              Decryptor.AcceleratedAES := True
-            else
-              Decryptor.AcceleratedAES := not CMDParser.CommandPresent('sw_aes');
+            Decryptor.AcceleratedAES := not CMDParser.CommandPresent('sw_aes');
             Decryptor.DecodeUnsuported := CMDParser.CommandPresent('dec_unsupp');
 
             If CMDParser.GetCommandData(Char('i'),ParamData) then
@@ -127,24 +124,21 @@ try
                end
             else OutFileName := InFileName;
 
-            If CMDParser.CommandPresent('in_mem') then
-              MemProcess := True
-            else
-              MemProcess := not CMDParser.CommandPresent('on_file');
-              
+            FileProcess := not CMDParser.CommandPresent('on_file');
+
             If CMDParser.CommandPresent('no_decode') then
               begin
-                If MemProcess then
-                  ProcResult := Decryptor.DecryptFileInMemory(InFileName,OutFileName)
+                If FileProcess then
+                  ProcResult := Decryptor.DecryptFile(InFileName,OutFileName)
                 else
-                  ProcResult := Decryptor.DecryptFile(InFileName,OutFileName);
+                  ProcResult := Decryptor.DecryptFileInMemory(InFileName,OutFileName);
               end
             else
               begin
-                If MemProcess then
-                  ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName)
+                If FileProcess then
+                  ProcResult := Decryptor.DecryptAndDecodeFile(InFileName,OutFileName)
                 else
-                  ProcResult := Decryptor.DecryptAndDecodeFile(InFileName,OutFileName);
+                  ProcResult := Decryptor.DecryptAndDecodeFileInMemory(InFileName,OutFileName);
               end;
               
             ExitCode := GetResultAsInt(ProcResult);
