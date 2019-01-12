@@ -248,8 +248,8 @@ object fMainForm: TfMainForm
       Left = 6
       Height = 17
       Top = 32
-      Width = 310
-      Caption = 'Decode unsupported types (experimental, use with caution!)'
+      Width = 306
+      Caption = 'Decode unsupported types (experimental, use with caution)'
       TabOrder = 1
     end
   end

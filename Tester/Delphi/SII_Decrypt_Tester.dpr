@@ -11,8 +11,7 @@ program SII_Decrypt_Tester;
 
 uses
   SII_Decrypt_Tester_Main in '..\SII_Decrypt_Tester_Main.pas',
-
-  SII_Decrypt_Header in '..\..\Headers\SII_Decrypt_Header.pas';
+  SII_Decrypt_Tester_LibraryDirect in '..\SII_Decrypt_Tester_LibraryDirect.pas';
 
 begin
   SII_Decrypt_Tester_Main.Main;

@@ -55,7 +55,7 @@ uses
 
 Function Exp_APIVersion: UInt32; stdcall;
 begin
-Result := BuildAPIVersion(1,0);
+Result := BuildAPIVersion(SIIDEC_LIBRARY_VERSION_MAJOR,SIIDEC_LIBRARY_VERSION_MINOR);
 end;
 
 //==============================================================================

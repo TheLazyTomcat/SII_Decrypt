@@ -18,6 +18,10 @@ Function StrConv(Str: PUTF8Char): String;
 
 Function BuildAPIVersion(Major,Minor: UInt16): UInt32;
 
+const
+  SIIDEC_LIBRARY_VERSION_MAJOR = 1;
+  SIIDEC_LIBRARY_VERSION_MINOR = 1;
+
 implementation
 
 uses

@@ -14,8 +14,80 @@ procedure Main;
 implementation
 
 uses
-  SysUtils, Classes, AuxTypes, StrRect, SII_Decrypt_Header;
+  SysUtils, Classes,
+  AuxTypes, StrRect, IniFileEx, CRC32, //SimpleLog_LogConsole,
+  SII_Decrypt_Library_Header, SII_Decrypt_Tester_LibraryDirect;
 
+procedure Main;
+type
+  TTestFileEntry = record
+    FileName: String;
+    Format:   Integer;
+    BCRC32:   TCRC32;
+    TCRC32:   TCRC32
+  end;
+const
+{$IFDEF FPC}
+  PathPrefix = '..\..\..\TestFiles\';
+{$ELSE}
+  PathPrefix = '..\..\TestFiles\';
+{$ENDIF}
+  TestFilesList = 'test_files_list.ini';
+var
+  TestFilesPath:    String;
+  TestFilesListIni: TIniFileEx;
+  TestFiles:        array of TTestFileEntry;
+  i:                Integer;
+begin
+try
+  WriteLn(StringOfChar('=',75));
+  WriteLn('    SII Decrypt Tester');
+  WriteLn(StringOfChar('=',75));
+  WriteLn;
+  TestFilesPath := ExpandFileName(ExtractFilePath(RTLToStr(ParamStr(0))) + PathPrefix);
+  WriteLn('Test files path: ',TestFilesPath);
+
+  WriteLn;
+  WriteLn('Loading test files list...');
+  TestFilesListIni := TIniFileEx.Create(TestFilesPath + TestFilesList,True);
+  try
+    SetLength(TestFiles,TestFilesListIni.ReadInteger('Files','Count',0));
+    For i := Low(TestFiles) to High(TestFiles) do
+      begin
+        TestFiles[i].FileName := TestFilesPath + TestFilesListIni.ReadString(Format('File.%d',[i]),'FileName','');
+        TestFiles[i].Format := TestFilesListIni.ReadInteger(Format('File.%d',[i]),'Format',0);
+        TestFiles[i].BCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'BCRC32',0));
+        TestFiles[i].TCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'TCRC32',0));
+      end;
+  finally
+    TestFilesListIni.Free;
+  end;
+  WriteLn;
+  WriteLn(Format('Loaded %d entries',[Length(TestFiles)]));
+
+  For i := Low(TestFiles) to High(TestFiles) do
+    begin
+      WriteLn;
+      WriteLn(StringOfChar('=',75));
+      WriteLn('  Entry #',i);
+      WriteLn(StringOfChar('=',75));
+      WriteLn;
+
+      SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i].FileName,TestFiles[i].Format,TestFiles[i].BCRC32,TestFiles[i].TCRC32);
+    end;
+    
+except
+  on E: Exception do
+    begin
+      WriteLn;
+      WriteLn(StrToCsl(Format('  error: %s: %s',[E.ClassName,E.Message])));
+    end;
+end;
+WriteLn;
+WriteLn(StringOfChar('-',75));
+Write('Press enter to continue...');ReadLn;
+end;
+(*
 const
 {$IFDEF FPC}
   PathPrefix = '..\..\..\';
@@ -88,6 +160,6 @@ except
     end;
 end;
 end;
-
+*)
 end.
 
