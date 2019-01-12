@@ -666,6 +666,37 @@ type
   TSIIDecContext = Pointer;
   PSIIDecContext = ^TSIIDecContext; // pointer to TSIIDecContext type
 
+//------------------------------------------------------------------------------
+
+var
+  Decryptor_Create: Function: TSIIDecContext; stdcall;
+  Decryptor_Free: procedure(Context: PSIIDecContext); stdcall;
+
+  Decryptor_GetOptionBool: Function(Context: TSIIDecContext; OptionID: Int32): LongBool; stdcall;
+  Decryptor_SetOptionBool: procedure(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool); stdcall;
+  Decryptor_SetProgressCallback: procedure(Context: TSIIDecContext; CallbackFunc: Pointer); stdcall;
+
+  Decryptor_GetMemoryFormat: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32; stdcall;
+  Decryptor_GetFileFormat: Function(Context: TSIIDecContext; FileName: PUTF8Char): Int32; stdcall;
+  Decryptor_IsEncryptedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_IsEncryptedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+  Decryptor_IsEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_IsEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+  Decryptor_Is3nKEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_Is3nKEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+
+  Decryptor_DecryptMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecryptFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+  Decryptor_DecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+  Decryptor_DecryptAndDecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecryptAndDecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptAndDecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
 //==============================================================================
 
 const
@@ -729,6 +760,37 @@ If LibHandle = 0 then
         DecryptAndDecodeFileInMemory := GetAndCheckProcAddress('DecryptAndDecodeFileInMemory');
 
         FreeHelper := GetAndCheckProcAddress('FreeHelper');
+
+        If APIVersion >= $00010001 then
+          begin
+            Decryptor_Create := GetAndCheckProcAddress('Decryptor_Create');
+            Decryptor_Free   := GetAndCheckProcAddress('Decryptor_Free');
+
+            Decryptor_GetOptionBool       := GetAndCheckProcAddress('Decryptor_GetOptionBool');
+            Decryptor_SetOptionBool       := GetAndCheckProcAddress('Decryptor_SetOptionBool');
+            Decryptor_SetProgressCallback := GetAndCheckProcAddress('Decryptor_SetProgressCallback');
+
+            Decryptor_GetMemoryFormat    := GetAndCheckProcAddress('Decryptor_GetMemoryFormat');
+            Decryptor_GetFileFormat      := GetAndCheckProcAddress('Decryptor_GetFileFormat');
+            Decryptor_IsEncryptedMemory  := GetAndCheckProcAddress('Decryptor_IsEncryptedMemory');
+            Decryptor_IsEncryptedFile    := GetAndCheckProcAddress('Decryptor_IsEncryptedFile');
+            Decryptor_IsEncodedMemory    := GetAndCheckProcAddress('Decryptor_IsEncodedMemory');
+            Decryptor_IsEncodedFile      := GetAndCheckProcAddress('Decryptor_IsEncodedFile');
+            Decryptor_Is3nKEncodedMemory := GetAndCheckProcAddress('Decryptor_Is3nKEncodedMemory');
+            Decryptor_Is3nKEncodedFile   := GetAndCheckProcAddress('Decryptor_Is3nKEncodedFile');
+
+            Decryptor_DecryptMemory       := GetAndCheckProcAddress('Decryptor_DecryptMemory');
+            Decryptor_DecryptFile         := GetAndCheckProcAddress('Decryptor_DecryptFile');
+            Decryptor_DecryptFileInMemory := GetAndCheckProcAddress('Decryptor_DecryptFileInMemory');
+
+            Decryptor_DecodeMemory       := GetAndCheckProcAddress('Decryptor_DecodeMemory');
+            Decryptor_DecodeFile         := GetAndCheckProcAddress('Decryptor_DecodeFile');
+            Decryptor_DecodeFileInMemory := GetAndCheckProcAddress('Decryptor_DecodeFileInMemory');
+
+            Decryptor_DecryptAndDecodeMemory       := GetAndCheckProcAddress('Decryptor_DecryptAndDecodeMemory');
+            Decryptor_DecryptAndDecodeFile         := GetAndCheckProcAddress('Decryptor_DecryptAndDecodeFile');
+            Decryptor_DecryptAndDecodeFileInMemory := GetAndCheckProcAddress('Decryptor_DecryptAndDecodeFileInMemory');
+          end;
       end
     else raise Exception.CreateFmt('Unable to load library %s.',[LibraryFile]);
   end;
@@ -740,6 +802,65 @@ procedure Unload_SII_Decrypt;
 begin
 If LibHandle <> 0 then
   begin
+    // invalidate procedural variables
+    APIVersion := nil;
+
+    GetMemoryFormat    := nil;
+    GetFileFormat      := nil;
+    IsEncryptedMemory  := nil;
+    IsEncryptedFile    := nil;
+    IsEncodedMemory    := nil;
+    IsEncodedFile      := nil;
+    Is3nKEncodedMemory := nil;
+    Is3nKEncodedFile   := nil;
+
+    DecryptMemory       := nil;
+    DecryptFile         := nil;
+    DecryptFileInMemory := nil;
+
+    DecodeMemoryHelper := nil;
+    DecodeMemory       := nil;
+    DecodeFile         := nil;
+    DecodeFileInMemory := nil;
+
+    DecryptAndDecodeMemoryHelper := nil;
+    DecryptAndDecodeMemory       := nil;
+    DecryptAndDecodeFile         := nil;
+    DecryptAndDecodeFileInMemory := nil;
+
+    FreeHelper := nil;
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    Decryptor_Create := nil;
+    Decryptor_Free   := nil;
+
+    Decryptor_GetOptionBool       := nil;
+    Decryptor_SetOptionBool       := nil;
+    Decryptor_SetProgressCallback := nil;
+
+    Decryptor_GetMemoryFormat    := nil;
+    Decryptor_GetFileFormat      := nil;
+    Decryptor_IsEncryptedMemory  := nil;
+    Decryptor_IsEncryptedFile    := nil;
+    Decryptor_IsEncodedMemory    := nil;
+    Decryptor_IsEncodedFile      := nil;
+    Decryptor_Is3nKEncodedMemory := nil;
+    Decryptor_Is3nKEncodedFile   := nil;
+
+    Decryptor_DecryptMemory       := nil;
+    Decryptor_DecryptFile         := nil;
+    Decryptor_DecryptFileInMemory := nil;
+
+    Decryptor_DecodeMemory       := nil;
+    Decryptor_DecodeFile         := nil;
+    Decryptor_DecodeFileInMemory := nil;
+
+    Decryptor_DecryptAndDecodeMemory       := nil;
+    Decryptor_DecryptAndDecodeFile         := nil;
+    Decryptor_DecryptAndDecodeFileInMemory := nil;
+
+    // unload the library
     FreeLibrary(LibHandle);
     LibHandle := 0;
   end;
