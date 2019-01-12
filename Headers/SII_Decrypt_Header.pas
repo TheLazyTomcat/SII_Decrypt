@@ -38,7 +38,11 @@ unit SII_Decrypt_Header;
 interface
 
 uses
-  AuxTypes; // provides types that are not guaranteed to be present in all compilers
+{
+  AuxTypes provides types that are not guaranteed to be present in all
+  compilers, eg. fixed-size integers)
+}
+  AuxTypes;
 
 {
   Types used in this unit (in case anyone will be translating this unit to other

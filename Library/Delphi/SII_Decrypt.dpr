@@ -9,8 +9,8 @@ library SII_Decrypt;
 
 uses
   SII_Decrypt_Library_Common in '..\SII_Decrypt_Library_Common.pas',
-  SII_Decrypt_Library_Standalone in '..\SII_Decrypt_Library_Standalone.pas',
-  SII_Decrypt_Library_Decryptor in '..\SII_Decrypt_Library_Decryptor.pas';
+  SII_Decrypt_Library_Decryptor in '..\SII_Decrypt_Library_Decryptor.pas',
+  SII_Decrypt_Library_Standalone in '..\SII_Decrypt_Library_Standalone.pas';
 
 {$R *.res}
 

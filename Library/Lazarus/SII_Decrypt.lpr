@@ -14,7 +14,9 @@ library SII_Decrypt;
 {$WARN 5023 OFF} // Unit "..." not used
 
 uses
-  SII_Decrypt_Library;
+  SII_Decrypt_Library_Common,
+  SII_Decrypt_Library_Decryptor,
+  SII_Decrypt_Library_Standalone;
 
 begin
 end.
