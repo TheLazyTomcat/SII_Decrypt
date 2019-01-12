@@ -94,7 +94,7 @@ OutputDir=.\Release\win_x86
 UnitOutputDir=.\DCU
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
+SearchPath=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
 Packages=vcl;rtl;vclx;VclSmp;vclshlctrls;AdvCircularProgressPkgD7;TMSMenusD7;AdvShaperPkgD7;alpb;sulab;butcmps;EZJTexturePanelD6;FormShapePkgD7;GradientLabelPkgD7;ic;l3d;lfr;fw;mmjl;ash;tqpb;shlab;vaf;ish;xib;TPNGButton;wbme;verinf;aled;DelphiX70
 Conditionals=
 DebugSourceDirs=
@@ -111,7 +111,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=5
 Release=0
-Build=41
+Build=42
 Debug=0
 PreRelease=0
 Special=0
@@ -122,7 +122,7 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=Library for SII file decryption
-FileVersion=1.5.0.41
+FileVersion=1.5.0.42
 InternalName=SII Decrypt Library
 LegalCopyright=© 2016 - 2019 František Milt
 LegalTrademarks=SII Decrypt Library
@@ -137,10 +137,11 @@ Item0=IsLibrary
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
-Item0=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
-Item1=..\..\Source\Libs
-Item2=..\Libs
+Count=4
+Item0=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
+Item1=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
+Item2=..\..\Source\Libs
+Item3=..\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=.\DCU

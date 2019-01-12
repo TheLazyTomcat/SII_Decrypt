@@ -46,7 +46,7 @@ implementation
 uses
   SysUtils, Classes,
   StaticMemoryStream,
-  SII_Decrypt_Decryptor, SII_Decrypt_Header, SII_Decrypt_Library_Common;
+  SII_Decrypt_Decryptor, SII_Decrypt_Library_Header, SII_Decrypt_Library_Common;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}

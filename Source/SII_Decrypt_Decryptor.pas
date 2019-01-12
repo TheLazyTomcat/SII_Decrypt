@@ -117,7 +117,7 @@ uses
   SysUtils,
   StrRect, BinaryStreaming, ExplicitStringLists, AuxExceptions,
   ZLibCommon, ZLibStatic,
-  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Header
+  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Library_Header
 {$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazFileUtils
 {$ENDIF};

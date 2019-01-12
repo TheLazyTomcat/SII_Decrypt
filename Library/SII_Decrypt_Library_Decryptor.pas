@@ -13,7 +13,7 @@ interface
 
 uses
   AuxTypes,
-  SII_Decrypt_Header;
+  SII_Decrypt_Library_Header;
 
 
 Function Exp_Decryptor_Create: TSIIDecContext; stdcall;

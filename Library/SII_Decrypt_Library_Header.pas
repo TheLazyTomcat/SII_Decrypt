@@ -29,7 +29,7 @@
             DecryptAndDecodeFileInMemory
 
 ===============================================================================}
-unit SII_Decrypt_Header;
+unit SII_Decrypt_Library_Header;
 
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -57,7 +57,7 @@ uses
     UInt32    - unsigned 32bit integer
     PUTF8Char - pointer to the first character of UTF8-encoded, null-terminated
                 string
-    LongBool  = 32bit wide boolean value (0 = False; any other value = True)
+    LongBool  = 32bit wide boolean value (0 = False, any other value = True)
 
 }
 

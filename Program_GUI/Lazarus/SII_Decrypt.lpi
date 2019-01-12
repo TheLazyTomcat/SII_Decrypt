@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="24"/>
+      <BuildNr Value="25"/>
       <Language Value="0405"/>
       <StringTable Comments="Tool for SII files decryption/decoding" CompanyName="František Milt" FileDescription="SII Decrypt - GUI program" InternalName="SII Decrypt" LegalCopyright="© 2016 - 2019 František Milt" LegalTrademarks="SII Decrypt" OriginalFilename="SII_Decrypt.exe" ProductName="SII Decrypt" ProductVersion="1.5"/>
     </VersionInfo>
@@ -34,7 +34,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -73,7 +73,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -119,7 +119,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -185,7 +185,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers"/>
+      <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
