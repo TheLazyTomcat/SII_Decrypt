@@ -81,19 +81,19 @@ try
         end;
       end;
     Write('  Exp_DecryptFile:         ',
-      Exp_DecryptFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecryptFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.BinCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.BinCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
     Write('  Exp_DecryptFileInMemory: ',
-      Exp_DecryptFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecryptFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.BinCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.BinCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -128,19 +128,19 @@ try
       end
     else Exp_FreeHelper(@Helper);
     Write('  Exp_DecodeFile:            ',
-      Exp_DecodeFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecodeFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
     Write('  Exp_DecodeFileInMemory:    ',
-      Exp_DecodeFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecodeFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -175,19 +175,19 @@ try
       end
     else Exp_FreeHelper(@Helper);
     Write('  Exp_DecryptAndDecodeFile:            ',
-      Exp_DecryptAndDecodeFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecryptAndDecodeFile(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
     Write('  Exp_DecryptAndDecodeFileInMemory:    ',
-      Exp_DecryptAndDecodeFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-    If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+      Exp_DecryptAndDecodeFileInMemory(PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+    If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
       begin
-        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-        DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+        WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+        DeleteFile(StrToRTL(TestFileEntry.OutFileName));
       end
     else WriteLn;
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -226,19 +226,19 @@ try
           end;
         end;
       Write('  Exp_Decryptor_DecryptFile:         ',
-        Exp_Decryptor_DecryptFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecryptFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.BinCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.BinCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
       Write('  Exp_Decryptor_DecryptFileInMemory: ',
-        Exp_Decryptor_DecryptFileInMemory(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecryptFileInMemory(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.BinCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.BinCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -258,19 +258,19 @@ try
           end;
         end;
       Write('  Exp_Decryptor_DecodeFile:         ',
-        Exp_Decryptor_DecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
       Write('  Exp_Decryptor_DecodeFileInMemory: ',
-        Exp_Decryptor_DecodeFileInMemory(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecodeFileInMemory(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -290,19 +290,19 @@ try
           end;
         end;
       Write('  Exp_Decryptor_DecryptAndDecodeFile:         ',
-        Exp_Decryptor_DecryptAndDecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecryptAndDecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
       Write('  Exp_Decryptor_DecryptAndDecodeFileInMemory: ',
-        Exp_Decryptor_DecryptAndDecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.FileName + '.out'))));
-      If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+        Exp_Decryptor_DecryptAndDecodeFile(Context,PUTF8Char(StrToUTF8(TestFileEntry.FileName)),PUTF8Char(StrToUTF8(TestFileEntry.OutFileName))));
+      If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
         begin
-          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-          DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+          WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+          DeleteFile(StrToRTL(TestFileEntry.OutFileName));
         end
       else WriteLn;
     finally

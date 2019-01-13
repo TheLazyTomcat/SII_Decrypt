@@ -60,10 +60,10 @@ If CreateProcess(nil,PChar(CommnadLine),@SecurityAttr,@SecurityAttr,True,
   end;
 WriteLn;
 Write('  ExitCode: ',ExitCode);
-If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
   begin
-    WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.TextCRC32));
-    DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+    WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.TextCRC32));
+    DeleteFile(StrToRTL(TestFileEntry.OutFileName));
   end
 else WriteLn;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,10 +79,10 @@ If CreateProcess(nil,PChar(CommnadLineND),@SecurityAttr,@SecurityAttr,True,
   end;
 WriteLn;
 Write('  ExitCode: ',ExitCode);
-If FileExists(StrToRTL(TestFileEntry.FileName + '.out')) then
+If FileExists(StrToRTL(TestFileEntry.OutFileName)) then
   begin
-    WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.FileName + '.out'),TestFileEntry.BinCRC32));
-    DeleteFile(StrToRTL(TestFileEntry.FileName + '.out'));
+    WriteLn('  ',SameCRC32(FileCRC32(TestFileEntry.OutFileName),TestFileEntry.BinCRC32));
+    DeleteFile(StrToRTL(TestFileEntry.OutFileName));
   end
 else WriteLn;
 end;

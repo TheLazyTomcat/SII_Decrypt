@@ -14,10 +14,11 @@ uses
 
 type
   TTestFileEntry = record
-    FileName:   String;
-    FileFormat: Integer;
-    BinCRC32:   TCRC32;
-    TextCRC32:  TCRC32
+    OutFileName:  String;  
+    FileName:     String;
+    FileFormat:   Integer;
+    BinCRC32:     TCRC32;
+    TextCRC32:    TCRC32;
   end;
 
 procedure Main;
@@ -78,6 +79,7 @@ try
     For i := Low(TestFiles) to High(TestFiles) do
       begin
         TestFiles[i].FileName := TestFilesPath + TestFilesListIni.ReadString(Format('File.%d',[i]),'FileName','');
+        TestFiles[i].OutFileName := ExtractFilePath(ParamStr(0)) + TestFilesListIni.ReadString(Format('File.%d',[i]),'FileName','');
         TestFiles[i].FileFormat := TestFilesListIni.ReadInteger(Format('File.%d',[i]),'FileFormat',0);
         TestFiles[i].BinCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'BinCRC32',0));
         TestFiles[i].TextCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'TextCRC32',0));
