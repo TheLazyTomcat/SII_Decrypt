@@ -38,6 +38,7 @@ var
   Helper:         Pointer;
   Context:        TSIIDecContext;
 begin
+WriteLn;
 WriteLn(StringOfChar('-',75));
 WriteLn('  SII Decrypt Tester - Library');
 WriteLn(StringOfChar('-',75));

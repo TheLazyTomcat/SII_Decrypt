@@ -28,7 +28,7 @@ uses
   SysUtils, Classes,
   AuxTypes, StrRect, IniFileEx,  //SimpleLog_LogConsole,
   SII_Decrypt_Library_Header, SII_Decrypt_Tester_LibraryDirect,
-  SII_Decrypt_Tester_Library;
+  SII_Decrypt_Tester_Library, SII_Decrypt_Tester_Program;
 
 procedure Main;
 const
@@ -91,10 +91,26 @@ try
         WriteLn(StringOfChar('=',75));
         WriteLn('  Entry #',i);
         WriteLn(StringOfChar('=',75));
-        WriteLn;
 
-        //SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i]);
+        SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i]);
         SII_Decrypt_Tester_Library.TestOnFile(TestFiles[i]);
+        SII_Decrypt_Tester_Program.TestOnFile(
+          Format('"%s" "%s" "%s"',[
+        {$IFDEF FPC}
+          {$IF SizeOf(Pointer) = 8}
+            ExpandFileName(PathPrefix + 'Program_Console\Lazarus\Release\win_x64\SII_Decrypt.exe'),
+          {$ELSE}
+            ExpandFileName(PathPrefix + 'Program_Console\Lazarus\Release\win_x86\SII_Decrypt.exe'),
+          {$IFEND}
+        {$ELSE}
+          {$IF SizeOf(Pointer) = 8}
+            ExpandFileName(PathPrefix + 'Program_Console\Delphi\Release\win_x64\SII_Decrypt.exe'),
+          {$ELSE}
+            ExpandFileName(PathPrefix + 'Program_Console\Delphi\Release\win_x86\SII_Decrypt.exe'),
+          {$IFEND}
+        {$ENDIF}
+            TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
+          TestFiles[i]);
       end;
   finally
     Unload_SII_Decrypt;
