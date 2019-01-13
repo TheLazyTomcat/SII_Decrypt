@@ -7,16 +7,16 @@
 -------------------------------------------------------------------------------}
 library SII_Decrypt;
 
-{$INCLUDE '..\..\Source\SII_3nK_defs.inc'}
+{$INCLUDE '..\..\Source\SII_Decrypt_defs.inc'}
 
-{$R *.res}
-
-{$WARN 5023 OFF} // Unit "..." not used
+{$WARN 5023 OFF}  // does not seem to work :\
 
 uses
-  SII_Decrypt_Library_Common,
+  // following units must be here otherwise their exports would be ignored
   SII_Decrypt_Library_Decryptor,
   SII_Decrypt_Library_Standalone;
+
+{$R *.res}
 
 begin
 end.
