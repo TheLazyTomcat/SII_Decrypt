@@ -106,14 +106,17 @@ end;
 procedure Exp_Decryptor_Free(Context: PSIIDecContext);
 begin
 try
-  PSIIDecContextInternal(Context^)^.Decryptor.Free;
-  PSIIDecContextInternal(Context^)^.Decryptor := nil;
-  PSIIDecContextInternal(Context^)^.Callback := nil;
-  If Assigned(PSIIDecContextInternal(Context^)^.Helper) then
-    PSIIDecContextInternal(Context^)^.Helper.Free;
-  PSIIDecContextInternal(Context^)^.Helper := nil;
-  Dispose(PSIIDecContextInternal(Context^));
-  Context^ := nil;
+  If Assigned(Context^) then
+    begin
+      PSIIDecContextInternal(Context^)^.Decryptor.Free;
+      PSIIDecContextInternal(Context^)^.Decryptor := nil;
+      PSIIDecContextInternal(Context^)^.Callback := nil;
+      If Assigned(PSIIDecContextInternal(Context^)^.Helper) then
+        PSIIDecContextInternal(Context^)^.Helper.Free;
+      PSIIDecContextInternal(Context^)^.Helper := nil;
+      Dispose(PSIIDecContextInternal(Context^));
+      Context^ := nil;
+    end;
 except
   // do nothing
 end;

@@ -22,4 +22,4 @@ copy ..\Library\Delphi\Release\win_x86\SII_Decrypt.dll  "..\Release\Library\SII_
 copy ..\Library\Lazarus\Release\win_x86\SII_Decrypt.dll "..\Release\Library\SII_Decrypt[L32].dll"
 copy ..\Library\Lazarus\Release\win_x64\SII_Decrypt.dll "..\Release\Library\SII_Decrypt[L64].dll"
 
-copy ..\Library\SII_Decrypt_Library_Header.pas"..\Release\Library\SII_Decrypt_Library_Header.pas"
+copy ..\Library\SII_Decrypt_Library_Header.pas "..\Release\Library\SII_Decrypt_Library_Header.pas"

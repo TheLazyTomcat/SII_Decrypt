@@ -7,8 +7,8 @@
 -------------------------------------------------------------------------------}
 {===============================================================================
 
-  Current SII Decrypt version:  1.4.2
-  Current library API version:  1.0
+  Current SII Decrypt version:  1.5
+  Current library API version:  1.1
 
   Note:
 
@@ -19,6 +19,8 @@
 
   Changelog:
 
+    1.5.0 - added context-aware functions to the API
+          - library API version changed to 1.1
     1.4.2 - no change in the library API
     1.4.1 - no change in the library API
     1.4.0 - started documenting changes
@@ -45,8 +47,8 @@ uses
   AuxTypes;
 
 {
-  Types used in this unit (in case anyone will be translating this unit to other
-  languages):
+  Basic types used in this unit (in case anyone will be translating this unit
+  to other languages):
 
     Pointer   - general, untyped pointer
     PPointer  - pointer to untyped pointer
@@ -59,11 +61,14 @@ uses
                 string
     LongBool  = 32bit wide boolean value (0 = False, any other value = True)
 
+  There is also a procedural type defined. Technically, it is just an ordinary
+  pointer.
 }
 
 const
 {
-  Following are all possible values any library function can return.
+  Following are all possible values any library function with Int32 as a result
+  type can return.
   For meaning of individual values, refer to description of functions that
   returns them - only values the function can normally return are documented,
   if it returns value that is not documented for that particular function,
@@ -80,16 +85,27 @@ const
   SIIDEC_RESULT_FORMAT_UNKNOWN   = 10;
   SIIDEC_RESULT_TOO_FEW_DATA     = 11;
   SIIDEC_RESULT_BUFFER_TOO_SMALL = 12;
+  
+  
 
-//==============================================================================
+{===============================================================================
+--------------------------------------------------------------------------------
+
+  Standalone functions
+
+    Functions than can be called without any preparation, but that cannot offer
+    some more advanced options (eg. progress reporting).
+
+--------------------------------------------------------------------------------
+===============================================================================}
 
 var
 {-------------------------------------------------------------------------------
 
   APIVersion
 
-  Returns version of API the library is providing. Lower 16 bits of returned
-  value contains minor version, higher 16 bits contains major version.
+    Returns version of API the library is providing. Lower 16 bits of returned
+    value contains minor version, higher 16 bits contains major version.
 
   Returns:
 
@@ -101,10 +117,10 @@ var
 
   GetMemoryFormat
 
-  Returns format of the passed memory buffer.
-  The format is discerned acording to first four bytes (signature) and the size
-  is then checked againts that format (must be high enough to contain valid
-  data for the given format).
+    Returns format of the passed memory buffer.
+    The format is discerned acording to first four bytes (signature) and the
+    size is then checked againts that format (must be high enough to contain
+    valid data for the given format).
 
   Parameters:
 
@@ -129,12 +145,12 @@ var
 
   GetFileFormat
 
-  Returns format of file given by its name (path).
-  It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, a generic error code is returned.
-  The format is discerned acording to first four bytes (signature) and the size
-  is then checked againts that format (must be high enough to contain valid
-  data for the given format).
+    Returns format of file given by its name (path).
+    It is recommended to pass full file path, but relative path is acceptable.
+    If the file does not exists, a generic error code is returned.
+    The format is discerned acording to first four bytes (signature) and the
+    size is then checked againts that format (must be high enough to contain
+    valid data for the given format).
 
   Parameters:
 
@@ -158,7 +174,7 @@ var
 
   IsEncryptedMemory
 
-  Checks whether the passed memory buffer contains an encrypted SII file.
+    Checks whether the passed memory buffer contains an encrypted SII file.
 
   Parameters:
 
@@ -176,9 +192,9 @@ var
 
   IsEncryptedFile
 
-  Checks whether the given file contains an encrypted SII file.
-  It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, zero (false) is returned.
+    Checks whether the given file contains an encrypted SII file.
+    It is recommended to pass full file path, but relative path is acceptable.
+    If the file does not exists, zero (false) is returned.
 
   Parameters:
 
@@ -195,7 +211,7 @@ var
 
   IsEncodedMemory
 
-  Checks whether the passed memory buffer contains a binary SII file.
+    Checks whether the passed memory buffer contains a binary SII file.
 
   Parameters:
 
@@ -213,9 +229,9 @@ var
 
   IsEncodedFile
 
-  Checks whether the given file contains a binary SII file.
-  It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, zero (false) is returned.
+    Checks whether the given file contains a binary SII file.
+    It is recommended to pass full file path, but relative path is acceptable.
+    If the file does not exists, zero (false) is returned.
 
   Parameters:
 
@@ -232,7 +248,7 @@ var
 
   Is3nKEncodedMemory
 
-  Checks whether the passed memory buffer contains an 3nK-encoded SII file.
+    Checks whether the passed memory buffer contains an 3nK-encoded SII file.
 
   Parameters:
 
@@ -250,9 +266,9 @@ var
 
   Is3nKEncodedFile
 
-  Checks whether the given file contains an 3nK-encoded SII file.
-  It is recommended to pass full file path, but relative path is acceptable.
-  If the file does not exists, zero (false) is returned.
+    Checks whether the given file contains an 3nK-encoded SII file.
+    It is recommended to pass full file path, but relative path is acceptable.
+    If the file does not exists, zero (false) is returned.
 
   Parameters:
 
@@ -269,24 +285,24 @@ var
 
   DecryptMemory
 
-  Decrypts memory block given by the Input parameter and stores decrypted data
-  to a memory given by Output parameter.
-  To properly use this function, you have to call it twice. Do following:
+    Decrypts memory block given by the Input parameter and stores decrypted data
+    to a memory given by Output parameter.
+    To properly use this function, you have to call it twice. Do following:
 
-    - call this function with parameter Output set to nil (null/0), variable
-      pointed to by OutSize pointer can contain any value
-    - if the function returns SIIDEC_RESULT_SUCCESS, then minimal size of output
-      buffer is stored in a variable pointed to by parameter OutSize, otherwise
-      stop here and do not continue with next step
-    - use returned min. size of output buffer to allocate buffer for the next
-      step
-    - call this function again, this time with Output set to a buffer allocated
-      in previous step and value of variable pointed to by OutSize set to a size
-      of the allocated output buffer
-    - if the function returns SIIDEC_RESULT_SUCCESS, then true size of decrypted
-      data will be stored to a variable pointed to by parameter OutSize and
-      decrypted data will be stored to buffer passed in Output parameter,
-      otherwise nothing is stored in any output
+      - call this function with parameter Output set to nil (null/0), variable
+        pointed to by OutSize pointer can contain any value
+      - if the function returns SIIDEC_RESULT_SUCCESS, then minimal size of
+        output buffer is stored in a variable pointed to by parameter OutSize,
+        otherwise stop here and do not continue with next step
+      - use returned min. size of output buffer to allocate buffer for the next
+        step
+      - call this function again, this time with Output set to a buffer
+        allocated in previous step and value of variable pointed to by OutSize
+        set to a size of the allocated output buffer
+      - if the function returns SIIDEC_RESULT_SUCCESS, then true size of
+        decrypted data will be stored to a variable pointed to by parameter
+        OutSize and decrypted data will be stored to buffer passed in Output
+        parameter, otherwise nothing is stored in any output
 
   Parameters:
 
@@ -321,12 +337,13 @@ var
 
   DecryptFile
 
-  Decrypts file given by a path in InputFile parameter and stores decrypted
-  result in a file given by a path in OutputFile parameter.
-  It is recommended to pass full file paths, but relative paths are acceptable.
-  Folder, where the destination file will be stored, must exists prior of
-  calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
-  It is allowed to pass the same file as input and output.
+    Decrypts file given by a path in InputFile parameter and stores decrypted
+    result in a file given by a path in OutputFile parameter.
+    It is recommended to pass full file paths, but relative paths are
+    acceptable. Folder, where the destination file will be stored, must exists
+    prior of calling this function, otherwise it fails with
+    SIIDEC_RESULT_GENERIC_ERROR.
+    It is allowed to pass the same file as input and output.
 
   Parameters:
 
@@ -356,9 +373,9 @@ var
 
   DecryptFileInMemory
 
-  Works exactly the same as function DecryptFile (refer there for details), but
-  is implemented slightly differently. It reduces IO operations in exchange for
-  larger memory use.
+    Works exactly the same as function DecryptFile (refer there for details),
+    but is implemented slightly differently. It reduces IO operations in
+    exchange for larger memory use.
 }
   DecryptFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -366,51 +383,53 @@ var
 
   DecodeMemoryHelper
 
-  Decodes (converts binary data to their textual form) memory block given by the
-  Input parameter and stores decoded data to a memory given by Output parameter.
-  Use of this function is somewhat complex, but it can be split into two, let's
-  say, paths - one where you use the provided Helper parameter, and one where
-  you don't.
+    Decodes (converts binary data to their textual form) memory block given by
+    the Input parameter and stores decoded data to a memory given by Output
+    parameter.
+    Use of this function is somewhat complex, but it can be split into two,
+    let's say, paths - one where you use the provided Helper parameter, and one
+    where you don't.
 
-  When you will use the helper, do following:
+    When you will use the helper, do following:
 
-    - call this function with parameter Output set to nil (null/0), variable
-      pointed to by OutSize pointer can contain any value, Helper must contain
-      a valid pointer to pointer
-    - if the function returns SIIDEC_RESULT_SUCCESS, then minimal size of output
-      buffer is stored in a variable pointed to by parameter OutSize and
-      variable pointed to by Helper parameter receives helper object, otherwise
-      stop here and do not continue with next step
-    - use returned min. size of output buffer to allocate buffer for the next
-      step
-    - call this function again, this time with Output set to a buffer allocated
-      in previous step, value of variable pointed to by OutSize set to a size
-      of the allocated output buffer and Helper pointing to the same variable as
-      in first call
-    - if the function returns SIIDEC_RESULT_SUCCESS, then true size of decoded
-      data will be stored to a variable pointed to by parameter OutSize,
-      decoded data will be stored to buffer passed in Output parameter and
-      helper object will be consumed and freed, otherwise nothing is stored in
-      any output and you have to free the helper object using function
-      FreeHelper
+      - call this function with parameter Output set to nil (null/0), variable
+        pointed to by OutSize pointer can contain any value, Helper must contain
+        a valid pointer to pointer
+      - if the function returns SIIDEC_RESULT_SUCCESS, then minimal size of
+        output buffer is stored in a variable pointed to by parameter OutSize
+        and variable pointed to by Helper parameter receives helper object,
+        otherwise stop here and do not continue with next step
+      - use returned min. size of output buffer to allocate buffer for the next
+        step
+      - call this function again, this time with Output set to a buffer
+        allocated in previous step, value of variable pointed to by OutSize set
+        to a size of the allocated output buffer and Helper pointing to the same
+        variable as in first call
+      - if the function returns SIIDEC_RESULT_SUCCESS, then true size of decoded
+        data will be stored to a variable pointed to by parameter OutSize,
+        decoded data will be stored to buffer passed in Output parameter and
+        helper object will be consumed and freed, otherwise nothing is stored in
+        any output and you have to free the helper object using function
+        FreeHelper
 
-  If you won't use the helper, set the parameter Helper to nil. The procedure is
-  then the same as with the function DecryptMemory, so refer there.
+    If you won't use the helper, set the parameter Helper to nil. The procedure
+    is then the same as with the function DecryptMemory, so refer there.
 
-  This function cannot determine the size of result before actual decoding is
-  complete. So when you ask it for size of output buffer, it will do complete
-  decoding, which may be quite a long process (several seconds).
-  Helper is there to speed things up - when you use it (pass valid pointer), the
-  function stores helper object (DO NOT assume anything about it, consider it
-  being completely opaque) to a variable pointed to by Helper parameter. When
-  you allocate output buffer and call the function again, pass this returned
-  helper and the function will, instead of decoding the data again, only copy
-  data from decoding done in the first iteration.
-  WARNING - if you don't call the function second time or if the function fails
-  in the second call, you have to manually free the helper using function
-  FreeHelper, otherwise it will result in serious memory leak (tens of MiB).
-  Given mentioned facts, it is strongly recommended to use the helper whenever
-  possible, but with caution.
+    This function cannot determine the size of result before actual decoding is
+    complete. So when you ask it for size of output buffer, it will do complete
+    decoding, which may be quite a long process (several seconds).
+    Helper is there to speed things up - when you use it (pass valid pointer),
+    the function stores helper object (DO NOT assume anything about it, consider
+    it being completely opaque) to a variable pointed to by Helper parameter.
+    When you allocate output buffer and call the function again, pass this
+    returned helper and the function will, instead of decoding the data again,
+    only copy data from decoding done in the first iteration.
+
+    WARNING - if you don't call the function second time or if the function
+              fails in the second call, you have to manually free the helper
+              using function FreeHelper, otherwise it will result in serious
+              memory leak (tens of MiB). Given mentioned facts, it is strongly
+              recommended to use the helper whenever possible, but with caution.
 
   Parameters:
 
@@ -444,10 +463,10 @@ var
 
   DecodeMemory
 
-  Decodes (converts binary data to their textual form) memory block given by the
-  Input parameter and stores decoded data to a memory given by Output parameter.
-  Use of this function is exactly the same as for DecodeMemoryHelper when you do
-  not use helper, so refer there for details.
+    Decodes (converts binary data to their textual form) memory block given by
+    the Input parameter and stores decoded data to a memory given by Output
+    parameter. Use of this function is exactly the same as for
+    DecodeMemoryHelper when you do not use helper, so refer there for details.
 
   Parameters:
 
@@ -480,12 +499,13 @@ var
 
   DecodeFile
 
-  Decodes file given by a path in InputFile parameter and stores decoded result
-  in a file given by a path in OutputFile parameter.
-  It is recommended to pass full file paths, but relative paths are acceptable.
-  Folder, where the destination file will be stored, must exists prior of
-  calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
-  It is allowed to pass the same file as input and output.
+    Decodes file given by a path in InputFile parameter and stores decoded
+    result in a file given by a path in OutputFile parameter.
+    It is recommended to pass full file paths, but relative paths are
+    acceptable. Folder, where the destination file will be stored, must exists
+    prior of calling this function, otherwise it fails with
+    SIIDEC_RESULT_GENERIC_ERROR.
+    It is allowed to pass the same file as input and output.
 
   Parameters:
 
@@ -513,9 +533,9 @@ var
 
   DecodeFileInMemory
 
-  Works exactly the same as function DecodeFile (refer there for details), but
-  is implemented slightly differently. It reduces IO operations in exchange for
-  larger memory use.
+    Works exactly the same as function DecodeFile (refer there for details), but
+    is implemented slightly differently. It reduces IO operations in exchange
+    for larger memory use.
 }
   DecodeFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -523,10 +543,10 @@ var
 
   DecryptAndDecodeMemoryHelper
 
-  Decrypts and, if needed, decodes memory block given by the Input parameter and
-  stores decoded data to a memory given by Output parameter.
-  Use is exactly the same as in function DecodeMemoryHelper, refer there for
-  details about how to properly use this function
+    Decrypts and, if needed, decodes memory block given by the Input parameter
+    and stores decoded data to a memory given by Output parameter.
+    Use is exactly the same as in function DecodeMemoryHelper, refer there for
+    details about how to properly use this function
 
   Parameters:
 
@@ -560,10 +580,10 @@ var
 
   DecryptAndDecodeMemory
 
-  Decrypts and, if needed, decodes memory block given by the Input parameter and
-  stores decoded data to a memory given by Output parameter.
-  Use is exactly the same as in function DecodeMemory, refer there for details
-  about how to properly use this function
+    Decrypts and, if needed, decodes memory block given by the Input parameter
+    and stores decoded data to a memory given by Output parameter.
+    Use is exactly the same as in function DecodeMemory, refer there for details
+    about how to properly use this function
 
   Parameters:
 
@@ -596,12 +616,13 @@ var
 
   DecryptAndDecodeFile
 
-  Decrypts and, if needed, decodes file given by a path in InputFile parameter
-  and stores the result in a file given by a path in OutputFile parameter.
-  It is recommended to pass full file paths, but relative paths are acceptable.
-  Folder, where the destination file will be stored, must exists prior of
-  calling this function, otherwise it fails with SIIDEC_RESULT_GENERIC_ERROR.
-  It is allowed to pass the same file as input and output.
+    Decrypts and, if needed, decodes file given by a path in InputFile parameter
+    and stores the result in a file given by a path in OutputFile parameter.
+    It is recommended to pass full file paths, but relative paths are
+    acceptable. Folder, where the destination file will be stored, must exists
+    prior of calling this function, otherwise it fails with
+    SIIDEC_RESULT_GENERIC_ERROR.
+    It is allowed to pass the same file as input and output.
 
   Parameters:
 
@@ -628,9 +649,9 @@ var
 
   DecryptAndDecodeFileInMemory
 
-  Works exactly the same as function DecryptAndDecodeFile (refer there for
-  details), but is implemented slightly differently. It reduces IO operations
-  in exchange for larger memory use.
+    Works exactly the same as function DecryptAndDecodeFile (refer there for
+    details), but is implemented slightly differently. It reduces IO operations
+    in exchange for larger memory use.
 }
   DecryptAndDecodeFileInMemory: Function(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
@@ -638,11 +659,12 @@ var
 
   FreeHelper
 
-  Frees resources taken by a helper object allocated by DecodeMemoryHelper or
-  DecryptAndDecodeMemoryHelper function. Refer to those functions documentation
-  for details about when you have to call this function and when you don't.
-  Passing in an already freed object is allowed, the function just returns
-  immediately.
+    Frees resources taken by a helper object allocated by DecodeMemoryHelper or
+    DecryptAndDecodeMemoryHelper function. Refer to those functions
+    documentation for details about when you have to call this function and when
+    you don't.
+    Passing in an already freed object is allowed, the function just returns
+    immediately.
 
   Parameters:
 
@@ -653,51 +675,362 @@ var
     This routine does not have a return value.
 }
   FreeHelper: procedure(Helper: PPointer); stdcall;
+  
+  
+
+{===============================================================================
+--------------------------------------------------------------------------------
+
+  Context functions
+  
+    Following functions are working on a context object. This object must be 
+    explicitly created before using it and also freed when you are done working
+    with it.
+    Unlike standalone functions, the use of context object enables you to use
+    more advanced options, for example setting decryptor properties or 
+    receiving progress reports.
+    Note that most context-aware functions behave the same as their standalone
+    version, so they are not fully documented and documentation only redirects
+    to proper counterpart. The only difference is, of course, that you must pass
+    a valid context object to these functions, that is all.
+
+    Example of how to use the context object property (written in pascal):
+
+      var
+        Context:  TSIIDecContext;
+      begin
+        Context := Decryptor_Create;
+        try
+          Decryptor_SetOptionBool(Context,SIIDEC_OPTIONID_DEC_UNSUPP,True);
+          Decryptor_DecryptAndDecodeFile(Context,InputFileName,OutputFileName);
+        finally
+          Decryptor_Free(@Context);
+        end;
+      end;
+
+--------------------------------------------------------------------------------
+===============================================================================}
+
+{
+  Following constants serves as identifiers that can be used to access
+  individual properties of context object.
+}
+const
+{-------------------------------------------------------------------------------
+  SIIDEC_OPTIONID_ACCEL_AES
+  
+    boolean value (default: True)
+    
+    When true, the decryptor can use hardware acceleration of AES cypher when
+    supported by the computer. When set to false, the decryption is done 
+    completely in software.  
+}
+  SIIDEC_OPTIONID_ACCEL_AES  = 0;
+
+{-------------------------------------------------------------------------------
+  SIIDEC_OPTIONID_DEC_UNSUPP
+  
+    boolean value (default: False)
+    
+    When true, the decoder (when decoding takes place) will try to decode 
+    unsupported types, otherwise it will ignore them and raises an exception.
+    
+    WARNING - this feature is only experimental and any use of it is dangerous 
+              (the process might produce corrupted save without reporting 
+              any error), use at your own risk
+} 
+  SIIDEC_OPTIONID_DEC_UNSUPP = 1;
 
 //==============================================================================
 
-const
-  SIIDEC_OPTIONID_ACCEL_AES  = 0;
-  SIIDEC_OPTIONID_DEC_UNSUPP = 1;
-
 type
+{-------------------------------------------------------------------------------
+
+  TSIIDecProgressCallback
+
+    This procedural type defines signature of callback function that should
+    receive progress notifications.
+
+    When you want to receive progress from context object, implement function
+    that has this signature and that will process the progress (eg. shows it to
+    the user), and then pass pointer to this function to
+    Decryptor_SetProgressCallback. Next time the decryptor will be doing some
+    long processing, this function will be repeatedly called with original
+    context and current progress value.
+
+    Progress will always be a value betveen 0.0 and 1.0. The value is not
+    strictly growing (same value can be reported several times), but it will
+    never go down (every progress value will be equal or larger then the
+    preceding one, never smaller).
+}
   TSIIDecProgressCallback = procedure(Context: Pointer; Progress: Double); stdcall;
 
-  TSIIDecContext = Pointer;
-  PSIIDecContext = ^TSIIDecContext; // pointer to TSIIDecContext type
+{-------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
+  TSIIDecContext
+
+    Type used as a context in context-aware functions.
+    It is defined as an untyped pointer, but internally is points to an
+    implementation-specific structure. Do not assume anything about this
+    structure and do not try to access it directly.
+
+  PSIIDecContext
+
+    This type is defined as a pointer to TSIIDecContext type.
+}
+  TSIIDecContext = Pointer;
+  PSIIDecContext = ^TSIIDecContext;
+
+//==============================================================================
 
 var
+{-------------------------------------------------------------------------------
+
+  Decryptor_Create
+
+    Creates and initializes context object and returns it.
+    Each context must be freed by passing it to Decryptor_Free procedure,
+    otherwise it will create memory leak.
+
+  Returns:
+
+    Context object that can be used in context-aware funtions.
+}
   Decryptor_Create: Function: TSIIDecContext; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_Free
+
+    Frees context object.
+    Already freed context can be passed, the function just returns immediately.
+
+  Parameters:
+
+    Context - pointer to context object to be freed
+
+  Returns:
+
+    This routine does not have a return value.
+}
   Decryptor_Free: procedure(Context: PSIIDecContext); stdcall;
 
-  Decryptor_GetOptionBool: Function(Context: TSIIDecContext; OptionID: Int32): LongBool; stdcall;
-  Decryptor_SetOptionBool: procedure(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool); stdcall;
-  Decryptor_SetProgressCallback: procedure(Context: TSIIDecContext; CallbackFunc: Pointer); stdcall;
+{-------------------------------------------------------------------------------
 
+  Decryptor_GetOptionBool
+
+    Returns value of boolean property of passed context object defined by
+    OptionID (see constants SIIDEC_OPTIONID_* for details).
+    If an invalid OptionID is passed, the function will return false.
+
+  Parameters:
+
+    Context  - context object to work with
+    OptionID - ID of context property to be queried
+
+  Returns:
+
+    Value of the requested context property or false on invalid OptionID.
+}
+  Decryptor_GetOptionBool: Function(Context: TSIIDecContext; OptionID: Int32): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_SetOptionBool
+
+    Sets value of boolean property of passed context object defined by
+    OptionID (see constants SIIDEC_OPTIONID_* for details).
+    If an invalid OptionID is passed, the function do nothing.
+
+  Parameters:
+
+    Context  - context object to work with
+    OptionID - ID of context property to be set
+    NewValue - new value of the property
+
+  Returns:
+
+    This routine does not have a return value.
+}
+  Decryptor_SetOptionBool: procedure(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool); stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_SetProgressCallback
+
+    Sets callback functions that will be receiving progress notifications on
+    long processing done by the context object.
+    When you pass nil (null/0), the callback will be effectively deassigned.
+
+  Parameters:
+
+    Context      - context object to work with
+    CallbackFunc - pointer to function that will be receiving notifications
+
+  Returns:
+
+    This routine does not have a return value.
+}
+  Decryptor_SetProgressCallback: procedure(Context: TSIIDecContext; CallbackFunc: TSIIDecProgressCallback); stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_GetMemoryFormat
+
+    Behaves the same as standalone function GetMemoryFormat. See there for
+    details.
+}
   Decryptor_GetMemoryFormat: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_GetFileFormat
+
+    Behaves the same as standalone function GetFileFormat. See there for
+    details.
+}
   Decryptor_GetFileFormat: Function(Context: TSIIDecContext; FileName: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_IsEncryptedMemory
+
+    Behaves the same as standalone function IsEncryptedMemory. See there for
+    details.
+}
   Decryptor_IsEncryptedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_IsEncryptedFile
+
+    Behaves the same as standalone function IsEncryptedFile. See there for
+    details.
+}
   Decryptor_IsEncryptedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_IsEncodedMemory
+
+    Behaves the same as standalone function IsEncodedMemory. See there for
+    details.
+}
   Decryptor_IsEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_IsEncodedFile
+
+    Behaves the same as standalone function IsEncodedFile. See there for
+    details.
+}
   Decryptor_IsEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_Is3nKEncodedMemory
+
+    Behaves the same as standalone function Is3nKEncodedMemory. See there for
+    details.
+}
   Decryptor_Is3nKEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_Is3nKEncodedFile
+
+    Behaves the same as standalone function Is3nKEncodedFile. See there for
+    details.
+}
   Decryptor_Is3nKEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
 
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptMemory
+
+    Behaves the same as standalone function DecryptMemory. See there for
+    details.
+}
   Decryptor_DecryptMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptFile
+
+    Behaves the same as standalone function DecryptFile. See there for details.
+}
   Decryptor_DecryptFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptFileInMemory
+
+    Behaves the same as standalone function DecryptFileInMemory. See there for
+    details.
+}
   Decryptor_DecryptFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecodeMemory
+
+    Behaves the same as standalone function DecodeMemoryHelper, you just don't
+    have to manage the helper object.
+    See DecodeMemoryHelper documentation for details.
+}
   Decryptor_DecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecodeFile
+
+    Behaves the same as standalone function DecodeFile. See there for details.
+}
   Decryptor_DecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecodeFileInMemory
+
+    Behaves the same as standalone function DecodeFileInMemory. See there for
+    details.
+}
   Decryptor_DecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptAndDecodeMemory
+
+    Behaves the same as standalone function DecryptAndDecodeMemoryHelper, you
+    just don't have to manage the helper object.
+    See DecryptAndDecodeMemoryHelper documentation for details.
+}
   Decryptor_DecryptAndDecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptAndDecodeFile
+
+    Behaves the same as standalone function DecryptAndDecodeFile. See there for
+    details.
+}
   Decryptor_DecryptAndDecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+
+{-------------------------------------------------------------------------------
+
+  Decryptor_DecryptAndDecodeFileInMemory
+
+    Behaves the same as standalone function DecryptAndDecodeFileInMemory.
+    See there for details.
+}
   Decryptor_DecryptAndDecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 //==============================================================================
+{
+  Everything from here onwards is specific to pascal implementation, so if you 
+  are translating this unit to other language, you can ignore it.
+}
 
 const
   // Default file name of the dynamically loaded library (DLL).
