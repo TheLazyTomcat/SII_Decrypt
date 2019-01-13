@@ -244,41 +244,37 @@ var
   OutMemStream: TWritableStaticMemoryStream;
 begin
 try
-  If InSize >= SizeOf(TSIIHeader) then
-    begin
-      InMemStream := TStaticMemoryStream.Create(Input,InSize);
-      try
-        Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(InMemStream));
-        If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
+  InMemStream := TStaticMemoryStream.Create(Input,InSize);
+  try
+    Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(InMemStream));
+    If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
+      begin
+        InMemStream.ReadBuffer(Header,SizeOf(TSIIHeader));
+        InMemStream.Seek(0,soBeginning);
+        If Assigned(Output) then
           begin
-            InMemStream.ReadBuffer(Header,SizeOf(TSIIHeader));
-            InMemStream.Seek(0,soBeginning);
-            If Assigned(Output) then
+            If OutSize^ >= TMemSize(Header.DataSize) then
               begin
-                If OutSize^ >= TMemSize(Header.DataSize) then
-                  begin
-                    OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
-                    try
-                      Result := GetResultAsInt(CtxDecryptor(Context).DecryptStream(InMemStream,OutMemStream,True));
-                      If Result = SIIDEC_RESULT_SUCCESS then
-                        OutSize^ := TMemSize(OutMemStream.Position);
-                    finally
-                      OutMemStream.Free;
-                    end;
-                  end
-                else Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
+                OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
+                try
+                  Result := GetResultAsInt(CtxDecryptor(Context).DecryptStream(InMemStream,OutMemStream,True));
+                  If Result = SIIDEC_RESULT_SUCCESS then
+                    OutSize^ := TMemSize(OutMemStream.Position);
+                finally
+                  OutMemStream.Free;
+                end;
               end
-            else
-              begin
-                OutSize^ := TMemSize(Header.DataSize);
-                Result := SIIDEC_RESULT_SUCCESS;
-              end;
+            else Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
+          end
+        else
+          begin
+            OutSize^ := TMemSize(Header.DataSize);
+            Result := SIIDEC_RESULT_SUCCESS;
           end;
-      finally
-        InMemStream.Free;
       end;
-    end
-  else Result := SIIDEC_RESULT_TOO_FEW_DATA;    
+  finally
+    InMemStream.Free;
+  end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;

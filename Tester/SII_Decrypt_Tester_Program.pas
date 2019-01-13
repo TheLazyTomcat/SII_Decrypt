@@ -34,7 +34,7 @@ begin
 {$ENDIF}
 WriteLn;
 WriteLn(StringOfChar('-',75));
-WriteLn('  SII Decrypt Tester - Library');
+WriteLn('  SII Decrypt Tester - Program');
 WriteLn(StringOfChar('-',75));
 WriteLn;
 WriteLn('FileName:  ',TestFileEntry.FileName);

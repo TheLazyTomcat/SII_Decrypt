@@ -50,7 +50,7 @@ WriteLn('BinCRC32:  ',CRC32ToStr(TestFileEntry.BinCRC32));
 WriteLn('TextCRC32: ',CRC32ToStr(TestFileEntry.TextCRC32));
 try
   WriteLn;
-  WriteLn('  Exp_APIVersion: 0x',Format('%.8x',[Exp_APIVersion]));
+  WriteLn('  Exp_APIVersion: 0x',Format('%.8x',[Exp_APIVersion()]));
   FileDataStream := TMemoryStream.Create;
   try
     FileDataStream.LoadFromFile(TestFileEntry.FileName);
@@ -193,7 +193,7 @@ try
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     WriteLn;
     WriteLn('Creating context...');
-    Context := Exp_Decryptor_Create;
+    Context := Exp_Decryptor_Create();
     try
       WriteLn;
       WriteLn('  Opt(SIIDEC_OPTIONID_ACCEL_AES):  ',Exp_Decryptor_GetOptionBool(Context,SIIDEC_OPTIONID_ACCEL_AES));
