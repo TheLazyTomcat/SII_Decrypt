@@ -9,8 +9,13 @@ program SII_Decrypt_Tester;
 
 {$mode objfpc}{$H+}
 
+{$WARN 5023 OFF} // Unit "..." not used
+
 uses
-  SII_Decrypt_Tester_Main;
+  SII_Decrypt_Tester_Main,
+  SII_Decrypt_Tester_LibraryDirect,
+  SII_Decrypt_Tester_Library,
+  SII_Decrypt_Tester_Program;
 
 begin
   SII_Decrypt_Tester_Main.Main;

@@ -134,10 +134,11 @@ Comments=
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
+Count=4
 Item0=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
-Item1=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Library
-Item2=..\..\Source\Libs
+Item1=..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
+Item2=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Library
+Item3=..\..\Source\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=.\DCU

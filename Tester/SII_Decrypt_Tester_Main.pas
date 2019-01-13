@@ -26,7 +26,7 @@ implementation
 
 uses
   SysUtils, Classes,
-  AuxTypes, StrRect, IniFileEx,  //SimpleLog_LogConsole,
+  StrRect, IniFileEx, SimpleLog_LogConsole,
   SII_Decrypt_Library_Header, SII_Decrypt_Tester_LibraryDirect,
   SII_Decrypt_Tester_Library, SII_Decrypt_Tester_Program;
 
@@ -39,6 +39,23 @@ const
 {$ENDIF}
   TestFilesPrefix = PathPrefix + 'TestFiles\';
   TestFilesList = 'test_files_list.ini';
+{$IFDEF FPC}
+  {$IF SizeOf(Pointer) = 8}
+  LibraryPath = PathPrefix + 'Library\Lazarus\Release\win_x64\SII_Decrypt.dll';
+  ExecPath    = PathPrefix + 'Program_Console\Lazarus\Release\win_x64\SII_Decrypt.exe';
+  {$ELSE}
+  LibraryPath = PathPrefix + 'Library\Lazarus\Release\win_x86\SII_Decrypt.dll';
+  ExecPath    = PathPrefix + 'Program_Console\Lazarus\Release\win_x86\SII_Decrypt.exe';
+  {$IFEND}
+{$ELSE}
+  {$IF SizeOf(Pointer) = 8}
+  LibraryPath = PathPrefix + 'Library\Delphi\Release\win_x64\SII_Decrypt.dll';
+  ExecPath    = PathPrefix + 'Program_Console\Delphi\Release\win_x64\SII_Decrypt.exe';
+  {$ELSE}
+  LibraryPath = PathPrefix + 'Library\Delphi\Release\win_x86\SII_Decrypt.dll';
+  ExecPath    = PathPrefix + 'Program_Console\Delphi\Release\win_x86\SII_Decrypt.exe';
+  {$IFEND}
+{$ENDIF}
 var
   TestFilesPath:    String;
   TestFilesListIni: TIniFileEx;
@@ -71,19 +88,7 @@ try
   WriteLn;
   WriteLn(Format('Loaded %d entries',[Length(TestFiles)]));
 
-{$IFDEF FPC}
-  {$IF SizeOf(Pointer) = 8}
-  Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x64\SII_Decrypt.dll');
-  {$ELSE}
-  Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x86\SII_Decrypt.dll');
-  {$IFEND}
-{$ELSE}
-  {$IF SizeOf(Pointer) = 8}
-  Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x64\SII_Decrypt.dll');
-  {$ELSE}
-  Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x86\SII_Decrypt.dll');
-  {$IFEND}
-{$ENDIF}
+  Load_SII_Decrypt(LibraryPath);
   try
     For i := Low(TestFiles) to High(TestFiles) do
       begin
@@ -95,21 +100,8 @@ try
         SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i]);
         SII_Decrypt_Tester_Library.TestOnFile(TestFiles[i]);
         SII_Decrypt_Tester_Program.TestOnFile(
-          Format('"%s" "%s" "%s"',[
-        {$IFDEF FPC}
-          {$IF SizeOf(Pointer) = 8}
-            ExpandFileName(PathPrefix + 'Program_Console\Lazarus\Release\win_x64\SII_Decrypt.exe'),
-          {$ELSE}
-            ExpandFileName(PathPrefix + 'Program_Console\Lazarus\Release\win_x86\SII_Decrypt.exe'),
-          {$IFEND}
-        {$ELSE}
-          {$IF SizeOf(Pointer) = 8}
-            ExpandFileName(PathPrefix + 'Program_Console\Delphi\Release\win_x64\SII_Decrypt.exe'),
-          {$ELSE}
-            ExpandFileName(PathPrefix + 'Program_Console\Delphi\Release\win_x86\SII_Decrypt.exe'),
-          {$IFEND}
-        {$ENDIF}
-            TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
+          Format('"%s" "%s" "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
+          Format('"%s" --no_decode -i "%s" -o "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
           TestFiles[i]);
       end;
   finally
@@ -126,79 +118,6 @@ WriteLn;
 WriteLn(StringOfChar('-',75));
 Write('Press enter to continue...');ReadLn;
 end;
-(*
-const
-{$IFDEF FPC}
-  PathPrefix = '..\..\..\';
-{$ELSE}
-  PathPrefix = '..\..\';
-{$ENDIF}
 
-procedure Main;
-var
-  MemStream:  TMemoryStream;
-  OutBuff:    Pointer;
-  OutSize:    TMemSize;
-begin
-{$IF SizeOf(Pointer) = 8}
-Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x64\SII_Decrypt.dll');
-{$ELSE}
-{$IFDEF FPC}
-Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x86\SII_Decrypt.dll');
-{$ELSE}
-Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x86\SII_Decrypt.dll');
-{$ENDIF}
-{$IFEND}
-try
-try
-  If ParamCount > 0 then
-    begin
-      MemStream := TMemoryStream.Create;
-      try
-        WriteLn(Format('API version: %.8x',[APIVersion()]));
-
-        WriteLn;
-        WriteLn('DecryptFile:          ',DecryptFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fout'))));
-        WriteLn('DecodeFile:           ',DecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.f2out'))));
-        WriteLn('DecryptAndDecodeFile: ',DecryptAndDecodeFile(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.fdout'))));
-
-        WriteLn;
-        WriteLn('DecryptFileInMemory:          ',DecryptFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfout'))));
-        WriteLn('DecodeFileInMemory:           ',DecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mf2out'))));
-        WriteLn('DecryptAndDecodeFileInMemory: ',DecryptAndDecodeFileInMemory(PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)))),PUTF8Char(StrToUTF8(RTLToStr(ParamStr(1)) + '.mfdout'))));
-
-        MemStream.LoadFromFile(ParamStr(1));
-        If DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,nil,@OutSize) = SIIDEC_RESULT_SUCCESS then
-          begin
-            GetMem(OutBuff,OutSize);
-            try
-              MemStream.Position := 0;
-              WriteLn;
-              WriteLn('DecryptAndDecodeMemory: ',DecryptAndDecodeMemory(MemStream.Memory,MemStream.Size,OutBuff,@OutSize));
-              MemStream.Seek(0,soBeginning);
-              MemStream.WriteBuffer(OutBuff^,OutSize);
-              MemStream.Size := OutSize;
-              MemStream.SaveToFile(ParamStr(1) + '.mout');
-            finally
-              FreeMem(OutBuff,OutSize);
-            end;
-          end;
-      finally
-        MemStream.Free;
-      end;
-    end;
-  WriteLn;  
-  Write('Press enter to continue...'); ReadLn;
-finally
-  Unload_SII_Decrypt;
-end;
-except
-  on E: Exception do
-    begin
-      Write('Error ',E.Message); ReadLn;
-    end;
-end;
-end;
-*)
 end.
 
