@@ -9,29 +9,35 @@ unit SII_Decrypt_Tester_Main;
 
 interface
 
+uses
+  CRC32;
+
+type
+  TTestFileEntry = record
+    FileName:   String;
+    FileFormat: Integer;
+    BinCRC32:   TCRC32;
+    TextCRC32:  TCRC32
+  end;
+
 procedure Main;
 
 implementation
 
 uses
   SysUtils, Classes,
-  AuxTypes, StrRect, IniFileEx, CRC32, //SimpleLog_LogConsole,
-  SII_Decrypt_Library_Header, SII_Decrypt_Tester_LibraryDirect;
+  AuxTypes, StrRect, IniFileEx,  //SimpleLog_LogConsole,
+  SII_Decrypt_Library_Header, SII_Decrypt_Tester_LibraryDirect,
+  SII_Decrypt_Tester_Library;
 
 procedure Main;
-type
-  TTestFileEntry = record
-    FileName: String;
-    Format:   Integer;
-    BCRC32:   TCRC32;
-    TCRC32:   TCRC32
-  end;
 const
 {$IFDEF FPC}
-  PathPrefix = '..\..\..\TestFiles\';
+  PathPrefix = '..\..\..\';
 {$ELSE}
-  PathPrefix = '..\..\TestFiles\';
+  PathPrefix = '..\..\';
 {$ENDIF}
+  TestFilesPrefix = PathPrefix + 'TestFiles\';
   TestFilesList = 'test_files_list.ini';
 var
   TestFilesPath:    String;
@@ -44,7 +50,7 @@ try
   WriteLn('    SII Decrypt Tester');
   WriteLn(StringOfChar('=',75));
   WriteLn;
-  TestFilesPath := ExpandFileName(ExtractFilePath(RTLToStr(ParamStr(0))) + PathPrefix);
+  TestFilesPath := ExpandFileName(ExtractFilePath(RTLToStr(ParamStr(0))) + TestFilesPrefix);
   WriteLn('Test files path: ',TestFilesPath);
 
   WriteLn;
@@ -55,9 +61,9 @@ try
     For i := Low(TestFiles) to High(TestFiles) do
       begin
         TestFiles[i].FileName := TestFilesPath + TestFilesListIni.ReadString(Format('File.%d',[i]),'FileName','');
-        TestFiles[i].Format := TestFilesListIni.ReadInteger(Format('File.%d',[i]),'Format',0);
-        TestFiles[i].BCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'BCRC32',0));
-        TestFiles[i].TCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'TCRC32',0));
+        TestFiles[i].FileFormat := TestFilesListIni.ReadInteger(Format('File.%d',[i]),'FileFormat',0);
+        TestFiles[i].BinCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'BinCRC32',0));
+        TestFiles[i].TextCRC32 := TCRC32(TestFilesListIni.ReadUInt32(Format('File.%d',[i]),'TextCRC32',0));
       end;
   finally
     TestFilesListIni.Free;
@@ -65,17 +71,34 @@ try
   WriteLn;
   WriteLn(Format('Loaded %d entries',[Length(TestFiles)]));
 
-  For i := Low(TestFiles) to High(TestFiles) do
-    begin
-      WriteLn;
-      WriteLn(StringOfChar('=',75));
-      WriteLn('  Entry #',i);
-      WriteLn(StringOfChar('=',75));
-      WriteLn;
+{$IFDEF FPC}
+  {$IF SizeOf(Pointer) = 8}
+  Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x64\SII_Decrypt.dll');
+  {$ELSE}
+  Load_SII_Decrypt(PathPrefix + 'Library\Lazarus\Release\win_x86\SII_Decrypt.dll');
+  {$IFEND}
+{$ELSE}
+  {$IF SizeOf(Pointer) = 8}
+  Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x64\SII_Decrypt.dll');
+  {$ELSE}
+  Load_SII_Decrypt(PathPrefix + 'Library\Delphi\Release\win_x86\SII_Decrypt.dll');
+  {$IFEND}
+{$ENDIF}
+  try
+    For i := Low(TestFiles) to High(TestFiles) do
+      begin
+        WriteLn;
+        WriteLn(StringOfChar('=',75));
+        WriteLn('  Entry #',i);
+        WriteLn(StringOfChar('=',75));
+        WriteLn;
 
-      SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i].FileName,TestFiles[i].Format,TestFiles[i].BCRC32,TestFiles[i].TCRC32);
-    end;
-    
+        //SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i]);
+        SII_Decrypt_Tester_Library.TestOnFile(TestFiles[i]);
+      end;
+  finally
+    Unload_SII_Decrypt;
+  end;
 except
   on E: Exception do
     begin

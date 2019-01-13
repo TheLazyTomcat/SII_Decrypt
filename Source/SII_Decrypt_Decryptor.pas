@@ -263,6 +263,7 @@ fAcceleratedAES := True;
 fDecodeUnsuported := False;
 fProgressTracker := TProgressTracker.Create;
 fProgressTracker.OnProgress := DoProgress;
+fProgressTracker.MinProgressDelta := 1e-4;
 fReportProgress := True;
 end;
 

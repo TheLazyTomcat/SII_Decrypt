@@ -15,7 +15,6 @@ uses
   AuxTypes,
   SII_Decrypt_Library_Header;
 
-
 Function Exp_Decryptor_Create: TSIIDecContext; stdcall;
 procedure Exp_Decryptor_Free(Context: PSIIDecContext); stdcall;
 
@@ -157,6 +156,10 @@ procedure Exp_Decryptor_SetProgressCallback(Context: TSIIDecContext; CallbackFun
 begin
 try
   PSIIDecContextInternal(Context)^.Callback := TSIIDecProgressCallback(CallbackFunc);
+  If Assigned(CallbackFunc) then
+    CtxDecryptor(Context).OnProgressCallback := ProgressCallbackFwd
+  else
+    CtxDecryptor(Context).OnProgressCallback := nil;
 except
   // do nothing
 end;

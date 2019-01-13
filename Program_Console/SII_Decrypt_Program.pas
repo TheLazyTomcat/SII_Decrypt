@@ -52,7 +52,7 @@ try
       pmNone:       //  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
         begin
           WriteLn;
-          WriteLn('usage:');
+          WriteLn('usage (see readme.txt for more details):');
           WriteLn;
           WriteLn('  SII_Decrypt.exe InputFile [OutputFile]');
           WriteLn('  SII_Decrypt.exe [commands] -i InputFile [-o OutputFile]');
@@ -124,7 +124,7 @@ try
                end
             else OutFileName := InFileName;
 
-            FileProcess := not CMDParser.CommandPresent('on_file');
+            FileProcess := CMDParser.CommandPresent('on_file');
 
             If CMDParser.CommandPresent('no_decode') then
               begin
