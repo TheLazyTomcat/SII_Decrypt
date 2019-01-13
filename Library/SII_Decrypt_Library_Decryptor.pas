@@ -63,7 +63,7 @@ type
   end;
   PSIIDecContextInternal = ^TSIIDecContextInternal;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 Function CtxDecryptor(Context: Pointer): TSII_Decryptor;
 begin
@@ -84,7 +84,6 @@ begin
 PSIIDecContextInternal((Sender as TSII_Decryptor).UserPtrData)^.
   Callback(TSIIDecContext((Sender as TSII_Decryptor).UserPtrData),Progress);
 end;
-
 
 //==============================================================================
 
@@ -120,7 +119,7 @@ except
 end;
 end;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 Function Exp_Decryptor_GetOptionBool(Context: TSIIDecContext; OptionID: Int32): LongBool;
 begin
@@ -165,7 +164,7 @@ except
 end;
 end;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 Function Exp_Decryptor_GetMemoryFormat(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32;
 var
@@ -232,7 +231,7 @@ begin
 Result := Exp_Decryptor_GetFileFormat(Context,FileName) = SIIDEC_RESULT_FORMAT_3NK;
 end;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 {$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
 Function Exp_Decryptor_DecryptMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
@@ -309,7 +308,7 @@ except
 end;
 end;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 Function Exp_Decryptor_DecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
 var
@@ -371,6 +370,7 @@ except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
 end;
+
 //------------------------------------------------------------------------------
 
 Function Exp_Decryptor_DecodeFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
@@ -397,7 +397,7 @@ except
 end;
 end;
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
 Function Exp_Decryptor_DecryptAndDecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
 var
