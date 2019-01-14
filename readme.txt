@@ -1,8 +1,8 @@
 ================================================================================
 
-                               SII Decrypt project
+                              SII Decrypt project
 
-                                 version 1.4.x
+                                 version 1.5.x
 
 ================================================================================
 
@@ -13,10 +13,10 @@ Index
   Description ............................................. 22
   Parts of the project .................................... 46
   Project files ........................................... 78
-  Repositories ............................................ 125
-  Licensing ............................................... 138
-  Authors, contacts ....................................... 146
-  Copyright ............................................... 157
+  Repositories ............................................ 117
+  Licensing ............................................... 131
+  Authors, contacts ....................................... 139
+  Copyright ............................................... 150
 
 
 Description
@@ -49,13 +49,13 @@ The project can be principally used in four ways - directly as a code, as
 a dynamically loaded library (DLL), as console program or as a GUI program.
 
   If you want to use it directly, simply include files from .\Source folder in
-  your project and use provided classes. Also make sure you add folder
-  .\Source\Libs to project search paths, as decryptor requires units that are
-  stored there.
+  your project and use provided classes. Also make sure you add folders
+  .\Source\Libs and .\Source\ValuNodes to project search paths, as decryptor
+  requires units that are stored there.
 
   To use this project as a library (DLL), include header file
-  .\Headers\SII_Decrypt_Header.pas to your project and use functions and
-  constants provided by this unit. Don't forget to add compiled DLL to your
+  .\Library\SII_Decrypt_Library_Header.pas to your project and use functions
+  and constants provided by this unit. Don't forget to add compiled DLL to your
   program.
 
   If you want to use this project in form of console program, you can do it as
@@ -87,10 +87,6 @@ List of folders with description of their content:
 
     Documentation of binary SII file format.
 
-  .\Headers
-
-    Header files for DLL part of the project.
-
   .\Source
 
     Source code of project's core. Also contains other units used throughout the
@@ -98,7 +94,7 @@ List of folders with description of their content:
 
   .\Library
 
-    Library (DLL) part of the project.
+    Library (DLL) part of the project, also contains header files for the DLL.
 
   .\Program_Console
 
@@ -110,11 +106,7 @@ List of folders with description of their content:
 
   .\Tester
 
-    Small utility used to test library part of the project.
-
-  .\TesterDirect
-
-    Utility used to directly test implementation of library part.
+    Small utility used to test the project.
 
   .\Scripts
 
@@ -129,6 +121,7 @@ repositories:
 
 https://github.com/ncs-sniper/SII_Decrypt
 https://bitbucket.org/ncs-sniper/sii_decrypt
+https://gitlab.com/ncs-sniper/SII_Decrypt
 
 Note - master branch does not contain binaries, you can find them in a branch
        called "bin".
@@ -156,4 +149,4 @@ https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASC
 
 Copyright
 ----------------------------------------
-©2016-2018 František Milt, all rights reserved
+©2016-2019 František Milt, all rights reserved

@@ -94,7 +94,7 @@ OutputDir=.\Release\win_x86
 UnitOutputDir=.\DCU
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\Headers;..\..\Source;..\..\Source\Libs
+SearchPath=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
 Packages=vcl;rtl;vclx;VclSmp;vclshlctrls;_AltFixUnit;_GlobalInstanceControl;_XPAdminMan;AdvCircularProgressPkgD7;TMSMenusD7;AdvShaperPkgD7;_alignedit;_ALProgressBar;_SuperLabel;_ButtonComps;_PJVersionInfo;EZJTexturePanelD6;FormShapePkgD7;GradientLabelPkgD7;_adpInstanceControl;_Label3D;_lfreg;_FadeWorks;_MMJLabel;PNGDelphi;_AlphaShowHide;_QProgBar;_ShadowLabel;_VistaAltFixUnit;shape;_XiButton;GR32_D7
 Conditionals=
 DebugSourceDirs=
@@ -109,9 +109,9 @@ DebugCWD=
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=1
-MinorVer=4
-Release=2
-Build=9
+MinorVer=5
+Release=0
+Build=12
 Debug=0
 PreRelease=0
 Special=0
@@ -122,23 +122,25 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=SII Decrypt - GUI program
-FileVersion=1.4.2.9
+FileVersion=1.5.0.12
 InternalName=SII Decrypt
-LegalCopyright=© 2016 - 2018 František Milt
+LegalCopyright=© 2016 - 2019 František Milt
 LegalTrademarks=SII Decrypt
 OriginalFilename=SII_Decrypt.exe
 ProductName=SII Decrypt
-ProductVersion=1.4.2
+ProductVersion=1.5
 Comments=Tool for SII files decryption/decoding
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=4
-Item0=..\..\Headers;..\..\Source;..\..\Source\Libs
-Item1=..\..\Source;..\..\Source\Libs
-Item2=..\Source;..\Source\Libs
-Item3=..\Source\Libs
+Count=6
+Item0=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library
+Item1=..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Headers
+Item2=..\..\Headers;..\..\Source;..\..\Source\Libs
+Item3=..\..\Source;..\..\Source\Libs
+Item4=..\Source;..\Source\Libs
+Item5=..\Source\Libs
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=.\DCU

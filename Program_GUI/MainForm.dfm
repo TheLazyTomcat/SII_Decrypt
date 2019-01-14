@@ -4,7 +4,7 @@ object fMainForm: TfMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt'
-  ClientHeight = 312
+  ClientHeight = 336
   ClientWidth = 464
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -111,14 +111,14 @@ object fMainForm: TfMainForm
   TextHeight = 13
   object bvlHor_Progress: TBevel
     Left = 8
-    Top = 208
+    Top = 232
     Width = 449
     Height = 9
     Shape = bsTopLine
   end
   object lblProgress: TLabel
     Left = 8
-    Top = 248
+    Top = 272
     Width = 46
     Height = 13
     Caption = 'Progress:'
@@ -163,7 +163,7 @@ object fMainForm: TfMainForm
   end
   object pbProgress: TProgressBar
     Left = 8
-    Top = 264
+    Top = 288
     Width = 449
     Height = 17
     Max = 1000
@@ -171,7 +171,7 @@ object fMainForm: TfMainForm
   end
   object stbStatusBar: TStatusBar
     Left = 0
-    Top = 293
+    Top = 317
     Width = 464
     Height = 19
     Panels = <
@@ -183,7 +183,7 @@ object fMainForm: TfMainForm
   end
   object btnStartProcessing: TButton
     Left = 8
-    Top = 216
+    Top = 240
     Width = 449
     Height = 25
     Caption = 'Start processing'
@@ -194,7 +194,7 @@ object fMainForm: TfMainForm
     Left = 8
     Top = 104
     Width = 449
-    Height = 97
+    Height = 121
     Caption = 'Options'
     TabOrder = 4
     object cbNoDecode: TCheckBox
@@ -207,7 +207,7 @@ object fMainForm: TfMainForm
     end
     object cbAccelAES: TCheckBox
       Left = 8
-      Top = 48
+      Top = 72
       Width = 401
       Height = 17
       Caption = 
@@ -215,17 +215,25 @@ object fMainForm: TfMainForm
         't extension)'
       Checked = True
       State = cbChecked
-      TabOrder = 1
+      TabOrder = 2
     end
     object cbInMemProc: TCheckBox
       Left = 8
-      Top = 72
+      Top = 96
       Width = 193
       Height = 17
       Caption = 'Do entire file processing in memory'
       Checked = True
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 3
+    end
+    object cbDecUnsupp: TCheckBox
+      Left = 8
+      Top = 48
+      Width = 313
+      Height = 17
+      Caption = 'Decode unsupported types (experimental, use with caution)'
+      TabOrder = 1
     end
   end
   object oXPManifest: TXPManifest

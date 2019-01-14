@@ -1,12 +1,12 @@
 object fMainForm: TfMainForm
   Left = 787
-  Height = 312
+  Height = 336
   Top = 116
   Width = 464
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SII Decrypt'
-  ClientHeight = 312
+  ClientHeight = 336
   ClientWidth = 464
   Color = clBtnFace
   Font.Color = clWindowText
@@ -109,18 +109,18 @@ object fMainForm: TfMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object bvlHor_Progress: TBevel
     Left = 8
     Height = 9
-    Top = 208
+    Top = 232
     Width = 449
     Shape = bsTopLine
   end
   object lblProgress: TLabel
     Left = 8
     Height = 13
-    Top = 248
+    Top = 272
     Width = 46
     Caption = 'Progress:'
     ParentColor = False
@@ -180,7 +180,7 @@ object fMainForm: TfMainForm
   object pbProgress: TProgressBar
     Left = 8
     Height = 17
-    Top = 264
+    Top = 288
     Width = 449
     Max = 1000
     TabOrder = 6
@@ -188,7 +188,7 @@ object fMainForm: TfMainForm
   object stbStatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 289
+    Top = 313
     Width = 464
     Panels = <    
       item
@@ -201,7 +201,7 @@ object fMainForm: TfMainForm
   object btnStartProcessing: TButton
     Left = 8
     Height = 25
-    Top = 216
+    Top = 240
     Width = 449
     Caption = 'Start processing'
     OnClick = btnStartProcessingClick
@@ -209,17 +209,17 @@ object fMainForm: TfMainForm
   end
   object gbOptions: TGroupBox
     Left = 8
-    Height = 97
+    Height = 120
     Top = 104
     Width = 449
     Caption = 'Options'
-    ClientHeight = 79
+    ClientHeight = 102
     ClientWidth = 445
     TabOrder = 4
     object cbNoDecode: TCheckBox
       Left = 6
       Height = 17
-      Top = 10
+      Top = 8
       Width = 204
       Caption = 'Do not attempt decoding, only decrypt'
       TabOrder = 0
@@ -227,22 +227,30 @@ object fMainForm: TfMainForm
     object cbAccelAES: TCheckBox
       Left = 6
       Height = 17
-      Top = 34
+      Top = 56
       Width = 394
       Caption = 'Allow hardware-accelerated AES decryption (AES-NI instruction set extension)'
       Checked = True
       State = cbChecked
-      TabOrder = 1
+      TabOrder = 2
     end
     object cbInMemProc: TCheckBox
       Left = 6
       Height = 17
-      Top = 58
+      Top = 80
       Width = 185
       Caption = 'Do entire file processing in memory'
       Checked = True
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 3
+    end
+    object cbDecUnsupp: TCheckBox
+      Left = 6
+      Height = 17
+      Top = 32
+      Width = 306
+      Caption = 'Decode unsupported types (experimental, use with caution)'
+      TabOrder = 1
     end
   end
   object diaOpenInputFile: TOpenDialog

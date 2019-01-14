@@ -9,9 +9,9 @@
 
   Binary streaming
 
-  ©František Milt 2017-09-14
+  ©František Milt 2018-10-22
 
-  Version 1.4
+  Version 1.4.1
 
   Dependencies:
     AuxTypes   - github.com/ncs-sniper/Lib.AuxTypes
@@ -23,6 +23,8 @@ unit BinaryStreaming;
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$INLINE ON}
+  {$DEFINE CanInline}
   {$DEFINE FPC_DisableWarns}
   {$MACRO ON}
 {$ENDIF}
@@ -39,78 +41,78 @@ uses
 {------------------------------------------------------------------------------}
 
 Function Ptr_WriteBool(var Dest: Pointer; Value: ByteBool; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteBool(Dest: Pointer; Value: ByteBool): TMemSize; overload;
+Function Ptr_WriteBool(Dest: Pointer; Value: ByteBool): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
-Function Ptr_WriteBoolean(var Dest: Pointer; Value: Boolean; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteBoolean(Dest: Pointer; Value: Boolean): TMemSize; overload;
+Function Ptr_WriteBoolean(var Dest: Pointer; Value: Boolean; Advance: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_WriteBoolean(Dest: Pointer; Value: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_WriteInt8(var Dest: Pointer; Value: Int8; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteInt8(Dest: Pointer; Value: Int8): TMemSize; overload;
+Function Ptr_WriteInt8(Dest: Pointer; Value: Int8): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUInt8(var Dest: Pointer; Value: UInt8; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUInt8(Dest: Pointer; Value: UInt8): TMemSize; overload;
+Function Ptr_WriteUInt8(Dest: Pointer; Value: UInt8): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteInt16(var Dest: Pointer; Value: Int16; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteInt16(Dest: Pointer; Value: Int16): TMemSize; overload;
+Function Ptr_WriteInt16(Dest: Pointer; Value: Int16): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUInt16(var Dest: Pointer; Value: UInt16; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUInt16(Dest: Pointer; Value: UInt16): TMemSize; overload;
+Function Ptr_WriteUInt16(Dest: Pointer; Value: UInt16): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteInt32(var Dest: Pointer; Value: Int32; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteInt32(Dest: Pointer; Value: Int32): TMemSize; overload;
+Function Ptr_WriteInt32(Dest: Pointer; Value: Int32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUInt32(var Dest: Pointer; Value: UInt32; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUInt32(Dest: Pointer; Value: UInt32): TMemSize; overload;
+Function Ptr_WriteUInt32(Dest: Pointer; Value: UInt32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteInt64(var Dest: Pointer; Value: Int64; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteInt64(Dest: Pointer; Value: Int64): TMemSize; overload;
+Function Ptr_WriteInt64(Dest: Pointer; Value: Int64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUInt64(var Dest: Pointer; Value: UInt64; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUInt64(Dest: Pointer; Value: UInt64): TMemSize; overload;
+Function Ptr_WriteUInt64(Dest: Pointer; Value: UInt64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_WriteFloat32(var Dest: Pointer; Value: Float32; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteFloat32(Dest: Pointer; Value: Float32): TMemSize; overload;
+Function Ptr_WriteFloat32(Dest: Pointer; Value: Float32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteFloat64(var Dest: Pointer; Value: Float64; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteFloat64(Dest: Pointer; Value: Float64): TMemSize; overload;
+Function Ptr_WriteFloat64(Dest: Pointer; Value: Float64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_WriteAnsiChar(var Dest: Pointer; Value: AnsiChar; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteAnsiChar(Dest: Pointer; Value: AnsiChar): TMemSize; overload;
+Function Ptr_WriteAnsiChar(Dest: Pointer; Value: AnsiChar): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUTF8Char(var Dest: Pointer; Value: UTF8Char; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUTF8Char(Dest: Pointer; Value: UTF8Char): TMemSize; overload;
+Function Ptr_WriteUTF8Char(Dest: Pointer; Value: UTF8Char): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteWideChar(var Dest: Pointer; Value: WideChar; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteWideChar(Dest: Pointer; Value: WideChar): TMemSize; overload;
+Function Ptr_WriteWideChar(Dest: Pointer; Value: WideChar): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
-Function Ptr_WriteChar(var Dest: Pointer; Value: Char; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteChar(Dest: Pointer; Value: Char): TMemSize; overload;
+Function Ptr_WriteChar(var Dest: Pointer; Value: Char; Advance: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_WriteChar(Dest: Pointer; Value: Char): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_WriteShortString(var Dest: Pointer; const Str: ShortString; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteShortString(Dest: Pointer; const Str: ShortString): TMemSize; overload;
+Function Ptr_WriteShortString(Dest: Pointer; const Str: ShortString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteAnsiString(var Dest: Pointer; const Str: AnsiString; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteAnsiString(Dest: Pointer; const Str: AnsiString): TMemSize; overload;
+Function Ptr_WriteAnsiString(Dest: Pointer; const Str: AnsiString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUnicodeString(var Dest: Pointer; const Str: UnicodeString; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUnicodeString(Dest: Pointer; const Str: UnicodeString): TMemSize; overload;
+Function Ptr_WriteUnicodeString(Dest: Pointer; const Str: UnicodeString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteWideString(var Dest: Pointer; const Str: WideString; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteWideString(Dest: Pointer; const Str: WideString): TMemSize; overload;
+Function Ptr_WriteWideString(Dest: Pointer; const Str: WideString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_WriteUTF8String(var Dest: Pointer; const Str: UTF8String; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteUTF8String(Dest: Pointer; const Str: UTF8String): TMemSize; overload;
+Function Ptr_WriteUTF8String(Dest: Pointer; const Str: UTF8String): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
-Function Ptr_WriteString(var Dest: Pointer; const Str: String; Advance: Boolean): TMemSize; overload;
-Function Ptr_WriteString(Dest: Pointer; const Str: String): TMemSize; overload;
+Function Ptr_WriteString(var Dest: Pointer; const Str: String; Advance: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_WriteString(Dest: Pointer; const Str: String): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -125,7 +127,7 @@ Function Ptr_WriteBytes(Dest: Pointer; const Value: array of UInt8): TMemSize; o
 //------------------------------------------------------------------------------
 
 Function Ptr_FillBytes(var Dest: Pointer; Count: TMemSize; Value: UInt8; Advance: Boolean): TMemSize; overload;
-Function Ptr_FillBytes(Dest: Pointer; Count: TMemSize; Value: UInt8): TMemSize; overload;
+Function Ptr_FillBytes(Dest: Pointer; Count: TMemSize; Value: UInt8): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 {------------------------------------------------------------------------------}
 {==============================================================================}
@@ -134,120 +136,120 @@ Function Ptr_FillBytes(Dest: Pointer; Count: TMemSize; Value: UInt8): TMemSize; 
 {------------------------------------------------------------------------------}
 
 Function Ptr_ReadBool(var Src: Pointer; out Value: ByteBool; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadBool(Src: Pointer; out Value: ByteBool): TMemSize; overload;
-Function Ptr_ReadBool(var Src: Pointer; Advance: Boolean): ByteBool; overload;
-Function Ptr_ReadBool(Src: Pointer): ByteBool; overload;
+Function Ptr_ReadBool(Src: Pointer; out Value: ByteBool): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadBool(var Src: Pointer; Advance: Boolean): ByteBool; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadBool(Src: Pointer): ByteBool; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadBoolean(var Src: Pointer; out Value: Boolean; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadBoolean(Src: Pointer; out Value: Boolean): TMemSize; overload;
+Function Ptr_ReadBoolean(Src: Pointer; out Value: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_ReadInt8(var Src: Pointer; out Value: Int8; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadInt8(Src: Pointer; out Value: Int8): TMemSize; overload;
-Function Ptr_ReadInt8(var Src: Pointer; Advance: Boolean): Int8; overload;
-Function Ptr_ReadInt8(Src: Pointer): Int8; overload;
+Function Ptr_ReadInt8(Src: Pointer; out Value: Int8): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt8(var Src: Pointer; Advance: Boolean): Int8; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt8(Src: Pointer): Int8; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUInt8(var Src: Pointer; out Value: UInt8; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUInt8(Src: Pointer; out Value: UInt8): TMemSize; overload;
-Function Ptr_ReadUInt8(var Src: Pointer; Advance: Boolean): UInt8; overload;
-Function Ptr_ReadUInt8(Src: Pointer): UInt8; overload;
+Function Ptr_ReadUInt8(Src: Pointer; out Value: UInt8): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt8(var Src: Pointer; Advance: Boolean): UInt8; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt8(Src: Pointer): UInt8; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadInt16(var Src: Pointer; out Value: Int16; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadInt16(Src: Pointer; out Value: Int16): TMemSize; overload;
-Function Ptr_ReadInt16(var Src: Pointer; Advance: Boolean): Int16; overload;
-Function Ptr_ReadInt16(Src: Pointer): Int16; overload;
+Function Ptr_ReadInt16(Src: Pointer; out Value: Int16): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt16(var Src: Pointer; Advance: Boolean): Int16; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt16(Src: Pointer): Int16; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUInt16(var Src: Pointer; out Value: UInt16; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUInt16(Src: Pointer; out Value: UInt16): TMemSize; overload;
-Function Ptr_ReadUInt16(var Src: Pointer; Advance: Boolean): UInt16; overload;
-Function Ptr_ReadUInt16(Src: Pointer): UInt16; overload;
+Function Ptr_ReadUInt16(Src: Pointer; out Value: UInt16): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt16(var Src: Pointer; Advance: Boolean): UInt16; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt16(Src: Pointer): UInt16; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadInt32(var Src: Pointer; out Value: Int32; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadInt32(Src: Pointer; out Value: Int32): TMemSize; overload;
-Function Ptr_ReadInt32(var Src: Pointer; Advance: Boolean): Int32; overload;
-Function Ptr_ReadInt32(Src: Pointer): Int32; overload;
+Function Ptr_ReadInt32(Src: Pointer; out Value: Int32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt32(var Src: Pointer; Advance: Boolean): Int32; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt32(Src: Pointer): Int32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUInt32(var Src: Pointer; out Value: UInt32; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUInt32(Src: Pointer; out Value: UInt32): TMemSize; overload;
-Function Ptr_ReadUInt32(var Src: Pointer; Advance: Boolean): UInt32; overload;
-Function Ptr_ReadUInt32(Src: Pointer): UInt32; overload;
+Function Ptr_ReadUInt32(Src: Pointer; out Value: UInt32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt32(var Src: Pointer; Advance: Boolean): UInt32; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt32(Src: Pointer): UInt32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadInt64(var Src: Pointer; out Value: Int64; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadInt64(Src: Pointer; out Value: Int64): TMemSize; overload;
-Function Ptr_ReadInt64(var Src: Pointer; Advance: Boolean): Int64; overload;
-Function Ptr_ReadInt64(Src: Pointer): Int64; overload;
+Function Ptr_ReadInt64(Src: Pointer; out Value: Int64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt64(var Src: Pointer; Advance: Boolean): Int64; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadInt64(Src: Pointer): Int64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUInt64(var Src: Pointer; out Value: UInt64; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUInt64(Src: Pointer; out Value: UInt64): TMemSize; overload;
-Function Ptr_ReadUInt64(var Src: Pointer; Advance: Boolean): UInt64; overload;
-Function Ptr_ReadUInt64(Src: Pointer): UInt64; overload;
+Function Ptr_ReadUInt64(Src: Pointer; out Value: UInt64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt64(var Src: Pointer; Advance: Boolean): UInt64; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUInt64(Src: Pointer): UInt64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_ReadFloat32(var Src: Pointer; out Value: Float32; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadFloat32(Src: Pointer; out Value: Float32): TMemSize; overload;
-Function Ptr_ReadFloat32(var Src: Pointer; Advance: Boolean): Float32; overload;
-Function Ptr_ReadFloat32(Src: Pointer): Float32; overload;
+Function Ptr_ReadFloat32(Src: Pointer; out Value: Float32): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadFloat32(var Src: Pointer; Advance: Boolean): Float32; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadFloat32(Src: Pointer): Float32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadFloat64(var Src: Pointer; out Value: Float64; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadFloat64(Src: Pointer; out Value: Float64): TMemSize; overload;
-Function Ptr_ReadFloat64(var Src: Pointer; Advance: Boolean): Float64; overload;
-Function Ptr_ReadFloat64(Src: Pointer): Float64; overload;
+Function Ptr_ReadFloat64(Src: Pointer; out Value: Float64): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadFloat64(var Src: Pointer; Advance: Boolean): Float64; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadFloat64(Src: Pointer): Float64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_ReadAnsiChar(var Src: Pointer; out Value: AnsiChar; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadAnsiChar(Src: Pointer; out Value: AnsiChar): TMemSize; overload;
-Function Ptr_ReadAnsiChar(var Src: Pointer; Advance: Boolean): AnsiChar; overload;
-Function Ptr_ReadAnsiChar(Src: Pointer): AnsiChar; overload;
+Function Ptr_ReadAnsiChar(Src: Pointer; out Value: AnsiChar): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadAnsiChar(var Src: Pointer; Advance: Boolean): AnsiChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadAnsiChar(Src: Pointer): AnsiChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUTF8Char(var Src: Pointer; out Value: UTF8Char; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUTF8Char(Src: Pointer; out Value: UTF8Char): TMemSize; overload;
-Function Ptr_ReadUTF8Char(var Src: Pointer; Advance: Boolean): UTF8Char; overload;
-Function Ptr_ReadUTF8Char(Src: Pointer): UTF8Char; overload;
+Function Ptr_ReadUTF8Char(Src: Pointer; out Value: UTF8Char): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUTF8Char(var Src: Pointer; Advance: Boolean): UTF8Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUTF8Char(Src: Pointer): UTF8Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadWideChar(var Src: Pointer; out Value: WideChar; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadWideChar(Src: Pointer; out Value: WideChar): TMemSize; overload;
-Function Ptr_ReadWideChar(var Src: Pointer; Advance: Boolean): WideChar; overload;
-Function Ptr_ReadWideChar(Src: Pointer): WideChar; overload;
+Function Ptr_ReadWideChar(Src: Pointer; out Value: WideChar): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadWideChar(var Src: Pointer; Advance: Boolean): WideChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadWideChar(Src: Pointer): WideChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
-Function Ptr_ReadChar(var Src: Pointer; out Value: Char; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadChar(Src: Pointer; out Value: Char): TMemSize; overload;
-Function Ptr_ReadChar(var Src: Pointer; Advance: Boolean): Char; overload;
-Function Ptr_ReadChar(Src: Pointer): Char; overload;
+Function Ptr_ReadChar(var Src: Pointer; out Value: Char; Advance: Boolean): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadChar(Src: Pointer; out Value: Char): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadChar(var Src: Pointer; Advance: Boolean): Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadChar(Src: Pointer): Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Ptr_ReadShortString(var Src: Pointer; out Str: ShortString; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadShortString(Src: Pointer; out Str: ShortString): TMemSize; overload;
-Function Ptr_ReadShortString(var Src: Pointer; Advance: Boolean): ShortString; overload;
-Function Ptr_ReadShortString(Src: Pointer): ShortString; overload;
+Function Ptr_ReadShortString(Src: Pointer; out Str: ShortString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadShortString(var Src: Pointer; Advance: Boolean): ShortString; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadShortString(Src: Pointer): ShortString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadAnsiString(var Src: Pointer; out Str: AnsiString; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadAnsiString(Src: Pointer; out Str: AnsiString): TMemSize; overload;
-Function Ptr_ReadAnsiString(var Src: Pointer; Advance: Boolean): AnsiString; overload;
-Function Ptr_ReadAnsiString(Src: Pointer): AnsiString; overload;
+Function Ptr_ReadAnsiString(Src: Pointer; out Str: AnsiString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadAnsiString(var Src: Pointer; Advance: Boolean): AnsiString; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadAnsiString(Src: Pointer): AnsiString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUnicodeString(var Src: Pointer; out Str: UnicodeString; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUnicodeString(Src: Pointer; out Str: UnicodeString): TMemSize; overload;
-Function Ptr_ReadUnicodeString(var Src: Pointer; Advance: Boolean): UnicodeString; overload;
-Function Ptr_ReadUnicodeString(Src: Pointer): UnicodeString; overload;
+Function Ptr_ReadUnicodeString(Src: Pointer; out Str: UnicodeString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUnicodeString(var Src: Pointer; Advance: Boolean): UnicodeString; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUnicodeString(Src: Pointer): UnicodeString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadWideString(var Src: Pointer; out Str: WideString; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadWideString(Src: Pointer; out Str: WideString): TMemSize; overload;
-Function Ptr_ReadWideString(var Src: Pointer; Advance: Boolean): WideString; overload;
-Function Ptr_ReadWideString(Src: Pointer): WideString; overload;
+Function Ptr_ReadWideString(Src: Pointer; out Str: WideString): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadWideString(var Src: Pointer; Advance: Boolean): WideString; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadWideString(Src: Pointer): WideString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadUTF8String(var Src: Pointer; out Str: UTF8String; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadUTF8String(Src: Pointer; out Str: UTF8String): TMemSize; overload;
-Function Ptr_ReadUTF8String(var Src: Pointer; Advance: Boolean): UTF8String; overload;
-Function Ptr_ReadUTF8String(Src: Pointer): UTF8String; overload;
+Function Ptr_ReadUTF8String(Src: Pointer; out Str: UTF8String): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUTF8String(var Src: Pointer; Advance: Boolean): UTF8String; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadUTF8String(Src: Pointer): UTF8String; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Ptr_ReadString(var Src: Pointer; out Str: String; Advance: Boolean): TMemSize; overload;
-Function Ptr_ReadString(Src: Pointer; out Str: String): TMemSize; overload;
-Function Ptr_ReadString(var Src: Pointer; Advance: Boolean): String; overload;
-Function Ptr_ReadString(Src: Pointer): String; overload;
+Function Ptr_ReadString(Src: Pointer; out Str: String): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadString(var Src: Pointer; Advance: Boolean): String; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Ptr_ReadString(Src: Pointer): String; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -262,7 +264,7 @@ Function Ptr_ReadBuffer(Src: Pointer; var Buffer; Size: TMemSize): TMemSize; ove
 
 Function Stream_WriteBool(Stream: TStream; Value: ByteBool; Advance: Boolean = True): TMemSize;
 
-Function Stream_WriteBoolean(Stream: TStream; Value: Boolean; Advance: Boolean = True): TMemSize;
+Function Stream_WriteBoolean(Stream: TStream; Value: Boolean; Advance: Boolean = True): TMemSize;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -296,7 +298,7 @@ Function Stream_WriteUTF8Char(Stream: TStream; Value: UTF8Char; Advance: Boolean
 
 Function Stream_WriteWideChar(Stream: TStream; Value: WideChar; Advance: Boolean = True): TMemSize;
 
-Function Stream_WriteChar(Stream: TStream; Value: Char; Advance: Boolean = True): TMemSize;
+Function Stream_WriteChar(Stream: TStream; Value: Char; Advance: Boolean = True): TMemSize;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -310,7 +312,7 @@ Function Stream_WriteWideString(Stream: TStream; const Str: WideString; Advance:
 
 Function Stream_WriteUTF8String(Stream: TStream; const Str: UTF8String; Advance: Boolean = True): TMemSize;
 
-Function Stream_WriteString(Stream: TStream; const Str: String; Advance: Boolean = True): TMemSize;
+Function Stream_WriteString(Stream: TStream; const Str: String; Advance: Boolean = True): TMemSize;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -331,77 +333,77 @@ Function Stream_FillBytes(Stream: TStream; Count: TMemSize; Value: UInt8; Advanc
 {------------------------------------------------------------------------------}
 
 Function Stream_ReadBool(Stream: TStream; out Value: ByteBool; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadBool(Stream: TStream; Advance: Boolean = True): ByteBool; overload;
+Function Stream_ReadBool(Stream: TStream; Advance: Boolean = True): ByteBool; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadBoolean(Stream: TStream; out Value: Boolean; Advance: Boolean = True): TMemSize;
 
 //------------------------------------------------------------------------------
 
 Function Stream_ReadInt8(Stream: TStream; out Value: Int8; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadInt8(Stream: TStream; Advance: Boolean = True): Int8; overload;
+Function Stream_ReadInt8(Stream: TStream; Advance: Boolean = True): Int8; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUInt8(Stream: TStream; out Value: UInt8; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUInt8(Stream: TStream; Advance: Boolean = True): UInt8; overload;
+Function Stream_ReadUInt8(Stream: TStream; Advance: Boolean = True): UInt8; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadInt16(Stream: TStream; out Value: Int16; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadInt16(Stream: TStream; Advance: Boolean = True): Int16; overload;
+Function Stream_ReadInt16(Stream: TStream; Advance: Boolean = True): Int16; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUInt16(Stream: TStream; out Value: UInt16; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUInt16(Stream: TStream; Advance: Boolean = True): UInt16; overload;
+Function Stream_ReadUInt16(Stream: TStream; Advance: Boolean = True): UInt16; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadInt32(Stream: TStream; out Value: Int32; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadInt32(Stream: TStream; Advance: Boolean = True): Int32; overload;
+Function Stream_ReadInt32(Stream: TStream; Advance: Boolean = True): Int32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUInt32(Stream: TStream; out Value: UInt32; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUInt32(Stream: TStream; Advance: Boolean = True): UInt32; overload;
+Function Stream_ReadUInt32(Stream: TStream; Advance: Boolean = True): UInt32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadInt64(Stream: TStream; out Value: Int64; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadInt64(Stream: TStream; Advance: Boolean = True): Int64; overload;
+Function Stream_ReadInt64(Stream: TStream; Advance: Boolean = True): Int64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUInt64(Stream: TStream; out Value: UInt64; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUInt64(Stream: TStream; Advance: Boolean = True): UInt64; overload;
+Function Stream_ReadUInt64(Stream: TStream; Advance: Boolean = True): UInt64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Stream_ReadFloat32(Stream: TStream; out Value: Float32; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadFloat32(Stream: TStream; Advance: Boolean = True): Float32; overload;
+Function Stream_ReadFloat32(Stream: TStream; Advance: Boolean = True): Float32; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadFloat64(Stream: TStream; out Value: Float64; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadFloat64(Stream: TStream; Advance: Boolean = True): Float64; overload;
+Function Stream_ReadFloat64(Stream: TStream; Advance: Boolean = True): Float64; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Stream_ReadAnsiChar(Stream: TStream; out Value: AnsiChar; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadAnsiChar(Stream: TStream; Advance: Boolean = True): AnsiChar; overload;
+Function Stream_ReadAnsiChar(Stream: TStream; Advance: Boolean = True): AnsiChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUTF8Char(Stream: TStream; out Value: UTF8Char; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUTF8Char(Stream: TStream; Advance: Boolean = True): UTF8Char; overload;
+Function Stream_ReadUTF8Char(Stream: TStream; Advance: Boolean = True): UTF8Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadWideChar(Stream: TStream; out Value: WideChar; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadWideChar(Stream: TStream; Advance: Boolean = True): WideChar; overload;
+Function Stream_ReadWideChar(Stream: TStream; Advance: Boolean = True): WideChar; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
-Function Stream_ReadChar(Stream: TStream; out Value: Char; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadChar(Stream: TStream; Advance: Boolean = True): Char; overload;
+Function Stream_ReadChar(Stream: TStream; out Value: Char; Advance: Boolean = True): TMemSize; overload;{$IFDEF CanInline} inline; {$ENDIF}
+Function Stream_ReadChar(Stream: TStream; Advance: Boolean = True): Char; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function Stream_ReadShortString(Stream: TStream; out Str: ShortString; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadShortString(Stream: TStream; Advance: Boolean = True): ShortString; overload;
+Function Stream_ReadShortString(Stream: TStream; Advance: Boolean = True): ShortString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadAnsiString(Stream: TStream; out Str: AnsiString; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadAnsiString(Stream: TStream; Advance: Boolean = True): AnsiString; overload;
+Function Stream_ReadAnsiString(Stream: TStream; Advance: Boolean = True): AnsiString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUnicodeString(Stream: TStream; out Str: UnicodeString; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUnicodeString(Stream: TStream; Advance: Boolean = True): UnicodeString; overload;
+Function Stream_ReadUnicodeString(Stream: TStream; Advance: Boolean = True): UnicodeString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadWideString(Stream: TStream; out Str: WideString; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadWideString(Stream: TStream; Advance: Boolean = True): WideString; overload;
+Function Stream_ReadWideString(Stream: TStream; Advance: Boolean = True): WideString; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadUTF8String(Stream: TStream; out Str: UTF8String; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadUTF8String(Stream: TStream; Advance: Boolean = True): UTF8String; overload;
+Function Stream_ReadUTF8String(Stream: TStream; Advance: Boolean = True): UTF8String; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 Function Stream_ReadString(Stream: TStream; out Str: String; Advance: Boolean = True): TMemSize; overload;
-Function Stream_ReadString(Stream: TStream; Advance: Boolean = True): String; overload;
+Function Stream_ReadString(Stream: TStream; Advance: Boolean = True): String; overload;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -604,7 +606,7 @@ type
 
 //------------------------------------------------------------------------------
 
-Function SwapEndian(Value: UInt16): UInt16; overload;
+Function SwapEndian(Value: UInt16): UInt16; overload;{$IFDEF CanInline} inline; {$ENDIF}
 begin
 Result := UInt16(Value shl 8) or UInt16(Value shr 8);
 end;
@@ -1336,7 +1338,7 @@ end;
 
 //==============================================================================
 
-Function Ptr_ReadInt8(var Src: Pointer; out Value: Int8; Advance: Boolean): TMemSize; 
+Function Ptr_ReadInt8(var Src: Pointer; out Value: Int8; Advance: Boolean): TMemSize;
 begin
 Value := Int8(Src^);
 Result := SizeOf(Value);

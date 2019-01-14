@@ -13,7 +13,7 @@ interface
 
 uses
   Classes,
-  AuxTypes, AES, ProgressTracker;
+  AuxTypes, AuxClasses, AES, ProgressTracker;
 
 {==============================================================================}
 {------------------------------------------------------------------------------}
@@ -62,14 +62,15 @@ type
   TSII_ProgressEvent    = procedure(Sender: TObject; Progress: Double) of object;
   TSII_ProgressCallback = procedure(Sender: TObject; Progress: Double);
 
-  TSII_Decryptor = class(TObject)
+  TSII_Decryptor = class(TCustomObject)
   private
     fReraiseExceptions:   Boolean;
     fAcceleratedAES:      Boolean;
+    fDecodeUnsuported:    Boolean;
     fProgressTracker:     TProgressTracker;
     fReportProgress:      Boolean;
-    fOnProgressEvent:     TSII_ProgressEvent;
     fOnProgressCallback:  TSII_ProgressCallback;
+    fOnProgressEvent:     TSII_ProgressEvent;
   protected
     procedure DoProgress(Sender: TObject; Progress: Double); virtual;
     procedure DecryptProgressHandler(Sender: TObject; Progress: Double); virtual;
@@ -95,10 +96,10 @@ type
     Function DecryptAndDecodeStream(Input, Output: TStream; InvariantOutput: Boolean = False): TSIIResult; virtual;
     Function DecryptAndDecodeFile(const Input, Output: String): TSIIResult; virtual;
     Function DecryptAndDecodeFileInMemory(const Input, Output: String): TSIIResult; virtual;
-    property OnProgressCallback: TSII_ProgressCallback read fOnProgressCallback write fOnProgressCallback;    
-  published
     property ReraiseExceptions: Boolean read fReraiseExceptions write fReraiseExceptions;
     property AcceleratedAES: Boolean read fAcceleratedAES write fAcceleratedAES;
+    property DecodeUnsuported: Boolean read fDecodeUnsuported write fDecodeUnsuported;
+    property OnProgressCallback: TSII_ProgressCallback read fOnProgressCallback write fOnProgressCallback;
     property OnProgressEvent: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
     property OnProgress: TSII_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
   end;
@@ -113,8 +114,10 @@ Function GetResultAsText(ResultCode: TSIIResult): String;
 implementation
 
 uses
-  SysUtils, StrRect, BinaryStreaming, ExplicitStringLists, ZLibCommon, ZLibStatic,
-  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Header
+  SysUtils,
+  StrRect, BinaryStreaming, ExplicitStringLists, AuxExceptions,
+  ZLibCommon, ZLibStatic,
+  SII_3nK_Transcoder, SII_Decode_Decoder, SII_Decrypt_Library_Header
 {$IFDEF FPC_NonUnicode_NoUTF8RTL}
   , LazFileUtils
 {$ENDIF};
@@ -236,7 +239,7 @@ try
   GetMem(DecompBuf,DecompSize);
   try
     If uncompress(DecompBuf,@DecompSize,Temp.Memory,uLong(Temp.Size)) <> Z_OK then
-      raise Exception.Create('Decompression error.');
+      raise EGeneralException.Create('Decompression error.',Self,'DecryptStreamInternal');
     Temp.Seek(0,soBeginning);
     Temp.WriteBuffer(DecompBuf^,DecompSize);
     Temp.Size := Temp.Position;
@@ -257,8 +260,10 @@ begin
 inherited Create;
 fReraiseExceptions := True;
 fAcceleratedAES := True;
+fDecodeUnsuported := False;
 fProgressTracker := TProgressTracker.Create;
 fProgressTracker.OnProgress := DoProgress;
+fProgressTracker.MinProgressDelta := 1e-4;
 fReportProgress := True;
 end;
 
@@ -486,6 +491,7 @@ try
       begin
         DecoderBin := TSIIBin_Decoder.Create;
         try
+          DecoderBin.ProcessUnknowns := fDecodeUnsuported;
           DecoderBin.OnProgress := DecodeProgressHandler;
           If Input = Output then
             begin

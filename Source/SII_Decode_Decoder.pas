@@ -13,24 +13,30 @@ interface
 
 uses
   Classes, Contnrs, ExplicitStringLists,
-  SII_Decode_Common, SII_Decode_Nodes;
+  SII_Decode_Common, SII_Decode_DataBlock;
 
-{==============================================================================}
-{------------------------------------------------------------------------------}
-{                               TSIIBin_Decoder                                }
-{------------------------------------------------------------------------------}
-{==============================================================================}
+{===============================================================================
+--------------------------------------------------------------------------------
+                                TSIIBin_Decoder
+--------------------------------------------------------------------------------
+===============================================================================}
 const
 {
-  (8 bytes) header
-    (4 bytes) signature
-    (4 bytes) version (1 or 2)
-  (5 bytes) an invalid layout block
-    (4 bytes) block type (0)
-    (1 byte ) valid (0))
+  Minimal size of valid BSII file. Obtained this way:
+
+  8 bytes - header
+    4 bytes - signature
+    4 bytes - version (1 or 2)
+  5 bytes - an invalid structure block
+    4 bytes - block type (0)
+    1 byte  - validity (0))
 }
   SIIBIN_MIN_SIZE = 13;
 
+{
+  Expected size ratio between textual and binary sii formats.
+  Used for preallocation.
+}
   SIIBIN_BIN_TEXT_RATIO = 3.5;
 
 type
@@ -41,13 +47,14 @@ type
   TSIIBin_ProgressTypeCallback = procedure(Sender: TObject; Progress: Double; ProgressType: TSIIBin_ProgressType);
   TSIIBin_ProgressCallback     = procedure(Sender: TObject; Progress: Double);
 
-{==============================================================================}
-{   TSIIBin_Decoder - declaration                                              }
-{==============================================================================}
+{===============================================================================
+    TSIIBin_Decoder - declaration
+===============================================================================}
   TSIIBin_Decoder = class(TObject)
   private
-    fFileLayout:              TSIIBin_FileLayout;
+    fFileInfo:                TSIIBin_FileInfo;
     fFileDataBlocks:          TObjectList;
+    fProcessUnknowns:         Boolean;
     fOnProgressTypeEvent:     TSIIBin_ProgressTypeEvent;
     fOnProgressEvent:         TSIIBin_ProgressEvent;
     fOnProgressTypeCallback:  TSIIBin_ProgressTypeCallback;
@@ -55,14 +62,15 @@ type
     Function GetDataBlockCount: Integer;
     Function GetDataBlock(Index: Integer): TSIIBin_DataBlock;
   protected
+    Function IndexOfStructureLocal(StructureID: TSIIBin_StructureID; const FileInfo: TSIIBin_FileInfo): Integer; virtual;
+    Function LoadStructureBlockLocal(Stream: TStream; var FileInfo: TSIIBin_FileInfo): Boolean; virtual;
+    procedure LoadDataBlockLocal(Stream: TStream; StructureID: TSIIBin_StructureID; const FileInfo: TSIIBin_FileInfo; out DataBlock: TSIIBin_DataBlock); virtual;
+    Function IndexOfStructure(StructureID: TSIIBin_StructureID): Integer; virtual;
+    Function LoadStructureBlock(Stream: TStream): Boolean; virtual;
+    procedure LoadDataBlock(Stream: TStream; StructureID: TSIIBin_StructureID); virtual;
     procedure Initialize; virtual;
-    procedure ClearLayouts(var FileLayout: TSIIBin_FileLayout); virtual;
-    Function IndexOfLayoutLocal(LayoutID: TSIIBin_LayoutID; const FileLayout: TSIIBin_FileLayout): Integer; virtual;
-    Function LoadLayoutBlockLocal(Stream: TStream; var FileLayout: TSIIBin_FileLayout): Boolean; virtual;
-    procedure LoadDataBlockLocal(Stream: TStream; LayoutID: TSIIBin_LayoutID; const FileLayout: TSIIBin_FileLayout; out DataBlock: TSIIBin_DataBlock); virtual;
-    Function IndexOfLayout(LayoutID: TSIIBin_LayoutID): Integer; virtual;
-    Function LoadLayoutBlock(Stream: TStream): Boolean; virtual;
-    procedure LoadDataBlock(Stream: TStream; LayoutID: TSIIBin_LayoutID); virtual;
+    procedure ClearStructures(var FileInfo: TSIIBin_FileInfo); virtual;
+    procedure CheckFileHeader(const FileInfo: TSIIBin_FileInfo); virtual;
     procedure DoProgress(Progress: Double; ProgressType: TSIIBin_ProgressType); virtual;
   public
     class Function IsBinarySIIStream(Stream: TStream): Boolean; virtual;
@@ -79,11 +87,11 @@ type
     procedure ConvertFromFile(const FileName: String; Output: TAnsiStringList); overload; virtual;
     procedure ConvertStream(InStream, OutStream: TStream; InvariantOutput: Boolean = False); virtual;
     procedure ConvertFile(const InFileName, OutFileName: String); overload; virtual;
+    property ProcessUnknowns: Boolean read fProcessUnknowns write fProcessUnknowns;
+    property DataBlockCount: Integer read GetDataBlockCount;
     property DataBlocks[Index: Integer]: TSIIBin_DataBlock read GetDataBlock;
     property OnProgressTypeCallBack: TSIIBin_ProgressTypeCallback read fOnProgressTypeCallback write fOnProgressTypeCallback;
-    property OnProgressCallBack: TSIIBin_ProgressCallback read fOnProgressCallback write fOnProgressCallback;
-  published
-    property DataBlockCount: Integer read GetDataBlockCount;
+    property OnProgressCallBack: TSIIBin_ProgressCallback read fOnProgressCallback write fOnProgressCallback; 
     property OnProgressTypeEvent: TSIIBin_ProgressTypeEvent read fOnProgressTypeEvent write fOnProgressTypeEvent;
     property OnProgressEvent: TSIIBin_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
     property OnProgress: TSIIBin_ProgressEvent read fOnProgressEvent write fOnProgressEvent;
@@ -92,8 +100,8 @@ type
 implementation
 
 uses
-  SysUtils, BinaryStreaming, StrRect,
-  SII_Decode_Helpers;
+  SysUtils, BinaryStreaming, StrRect, AuxExceptions,
+  SII_Decode_Utils, SII_Decode_FieldData;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -106,17 +114,17 @@ uses
   {$IFEND}
 {$ENDIF}
 
-{==============================================================================}
-{------------------------------------------------------------------------------}
-{                               TSIIBin_Decoder                                }
-{------------------------------------------------------------------------------}
-{==============================================================================}
-{==============================================================================}
-{   TSIIBin_Decoder - implementation                                           }
-{==============================================================================}
-{------------------------------------------------------------------------------}
-{   TSIIBin_Decoder - private methods                                          }
-{------------------------------------------------------------------------------}
+{===============================================================================
+--------------------------------------------------------------------------------
+                                TSIIBin_Decoder
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    TSIIBin_Decoder - implementation
+===============================================================================}
+{-------------------------------------------------------------------------------
+    TSIIBin_Decoder - private methods
+-------------------------------------------------------------------------------}
 
 Function TSIIBin_Decoder.GetDataBlockCount: Integer;
 begin
@@ -130,42 +138,20 @@ begin
 If (Index >= 0) and (Index < fFileDataBlocks.Count) then
   Result := TSIIBin_DataBlock(fFileDataBlocks[Index])
 else
-  raise Exception.CreateFmt('TSIIBin_Decoder.GetDataBlock: Index (%d) out of bounds.',[Index]);
+  raise EIndexOutOfBounds.Create(Index,Self,'GetDataBlock');
 end;
 
-{------------------------------------------------------------------------------}
-{   TSIIBin_Decoder - protected methods                                        }
-{------------------------------------------------------------------------------}
+{-------------------------------------------------------------------------------
+    TSIIBin_Decoder - protected methods
+-------------------------------------------------------------------------------}
 
-procedure TSIIBin_Decoder.Initialize;
-begin
-ClearLayouts(fFileLayout);
-FillChar(fFileLayout.Header,SizeOf(TSIIBin_Header),0);
-SetLength(fFileLayout.Layouts,0);
-fFileDataBlocks.Clear;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TSIIBin_Decoder.ClearLayouts(var FileLayout: TSIIBin_FileLayout);
-var
-  i,j:  Integer;
-begin
-For i := Low(FileLayout.Layouts) to High(FileLayout.Layouts) do
-  For j := Low(FileLayout.Layouts[i].Fields) to High(FileLayout.Layouts[i].Fields) do
-    If Assigned(FileLayout.Layouts[i].Fields[j].ValueData) then
-      FreeAndNil(FileLayout.Layouts[i].Fields[j].ValueData);
-end;
-
-//------------------------------------------------------------------------------
-
-Function TSIIBin_Decoder.IndexOfLayoutLocal(LayoutID: TSIIBin_LayoutID; const FileLayout: TSIIBin_FileLayout): Integer;
+Function TSIIBin_Decoder.IndexOfStructureLocal(StructureID: TSIIBin_StructureID; const FileInfo: TSIIBin_FileInfo): Integer;
 var
   i:  Integer;
 begin
 Result := -1;
-For i := Low(FileLayout.Layouts) to High(FileLayout.Layouts) do
-  If FileLayout.Layouts[i].ID = LayoutID then
+For i := Low(FileInfo.Structures) to High(FileInfo.Structures) do
+  If FileInfo.Structures[i].ID = StructureID then
     begin
       Result := i;
       Break;
@@ -174,86 +160,129 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Decoder.LoadLayoutBlockLocal(Stream: TStream; var FileLayout: TSIIBin_FileLayout): Boolean;
+Function TSIIBin_Decoder.LoadStructureBlockLocal(Stream: TStream; var FileInfo: TSIIBin_FileInfo): Boolean;
 var
-  Layout:     TSIIBin_Layout;
+  Structure:  TSIIBin_Structure;
   ValueCount: Integer;
   ValueType:  TSIIBin_ValueType;
 begin
-Layout.Valid := Stream_ReadBool(Stream);
-If Layout.Valid then
+Structure.Valid := Stream_ReadBool(Stream);
+If Structure.Valid then
   begin
-    Layout.ID := Stream_ReadUInt32(Stream);
-    If (Layout.ID <> 0) and (IndexOfLayoutLocal(Layout.ID,FileLayout) < 0) then
+    Structure.ID := Stream_ReadUInt32(Stream);
+    If (Structure.ID <> 0) and (IndexOfStructureLocal(Structure.ID,FileInfo) < 0) then
       begin
-        SIIBin_LoadString(Stream,Layout.Name);
+        SIIBin_LoadString(Stream,Structure.Name);
         ValueCount := 0;
         repeat
           ValueType := Stream_ReadUInt32(Stream);
           If ValueType <> 0 then
             begin
-              If Length(Layout.Fields) <= ValueCount then
-                SetLength(Layout.Fields,Length(Layout.Fields) + 16);
-              If TSIIBin_DataBlock.ValueTypeSupported(ValueType) then
-                Layout.Fields[ValueCount].ValueType := ValueType
+              If Length(Structure.Fields) <= ValueCount then
+                SetLength(Structure.Fields,Length(Structure.Fields) + 16);
+              If TSIIBin_DataBlock.ValueTypeSupported(ValueType) or
+                (fProcessUnknowns and TSIIBin_DataBlockUnknowns.ValueTypeSupported(ValueType)) then
+                Structure.Fields[ValueCount].ValueType := ValueType
               else
-                raise Exception.CreateFmt('TSIIBin_Decoder.LoadLayoutBlockLocal: Unsupported value type (0x%.8x).',[Ord(ValueType)]);
-              SIIBin_LoadString(Stream,Layout.Fields[ValueCount].ValueName);
+                raise EGeneralException.CreateFmt('Unsupported value type (0x%.8x).',[Ord(ValueType)],Self,'LoadStructureBlockLocal');
+              SIIBin_LoadString(Stream,Structure.Fields[ValueCount].ValueName);
               case ValueType of
-                $00000037:  Layout.Fields[ValueCount].ValueData := TSIIBIn_ValueData_Helper_OrdinalStrings.Create(Stream);
+                $00000037:  Structure.Fields[ValueCount].ValueData := TSIIBIn_FieldData_OrdinalString.Create(Stream);
               else
-                Layout.Fields[ValueCount].ValueData := nil;
+                Structure.Fields[ValueCount].ValueData := nil;
               end;
               Inc(ValueCount);
             end;
         until ValueType = 0;
-        SetLength(Layout.Fields,ValueCount);
-        SetLength(FileLayout.Layouts,Length(FileLayout.Layouts) + 1);
-        FileLayout.Layouts[High(FileLayout.Layouts)] := Layout;
+        SetLength(Structure.Fields,ValueCount);
+        SetLength(FileInfo.Structures,Length(FileInfo.Structures) + 1);
+        FileInfo.Structures[High(FileInfo.Structures)] := Structure;
         Result := True;
       end
-    else raise Exception.CreateFmt('TSIIBin_Decoder.LoadLayoutBlockLocal: Invalid layout ID (%d).',[Layout.ID]);
+    else raise EValueInvalidNameOnly.Create('structure ID',Self,'LoadStructureBlockLocal');
   end
 else Result := False;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TSIIBin_Decoder.LoadDataBlockLocal(Stream: TStream; LayoutID: TSIIBin_LayoutID; const FileLayout: TSIIBin_FileLayout; out DataBlock: TSIIBin_DataBlock);
+procedure TSIIBin_Decoder.LoadDataBlockLocal(Stream: TStream; StructureID: TSIIBin_StructureID; const FileInfo: TSIIBin_FileInfo; out DataBlock: TSIIBin_DataBlock);
 var
   Index:  Integer;
 begin
-Index := IndexOfLayoutLocal(LayoutID,FileLayout);
+Index := IndexOfStructureLocal(StructureID,FileInfo);
 If Index >= 0 then
   begin
-    DataBlock := TSIIBin_DataBlock.Create(FileLayout.Header.Version,FileLayout.Layouts[Index]);
+    If fProcessUnknowns then
+      DataBlock := TSIIBin_DataBlockUnknowns.Create(FileInfo.Header.Version,FileInfo.Structures[Index])
+    else
+      DataBlock := TSIIBin_DataBlock.Create(FileInfo.Header.Version,FileInfo.Structures[Index]);
     DataBlock.Load(Stream);
   end
-else raise Exception.CreateFmt('TSIIBin_Decoder.LoadDataBlockLocal: Unknown layout ID (%d).',[LayoutID]);
+else raise EGeneralException.CreateFmt('Unknown structure ID (%d).',[StructureID],Self,'LoadDataBlockLocal');
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Decoder.IndexOfLayout(LayoutID: TSIIBin_LayoutID): Integer;
+Function TSIIBin_Decoder.IndexOfStructure(StructureID: TSIIBin_StructureID): Integer;
 begin
-Result := IndexOfLayoutLocal(LayoutID,fFileLayout);
+Result := IndexOfStructureLocal(StructureID,fFileInfo);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TSIIBin_Decoder.LoadLayoutBlock(Stream: TStream): Boolean;
+Function TSIIBin_Decoder.LoadStructureBlock(Stream: TStream): Boolean;
 begin
-Result := LoadLayoutBlockLocal(Stream,fFileLayout);
+Result := LoadStructureBlockLocal(Stream,fFileInfo);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TSIIBin_Decoder.LoadDataBlock(Stream: TStream; LayoutID: TSIIBin_LayoutID);
+procedure TSIIBin_Decoder.LoadDataBlock(Stream: TStream; StructureID: TSIIBin_StructureID);
 var
   DataBlock:  TSIIBin_DataBlock;
 begin
-LoadDataBlockLocal(Stream,LayoutID,fFileLayout,DataBlock);
+LoadDataBlockLocal(Stream,StructureID,fFileInfo,DataBlock);
 fFileDataBlocks.Add(DataBlock);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Decoder.Initialize;
+begin
+ClearStructures(fFileInfo);
+FillChar(fFileInfo.Header,SizeOf(TSIIBin_FileHeader),0);
+SetLength(fFileInfo.Structures,0);
+fFileDataBlocks.Clear;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Decoder.ClearStructures(var FileInfo: TSIIBin_FileInfo);
+var
+  i,j:  Integer;
+begin
+For i := Low(FileInfo.Structures) to High(FileInfo.Structures) do
+  For j := Low(FileInfo.Structures[i].Fields) to High(FileInfo.Structures[i].Fields) do
+    If Assigned(FileInfo.Structures[i].Fields[j].ValueData) then
+      FreeAndNil(FileInfo.Structures[i].Fields[j].ValueData);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TSIIBin_Decoder.CheckFileHeader(const FileInfo: TSIIBin_FileInfo);
+begin
+case FileInfo.Header.Signature of
+  SIIBIN_SIGNARUTE_BIN:
+    If not FileInfo.Header.Version in [1,2] then
+      raise EGeneralException.CreateFmt('Unsupported version (0x%.8x).',[FileInfo.Header.Version],Self,'CheckFileHeader');
+  SIIBin_SIGNATURE_CRYPT:
+    raise EGeneralException.Create('Data are encrypted.',Self,'CheckFileHeader');
+  SIIBin_SIGNATURE_TEXT:
+    raise EGeneralException.Create('Data are already decoded.',Self,'CheckFileHeader');
+else
+  raise EGeneralException.CreateFmt('Unknown format (0x%.8x).',[FileInfo.Header.Signature],Self,'CheckFileHeader');
+end;
 end;
 
 //------------------------------------------------------------------------------
@@ -270,14 +299,14 @@ If Assigned(fOnProgressCallback) then
   fOnProgressCallback(Self,Progress);
 end;
 
-{------------------------------------------------------------------------------}
-{   TSIIBin_Decoder - public methods                                           }
-{------------------------------------------------------------------------------}
+{-------------------------------------------------------------------------------
+    TSIIBin_Decoder - public methods
+-------------------------------------------------------------------------------}
 
 class Function TSIIBin_Decoder.IsBinarySIIStream(Stream: TStream): Boolean;
 begin
 If (Stream.Size - Stream.Position) >= SIIBIN_MIN_SIZE then
-  Result := Stream_ReadUInt32(Stream,False) = SIIBin_Signature_Bin
+  Result := Stream_ReadUInt32(Stream,False) = SIIBIN_SIGNARUTE_BIN
 else
   Result := False;
 end;
@@ -309,7 +338,7 @@ end;
 destructor TSIIBin_Decoder.Destroy;
 begin
 fFileDataBlocks.Free;
-ClearLayouts(fFileLayout);
+ClearStructures(fFileInfo);
 inherited;
 end;
 
@@ -326,30 +355,20 @@ If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
   begin
     DoProgress(0.0,ptLoading);
     Initialize;
-    Stream_ReadBuffer(Stream,fFileLayout.Header,SizeOf(TSIIBin_Header));
-    case fFileLayout.Header.Signature of
-      SIIBin_Signature_Bin:
-        If not fFileLayout.Header.Version in [1,2] then
-          raise Exception.CreateFmt('TSIIBin_Decoder.LoadFromStream: Unsupported version (0x%.8x).',[fFileLayout.Header.Version]);
-      SIIBin_Signature_Crypt:
-        raise Exception.Create('TSIIBin_Decoder.LoadFromStream: Data are encrypted.');
-      SIIBin_Signature_Text:
-        raise Exception.Create('TSIIBin_Decoder.LoadFromStream: Data are already decoded.');
-    else
-      raise Exception.CreateFmt('TSIIBin_Decoder.LoadFromStream: Unknown format (0x%.8x).',[fFileLayout.Header.Signature]);
-    end;
+    Stream_ReadBuffer(Stream,fFileInfo.Header,SizeOf(TSIIBin_FileHeader));
+    CheckFileHeader(FFileInfo);
     Continue := True;
     repeat
       BlockType := Stream_ReadUInt32(Stream);
       If BlockType = 0 then
-        Continue := LoadLayoutBlock(Stream)
+        Continue := LoadStructureBlock(Stream)
       else
-        LoadDataBlock(Stream,TSIIBin_LayoutID(BlockType));
+        LoadDataBlock(Stream,TSIIBin_StructureID(BlockType));
       DoProgress((Stream.Position - InitialPos) / (Stream.Size - InitialPos),ptLoading);
     until not Continue;
     DoProgress(1.0,ptLoading);
   end
-else raise Exception.CreateFmt('TSIIBin_Decoder.LoadFromStream: Insufficient data (%d).',[Stream.Size - InitialPos]);
+else raise EGeneralException.CreateFmt('Insufficient data (%d).',[Stream.Size - InitialPos],Self,'LoadFromStream');
 end;
 
 //------------------------------------------------------------------------------
@@ -408,7 +427,7 @@ end;
 procedure TSIIBin_Decoder.ConvertFromStream(Stream: TStream; Output: TStrings);
 var
   InitialPos: Int64;
-  FileLayout: TSIIBin_FileLayout;
+  FileInfo:   TSIIBin_FileInfo;
   BlockType:  TSIIBin_BlockType;
   Continue:   Boolean;
   DataBlock:  TSIIBin_DataBlock;
@@ -417,18 +436,8 @@ InitialPos := Stream.Position;
 If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
   begin
     DoProgress(0.0,ptStreaming);
-    Stream_ReadBuffer(Stream,FileLayout.Header,SizeOf(TSIIBin_Header));
-    case FileLayout.Header.Signature of
-      SIIBin_Signature_Bin:
-        If not FileLayout.Header.Version in [1,2] then
-          raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Unsupported version (0x%.8x).',[FileLayout.Header.Version]);
-      SIIBin_Signature_Crypt:
-        raise Exception.Create('TSIIBin_Decoder.ConvertFromStream: Data are encrypted.');
-      SIIBin_Signature_Text:
-        raise Exception.Create('TSIIBin_Decoder.ConvertFromStream: Data are already decoded.');
-    else
-      raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Unknown format (0x%.8x).',[FileLayout.Header.Signature]);
-    end;
+    Stream_ReadBuffer(Stream,FileInfo.Header,SizeOf(TSIIBin_FileHeader));
+    CheckFileHeader(FileInfo);
     Output.Add('SiiNunit');
     Output.Add('{');
     Continue := True;
@@ -436,17 +445,21 @@ If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
       BlockType := Stream_ReadUInt32(Stream);
       If BlockType <> 0 then
         begin
-          LoadDataBlockLocal(Stream,TSIIBin_LayoutID(BlockType),FileLayout,DataBlock);
-          Output.Add(AnsiToStr(DataBlock.AsString));
+          LoadDataBlockLocal(Stream,TSIIBin_StructureID(BlockType),FileInfo,DataBlock);
+          try
+            Output.Add(AnsiToStr(DataBlock.AsString));
+          finally
+            DataBlock.Free;
+          end;
         end
-      else Continue := LoadLayoutBlockLocal(Stream,FileLayout);
+      else Continue := LoadStructureBlockLocal(Stream,FileInfo);
       DoProgress((Stream.Position - InitialPos) / (Stream.Size - InitialPos),ptStreaming);
     until not Continue;
     Output.Add('}');
-    ClearLayouts(FileLayout);
+    ClearStructures(FileInfo);
     DoProgress(1.0,ptStreaming);
   end
-else raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Insufficient data (%d).',[Stream.Size - InitialPos]);
+else raise EGeneralException.CreateFmt('Insufficient data (%d).',[Stream.Size - InitialPos],Self,'ConvertFromStream');
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
@@ -456,7 +469,7 @@ end;
 procedure TSIIBin_Decoder.ConvertFromStream(Stream: TStream; Output: TAnsiStringList);
 var
   InitialPos: Int64;
-  FileLayout: TSIIBin_FileLayout;
+  FileInfo:   TSIIBin_FileInfo;
   BlockType:  TSIIBin_BlockType;
   Continue:   Boolean;
   DataBlock:  TSIIBin_DataBlock;
@@ -465,18 +478,8 @@ InitialPos := Stream.Position;
 If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
   begin
     DoProgress(0.0,ptStreaming);
-    Stream_ReadBuffer(Stream,FileLayout.Header,SizeOf(TSIIBin_Header));
-    case FileLayout.Header.Signature of
-      SIIBin_Signature_Bin:
-        If not FileLayout.Header.Version in [1,2] then
-          raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Unsupported version (0x%.8x).',[FileLayout.Header.Version]);
-      SIIBin_Signature_Crypt:
-        raise Exception.Create('TSIIBin_Decoder.ConvertFromStream: Data are encrypted.');
-      SIIBin_Signature_Text:
-        raise Exception.Create('TSIIBin_Decoder.ConvertFromStream: Data are already decoded.');
-    else
-      raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Unknown format (0x%.8x).',[FileLayout.Header.Signature]);
-    end;
+    Stream_ReadBuffer(Stream,FileInfo.Header,SizeOf(TSIIBin_FileHeader));
+    CheckFileHeader(FileInfo);
     Output.Add(AnsiString('SiiNunit'));
     Output.Add(AnsiString('{'));
     Continue := True;
@@ -484,21 +487,21 @@ If (Stream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
       BlockType := Stream_ReadUInt32(Stream);
       If BlockType <> 0 then
         begin
-          LoadDataBlockLocal(Stream,TSIIBin_LayoutID(BlockType),FileLayout,DataBlock);
+          LoadDataBlockLocal(Stream,TSIIBin_StructureID(BlockType),FileInfo,DataBlock);
           try
             Output.Add(DataBlock.AsString);
           finally
             DataBlock.Free;
           end;
         end
-      else Continue := LoadLayoutBlockLocal(Stream,FileLayout);
+      else Continue := LoadStructureBlockLocal(Stream,FileInfo);
       DoProgress((Stream.Position - InitialPos) / (Stream.Size - InitialPos),ptStreaming);
     until not Continue;
     Output.Add(AnsiString('}'));
-    ClearLayouts(FileLayout);
+    ClearStructures(FileInfo);
     DoProgress(1.0,ptStreaming);
   end
-else raise Exception.CreateFmt('TSIIBin_Decoder.ConvertFromStream: Insufficient data (%d).',[Stream.Size - InitialPos]);
+else raise EGeneralException.CreateFmt('Insufficient data (%d).',[Stream.Size - InitialPos],Self,'ConvertFromStream');
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
@@ -538,7 +541,7 @@ const
   asLineBreak: AnsiString = sLineBreak;
 var
   InitialPos: Int64;
-  FileLayout: TSIIBin_FileLayout;
+  FileInfo:   TSIIBin_FileInfo;
   BlockType:  TSIIBin_BlockType;
   Continue:   Boolean;
   DataBlock:  TSIIBin_DataBlock;
@@ -546,9 +549,9 @@ var
 
   procedure WriteToOutput(const Str: AnsiString; WriteLineBreak: Boolean = True);
   begin
-    OutStream.WriteBuffer(PAnsiChar(Str)^,Length(Str) * SizeOf(AnsiChar));
+    Stream_WriteBuffer(OutStream,PAnsiChar(Str)^,Length(Str) * SizeOf(AnsiChar));
     If WriteLineBreak then
-      OutStream.WriteBuffer(PAnsiChar(asLineBreak)^,Length(asLineBreak) * SizeOf(AnsiChar));
+      Stream_WriteBuffer(OutStream,PAnsiChar(asLineBreak)^,Length(asLineBreak) * SizeOf(AnsiChar));
   end;
 
 begin
@@ -558,18 +561,8 @@ If InStream <> OutStream then
     If (InStream.Size - InitialPos) >= SIIBIN_MIN_SIZE then
       begin
         DoProgress(0.0,ptStreaming);
-        Stream_ReadBuffer(InStream,FileLayout.Header,SizeOf(TSIIBin_Header));
-        case FileLayout.Header.Signature of
-          SIIBin_Signature_Bin:
-            If not FileLayout.Header.Version in [1,2] then
-              raise Exception.CreateFmt('TSIIBin_Decoder.ConvertStream: Unsupported version (0x%.8x).',[FileLayout.Header.Version]);
-          SIIBin_Signature_Crypt:
-            raise Exception.Create('TSIIBin_Decoder.ConvertStream: Data are encrypted.');
-          SIIBin_Signature_Text:
-            raise Exception.Create('TSIIBin_Decoder.ConvertStream: Data are already decoded.');
-        else
-          raise Exception.CreateFmt('TSIIBin_Decoder.ConvertStream: Unknown format (0x%.8x).',[FileLayout.Header.Signature]);
-        end;
+        Stream_ReadBuffer(InStream,FileInfo.Header,SizeOf(TSIIBin_FileHeader));
+        CheckFileHeader(FileInfo);
         // output preallocation
         If not InvariantOutput then
           begin
@@ -591,26 +584,26 @@ If InStream <> OutStream then
           BlockType := Stream_ReadUInt32(InStream);
           If BlockType <> 0 then
             begin
-              LoadDataBlockLocal(InStream,TSIIBin_LayoutID(BlockType),FileLayout,DataBlock);
+              LoadDataBlockLocal(InStream,TSIIBin_StructureID(BlockType),FileInfo,DataBlock);
               try
                 WriteToOutput(DataBlock.AsString);
               finally
                 DataBlock.Free;
               end;
             end
-          else Continue := LoadLayoutBlockLocal(InStream,FileLayout);
+          else Continue := LoadStructureBlockLocal(InStream,FileInfo);
           DoProgress((InStream.Position - InitialPos) / (InStream.Size - InitialPos),ptStreaming);
         until not Continue;
         WriteToOutput(AnsiString('}'),False);
-        ClearLayouts(FileLayout);
+        ClearStructures(FileInfo);
         // rectify size
         If not InvariantOutput and (OutStream.Position < OutStream.Size) then
           OutStream.Size := OutStream.Position;
         DoProgress(1.0,ptStreaming);
       end
-    else raise Exception.CreateFmt('TSIIBin_Decoder.ConvertStream: Insufficient data (%d).',[InStream.Size - InitialPos]);
+    else raise EGeneralException.CreateFmt('Insufficient data (%d).',[InStream.Size - InitialPos],Self,'ConvertStream');
   end
-else raise Exception.Create('TSIIBin_Decoder.ConvertStream: Input and output streams are the same.');
+else raise EGeneralException.Create('Input and output streams are the same.',Self,'ConvertStream');
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 

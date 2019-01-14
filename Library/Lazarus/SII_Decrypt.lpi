@@ -21,11 +21,10 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="4"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="39"/>
+      <MinorVersionNr Value="5"/>
+      <BuildNr Value="54"/>
       <Language Value="0405"/>
-      <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.4.2"/>
+      <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 - 2019 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.5"/>
     </VersionInfo>
     <BuildModes Count="4">
       <Item1 Name="Debug_win_x86" Default="True"/>
@@ -38,7 +37,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -76,7 +75,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -121,7 +120,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+            <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
             <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -164,15 +163,23 @@
         <PackageName Value="LazUtils"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="4">
       <Unit0>
         <Filename Value="SII_Decrypt.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="..\SII_Decrypt_Library.pas"/>
+        <Filename Value="..\SII_Decrypt_Library_Decryptor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\SII_Decrypt_Library_Common.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\SII_Decrypt_Library_Standalone.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -183,7 +190,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\..\Headers;..\..\Source;..\..\Source\Libs"/>
+      <OtherUnitFiles Value="..;..\..\Source\Libs;..\..\Source\ValueNodes;..\..\Source;..\..\Library"/>
       <UnitOutputDirectory Value="out_temp\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

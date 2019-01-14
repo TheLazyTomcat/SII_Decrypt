@@ -9,9 +9,9 @@
 
   Rijndael/AES cipher
 
-  ©František Milt 2018-05-03
+  ©František Milt 2018-10-21
 
-  Version 1.1.2
+  Version 1.1.3
 
   All combinations of allowed key and block sizes are implemented and should be
   compatible with reference Rijndael cipher.
@@ -27,20 +27,20 @@
 ===============================================================================}
 unit AES;
 
-{$IF defined(CPUX86_64) or defined(CPUX64)}
-  {$DEFINE x64}
-{$ELSEIF defined(CPU386)}
-  {$DEFINE x86}
-{$ELSE}
-  {$DEFINE PurePascal}
-{$IFEND}
-
 {$IF defined(CPU64) or defined(CPU64BITS)}
   {$DEFINE 64bit}
 {$ELSEIF defined(CPU16)}
   {$MESSAGE FATAL '16bit CPU not supported'}
 {$ELSE}
   {$DEFINE 32bit}
+{$IFEND}
+
+{$IF defined(CPUX86_64) or defined(CPUX64)}
+  {$DEFINE x64}
+{$ELSEIF defined(CPU386)}
+  {$DEFINE x86}
+{$ELSE}
+  {$DEFINE PurePascal}
 {$IFEND}
 
 {$IF Defined(WINDOWS) or Defined(MSWINDOWS)}
@@ -70,8 +70,6 @@ unit AES;
 {$ELSE}
   {$UNDEF ASM_MachineCode}
 {$IFEND}
-
-{$TYPEINFO ON}
 
 interface
 
@@ -161,7 +159,6 @@ type
     procedure ProcessString(var Str: String); overload; virtual;
     property InitVector: Pointer read fInitVector;
     property Key: Pointer read fKey;
-  published
     property Mode: TBCMode read fMode;
     property ModeOfOperation: TBCModeOfOperation read fModeOfOperation write SetModeOfOperation;
     property Padding: TBCPadding read fPadding write fPadding;
@@ -216,7 +213,6 @@ type
     constructor Create(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; virtual;
     procedure Init(const Key; const InitVector; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; virtual;
     procedure Init(const Key; KeyLength, BlockLength: TRijLength; Mode: TBCMode); overload; virtual;
-  published
     property KeyLength: TRijLength read fKeyLength;
     property BlockLength: TRijLength read fBlockLength;
     property Nk: Integer read fNk;

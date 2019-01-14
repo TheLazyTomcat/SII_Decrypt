@@ -2,7 +2,7 @@
 
                          SII Decrypt project - programs
 
-                                version 1.4.2
+                                  version 1.5
 
 ================================================================================
 
@@ -12,12 +12,12 @@ Index
   Index ...................................................   9
   Description .............................................  23
   Use of the program ......................................  41
-  Changelog ...............................................  90
-  Known problems and limitations .......................... 134
-  Repositories ............................................ 141
-  Licensing ............................................... 154
-  Authors, contacts ....................................... 162
-  Copyright ............................................... 175
+  Changelog ...............................................  96
+  Known problems and limitations .......................... 147
+  Repositories ............................................ 154
+  Licensing ............................................... 168
+  Authors, contacts ....................................... 176
+  Copyright ............................................... 189
 
 
 Description
@@ -66,11 +66,17 @@ Extended scheme
   Extended scheme allows you to use commands when invoking the utility. Output
   file is optional and when not specified, the result is stored back into input
   file.
+
   Available commands are:
 
     --no_decode     When present, the program will not attempt to decode the
                     file, only decryption will be done. Can be used when there
                     are problems with the decoding.
+
+    --dec_unsupp    Enables experimental decoding of unsupported types when the
+                    decoding is attempted. As the implementation cannot be
+                    checked in any way, use of this option is dangerous (might
+                    damage saves) and you will be using it at your own risk.
 
     --sw_aes        AES decryption will be done completely in software.
                     Normally, AES can use hardware acceleration when supported
@@ -90,6 +96,13 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.4.2 -> SII Decrypt program 1.5
+  - added an option to activate experimental decoding of unsupported types
+    in binary SII files
+  - added support for decoding of value type 0x17
+  - added context-aware functions to the library (DLL)
+
 
 SII Decrypt program 1.4.1 -> SII Decrypt program 1.4.2
   - GUI program now parses command line parameters and uses them to preset
@@ -145,6 +158,7 @@ of this program, on either of these git repositories:
 
 https://github.com/ncs-sniper/SII_Decrypt
 https://bitbucket.org/ncs-sniper/sii_decrypt
+https://gitlab.com/ncs-sniper/SII_Decrypt
 
 Note - master branch does not contain binaries, you can find them in a branch
        called "bin".
@@ -161,7 +175,7 @@ https://www.mozilla.org/MPL/2.0/.
 
 Authors, contacts, links
 ----------------------------------------
-František Milt, frantisek.milt@gmail.com
+FrantiÅ¡ek Milt, frantisek.milt@gmail.com
 
 Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
 
@@ -174,4 +188,4 @@ https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASC
 
 Copyright
 ----------------------------------------
-©2016-2018 František Milt, all rights reserved
+Â©2016-2019 FrantiÅ¡ek Milt, all rights reserved

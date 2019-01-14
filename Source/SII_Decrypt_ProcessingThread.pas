@@ -24,6 +24,7 @@ const
   SII_DPT_OPTID_INMEMPROC = 0;
   SII_DPT_OPTID_ACCELAES  = 1;
   SII_DPT_OPTID_NODECODE  = 2;
+  SII_DPT_OPTID_DECUNSUPP = 3;
 
 {===============================================================================
     TSII_DecryptProcessThread - declaration
@@ -55,12 +56,14 @@ type
     property Opt_InMemoryProcess: Boolean index SII_DPT_OPTID_INMEMPROC write SetOption;
     property Opt_AcceleratedAES: Boolean index SII_DPT_OPTID_ACCELAES write SetOption;
     property Opt_NoDecode: Boolean index SII_DPT_OPTID_NODECODE write SetOption;
+    property Opt_DecodeUnsupported: Boolean index SII_DPT_OPTID_DECUNSUPP write SetOption;
   end;
 
 implementation
 
 uses
-  SysUtils, Math;
+  SysUtils, Math,
+  AuxExceptions;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -87,6 +90,7 @@ case Option of
   SII_DPT_OPTID_INMEMPROC:  fOpt_InMemProc := Value;
   SII_DPT_OPTID_ACCELAES:   fDecryptor.AcceleratedAES := Value;
   SII_DPT_OPTID_NODECODE:   fOpt_NoDecode := Value;
+  SII_DPT_OPTID_DECUNSUPP:  fDecryptor.DecodeUnsuported := Value;
 end;
 end;
 
@@ -140,7 +144,8 @@ try
       fErrorText := 'Success';
       DecryptorProgressHandler(Self,2.0);
     end
-  else raise Exception.CreateFmt('Decryptor failed with message: %s',[GetResultAsText(DecryptorResult)]);
+  else raise EGeneralException.CreateFmt('Decryptor failed with message: %s',
+               [GetResultAsText(DecryptorResult)],Self,'Execute');
 except
   on E: Exception do
     begin

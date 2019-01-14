@@ -9,9 +9,9 @@
 
   Floating point numbers <-> HexString conversion routines
 
-  ©František Milt 2018-05-13
+  ©František Milt 2018-10-21
 
-  Version 1.5.4
+  Version 1.5.5
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -27,17 +27,25 @@ unit FloatHex;
   {$DEFINE PurePascal}
 {$IFEND}
 
+{$IFDEF ENDIAN_BIG}
+  {$MESSAGE FATAL 'Big-endian system not supported'}
+{$ENDIF}
+
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
+  {$INLINE ON}
+  {$DEFINE CanInline}
   {$IFNDEF PurePascal}
     {$ASMMODE Intel}
   {$ENDIF}
   {$DEFINE FPC_DisableWarns}
   {$MACRO ON}
-{$ENDIF}
-
-{$IFDEF ENDIAN_BIG}
-  {$MESSAGE FATAL 'Big-endian system not supported'}
+{$ELSE}
+  {$IF CompilerVersion >= 17 then}  // Delphi 2005+
+    {$DEFINE CanInline}
+  {$ELSE}
+    {$UNDEF CanInline}
+  {$IFEND}
 {$ENDIF}
 
 interface
@@ -45,38 +53,38 @@ interface
 uses
   AuxTypes;
 
-Function HalfToHex(Value: Half): String;
+Function HalfToHex(Value: Half): String;{$IFDEF CanInline} inline; {$ENDIF}
 Function HexToHalf(HexString: String): Half;
 Function TryHexToHalf(const HexString: String; out Value: Half): Boolean;
-Function HexToHalfDef(const HexString: String; const DefaultValue: Half): Half;
+Function HexToHalfDef(const HexString: String; const DefaultValue: Half): Half;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
-Function SingleToHex(Value: Single): String;
+Function SingleToHex(Value: Single): String;{$IFDEF CanInline} inline; {$ENDIF}
 Function HexToSingle(HexString: String): Single;
 Function TryHexToSingle(const HexString: String; out Value: Single): Boolean;
-Function HexToSingleDef(const HexString: String; const DefaultValue: Single): Single;
+Function HexToSingleDef(const HexString: String; const DefaultValue: Single): Single;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
-Function DoubleToHex(Value: Double): String;
+Function DoubleToHex(Value: Double): String;{$IFDEF CanInline} inline; {$ENDIF}
 Function HexToDouble(HexString: String): Double;
 Function TryHexToDouble(const HexString: String; out Value: Double): Boolean;
-Function HexToDoubleDef(const HexString: String; const DefaultValue: Double): Double;
+Function HexToDoubleDef(const HexString: String; const DefaultValue: Double): Double;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
 Function ExtendedToHex(Value: Extended): String;
 Function HexToExtended(HexString: String): Extended;
 Function TryHexToExtended(const HexString: String; out Value: Extended): Boolean;
-Function HexToExtendedDef(const HexString: String; const DefaultValue: Extended): Extended;
+Function HexToExtendedDef(const HexString: String; const DefaultValue: Extended): Extended;{$IFDEF CanInline} inline; {$ENDIF}
 
 //------------------------------------------------------------------------------
 
-Function FloatToHex(Value: Double): String;
-Function HexToFloat(const HexString: String): Double;
-Function TryHexToFloat(const HexString: String; out Value: Double): Boolean;
-Function HexToFloatDef(const HexString: String; const DefaultValue: Double): Double; 
+Function FloatToHex(Value: Double): String;{$IFDEF CanInline} inline; {$ENDIF}
+Function HexToFloat(const HexString: String): Double;{$IFDEF CanInline} inline; {$ENDIF}
+Function TryHexToFloat(const HexString: String; out Value: Double): Boolean;{$IFDEF CanInline} inline; {$ENDIF}
+Function HexToFloatDef(const HexString: String; const DefaultValue: Double): Double;{$IFDEF CanInline} inline; {$ENDIF}
 
 implementation
 

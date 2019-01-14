@@ -34,6 +34,7 @@ type
     btnStartProcessing: TButton;
     gbOptions: TGroupBox;
     cbNoDecode: TCheckBox;
+    cbDecUnsupp: TCheckBox;
     cbAccelAES: TCheckBox;
     cbInMemProc: TCheckBox;
     procedure FormCreate(Sender: TObject);
@@ -122,6 +123,7 @@ gbOptions.Enabled := Enable;
 cbNoDecode.Enabled := Enable;
 cbAccelAES.Enabled := Enable;
 cbInMemProc.Enabled := Enable;
+cbDecUnsupp.Enabled := Enable;
 end;
 
 //==============================================================================
@@ -225,6 +227,7 @@ If leInputFile.Text <> '' then
     ProcessingThread.Opt_InMemoryProcess := cbInMemProc.Checked;
     ProcessingThread.Opt_AcceleratedAES := cbAccelAES.Checked;
     ProcessingThread.Opt_NoDecode := cbNoDecode.Checked;
+    ProcessingThread.Opt_DecodeUnsupported := cbDecUnsupp.Checked;
     ProcessingThread.Run;
   end
 else MessageDlg('No input file selected.',mtError,[mbOk],0);

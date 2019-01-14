@@ -1,6 +1,6 @@
 @echo off
 
->log.txt (
+>build.log (
 call "Build library.bat"
 call "Build console program.bat"
 call "Build GUI program.bat"

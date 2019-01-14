@@ -11,15 +11,16 @@
 
   Part A - lists working with ansichar-based strings.
 
-  ©František Milt 2018-05-21
+  ©František Milt 2018-10-21
 
-  Version 1.0.2
+  Version 1.0.4
 
   Dependencies:
     AuxTypes        - github.com/ncs-sniper/Lib.AuxTypes
     AuxClasses      - github.com/ncs-sniper/Lib.AuxClasses
     StrRect         - github.com/ncs-sniper/Lib.StrRect
     BinaryStreaming - github.com/ncs-sniper/Lib.BinaryStreaming
+    ListSorters     - github.com/ncs-sniper/Lib.ListSorters
 
 ===============================================================================}
 unit ExplicitStringListsA;
@@ -56,7 +57,6 @@ type
     Function GetAnsiCommaText: AnsiString;
     procedure SetAnsiCommaText(const Value: AnsiString);
     {$I ExplicitStringLists.inc}
-  published
     property AnsiText: AnsiString read GetAnsiText write SetAnsiText;
     property AnsiDelimitedText: AnsiString read GetAnsiDelimitedText write SetAnsiDelimitedText;
     property AnsiCommaText: AnsiString read GetAnsiCommaText write SetAnsiCommaText;
@@ -79,7 +79,7 @@ uses
 {$IF not Defined(FPC) and (CompilerVersion >= 20)}(* Delphi2009+ *)
   {$IFDEF Windows} Windows,{$ENDIF} AnsiStrings,
 {$IFEND}
-  SysUtils, StrRect, ExplicitStringListsParser;
+  SysUtils, StrRect, ListSorters, ExplicitStringListsParser;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
@@ -323,10 +323,10 @@ try
   Clear;
   Helper := TAnsiParsingHelper.Create;
   try
-    Helper.OnAddItem := {$IFDEF FPC}@{$ENDIF}Self.Append;
+    Helper.OnAddItem := Self.Append;
     with TAnsiDelimitedTextParser.Create(fDelimiter,fQuoteChar,fStrictDelimiter) do
     try
-      OnNewString := {$IFDEF FPC}@{$ENDIF}Helper.Thunk;
+      OnNewString := Helper.Thunk;
       Parse(Value);
     finally
       Free;
