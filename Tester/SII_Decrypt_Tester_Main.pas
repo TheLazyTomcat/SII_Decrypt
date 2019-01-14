@@ -102,8 +102,8 @@ try
         SII_Decrypt_Tester_LibraryDirect.TestOnFile(TestFiles[i]);
         SII_Decrypt_Tester_Library.TestOnFile(TestFiles[i]);
         SII_Decrypt_Tester_Program.TestOnFile(
-          Format('"%s" "%s" "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
-          Format('"%s" --no_decode -i "%s" -o "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].FileName + '.out']),
+          Format('"%s" "%s" "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].OutFileName]),
+          Format('"%s" --no_decode -i "%s" -o "%s"',[ExecPath,TestFiles[i].FileName,TestFiles[i].OutFileName]),
           TestFiles[i]);
       end;
   finally
