@@ -1,4 +1,4 @@
-================================================================================
+﻿================================================================================
 
                          SII Decrypt project - programs
 
@@ -101,7 +101,7 @@ SII Decrypt program 1.4.2 -> SII Decrypt program 1.5
   - added an option to activate experimental decoding of unsupported types
     in binary SII files
   - added support for decoding of value type 0x17
-  - added context-aware functions to the library (DLL)
+  - added decryptor object functions to the library (DLL)
 
 
 SII Decrypt program 1.4.1 -> SII Decrypt program 1.4.2
@@ -180,9 +180,8 @@ František Milt, frantisek.milt@gmail.com
 Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
 
 If you find this program useful and don't know what to do with your money ;),
-consider making a small donation using one of the following links:
+consider making a small donation using the following link:
 https://www.paypal.me/FMilt
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
 
 

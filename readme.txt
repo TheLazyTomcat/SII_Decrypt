@@ -1,4 +1,4 @@
-================================================================================
+﻿================================================================================
 
                               SII Decrypt project
 
@@ -141,9 +141,8 @@ Authors, contacts, links
 František Milt, frantisek.milt@gmail.com
 
 If you find this project useful and don't know what to do with your money ;),
-consider making a small donation using one of the following links:
+consider making a small donation using the following link:
 https://www.paypal.me/FMilt
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WE33UXX9ASCCJ
 
 
 

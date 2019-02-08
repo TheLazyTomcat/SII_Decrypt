@@ -9,9 +9,9 @@
 
   Memory buffer
 
-  ©František Milt 2018-12-15
+  ©František Milt 2019-01-26
 
-  Version 1.0.2
+  Version 1.0.3
 
   Dependencies:
     AuxTypes - github.com/ncs-sniper/Lib.AuxTypes
@@ -21,8 +21,6 @@ unit MemoryBuffer;
 
 {$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
-  {$DEFINE FPC_DisableWarns}
-  {$MACRO ON}
 {$ENDIF}
 
 interface
@@ -34,18 +32,21 @@ type
   TMemoryBuffer = record
     Memory: Pointer;
     Size:   TMemSize;
+    SigA:   UInt32;
     Data:   PtrInt;
+    SigB:   UInt32;
   end;
   PMemoryBuffer = ^TMemoryBuffer;
 
+Function ValidBuffer(const Buff: TMemoryBuffer): Boolean;
 procedure InitBuffer(out Buff: TMemoryBuffer);
 
-procedure GetBuffer(var Buff: TMemoryBuffer); overload;
 procedure GetBuffer(out Buff: TMemoryBuffer; Size: TMemSize); overload;
+procedure GetBuffer(var Buff: TMemoryBuffer); overload;
 Function GetBuffer(Size: TMemSize): TMemoryBuffer; overload;
 
-procedure AllocBuffer(var Buff: TMemoryBuffer); overload;
 procedure AllocBuffer(out Buff: TMemoryBuffer; Size: TMemSize); overload;
+procedure AllocBuffer(var Buff: TMemoryBuffer); overload;
 Function AllocBuffer(Size: TMemSize): TMemoryBuffer; overload;
 
 procedure FreeBuffer(var Buff: TMemoryBuffer);
@@ -60,53 +61,55 @@ Function BuildBuffer(Memory: Pointer; Size: TMemSize; Data: PtrInt = 0): TMemory
 
 implementation
 
-{$IFDEF FPC_DisableWarns}
-  {$DEFINE FPCDWM}
-  {$DEFINE W5058:={$WARN 5058 OFF}} // Variable "$1" does not seem to be initialized
-{$ENDIF}
+const
+  // just some random numbers
+  MEMBUFFER_SIGA = UInt32($035577FA);
+  MEMBUFFER_SIGB = UInt32($45A297BC);
 
-{$IFDEF FPCDWM}{$PUSH}W5058{$ENDIF}
-procedure InitBuffer(out Buff: TMemoryBuffer);
+Function ValidBuffer(const Buff: TMemoryBuffer): Boolean;
 begin
-FillChar(Buff,SizeOf(TMemoryBuffer),0);
+Result := (Buff.SigA = MEMBUFFER_SIGA) and (Buff.SigB = MEMBUFFER_SIGB);
 end;
-{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
-procedure GetBuffer(var Buff: TMemoryBuffer);
+procedure InitBuffer(out Buff: TMemoryBuffer);
 begin
-If Buff.Size > 0 then
-  GetMem(Buff.Memory,Buff.Size)
-else
-  Buff.Memory := nil;
+Buff.Memory := nil;
+Buff.Size := 0;
+Buff.SigA := MEMBUFFER_SIGA;
+Buff.Data := 0;
+Buff.SigB := MEMBUFFER_SIGB;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure GetBuffer(out Buff: TMemoryBuffer; Size: TMemSize);
+begin
+InitBuffer(Buff);
+If Size > 0 then
+  begin
+    GetMem(Buff.Memory,Size);
+    Buff.Size := Size;
+  end
+else Buff.Memory := nil;
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-procedure GetBuffer(out Buff: TMemoryBuffer; Size: TMemSize);
+procedure GetBuffer(var Buff: TMemoryBuffer);
 begin
-Buff.Size := Size;
-GetBuffer(Buff);
+GetBuffer(Buff,Buff.Size);
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 Function GetBuffer(Size: TMemSize): TMemoryBuffer;
 begin
-Result.Size := Size;
-GetBuffer(Result);
+GetBuffer(Result,Size);
 end;
 
 //------------------------------------------------------------------------------
-
-procedure AllocBuffer(var Buff: TMemoryBuffer);
-begin
-GetBuffer(Buff);
-FillChar(Buff.Memory^,Buff.Size,0);
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 procedure AllocBuffer(out Buff: TMemoryBuffer; Size: TMemSize);
 begin
@@ -116,26 +119,36 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+procedure AllocBuffer(var Buff: TMemoryBuffer);
+begin
+AllocBuffer(Buff,Buff.Size);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 Function AllocBuffer(Size: TMemSize): TMemoryBuffer;
 begin
-Result := GetBuffer(Size);
-FillChar(Result.Memory^,Result.Size,0);
+AllocBuffer(Result,Size);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure FreeBuffer(var Buff: TMemoryBuffer);
 begin
-FreeMem(Buff.Memory,Buff.Size);
-Buff.Memory := nil;
-Buff.Size := 0;
+If ValidBuffer(Buff) then
+  begin
+    FreeMem(Buff.Memory,Buff.Size);
+    Buff.Memory := nil;
+    Buff.Size := 0;
+  end
+else Initbuffer(Buff);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure ReallocBuffer(var Buff: TMemoryBuffer; NewSize: TMemSize);
 begin
-If Assigned(Buff.Memory) then
+If ValidBuffer(Buff) then
   begin
     If NewSize <> 0 then
       begin
@@ -154,33 +167,44 @@ end;
 
 procedure ReallocBufferKeep(var Buff: TMemoryBuffer; NewSize: TMemSize; AllowShrink: Boolean = False);
 begin
-If (NewSize > Buff.Size) or AllowShrink then
-  ReallocBuffer(Buff,NewSize);
+If ValidBuffer(Buff) then
+  begin
+    If (NewSize > Buff.Size) or AllowShrink then
+      ReallocBuffer(Buff,NewSize);
+  end
+else GetBuffer(Buff,NewSize);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure CopyBuffer(const Src: TMemoryBuffer; out Copy: TMemoryBuffer);
 begin
-Copy := GetBuffer(Src.Size);
-Move(Src.Memory^,Copy.Memory^,Src.Size);
-Copy.Data := Src.Data;
+If ValidBuffer(Src) then
+  begin
+    Copy := GetBuffer(Src.Size);  // this will also init the copy buffer
+    Move(Src.Memory^,Copy.Memory^,Src.Size);
+    Copy.Data := Src.Data;
+  end
+else InitBuffer(Copy);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure CopyBufferInto(const Src: TMemoryBuffer; var Dest: TMemoryBuffer);
 begin
-// destination buffer must be properly initialized
-ReallocBuffer(Dest,Src.Size);
-Move(Src.Memory^,Dest.Memory^,Dest.Size);
-Dest.Data := Src.Data;
+If ValidBuffer(Src) then
+  begin
+    ReallocBuffer(Dest,Src.Size); // this also checks validity
+    Move(Src.Memory^,Dest.Memory^,Dest.Size);
+    Dest.Data := Src.Data;
+  end;
 end;
 
 //------------------------------------------------------------------------------
 
 Function BuildBuffer(Memory: Pointer; Size: TMemSize; Data: PtrInt = 0): TMemoryBuffer;
 begin
+InitBuffer(Result);
 Result.Memory := Memory;
 Result.Size := Size;
 Result.Data := Data;

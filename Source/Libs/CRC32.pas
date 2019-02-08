@@ -52,6 +52,10 @@ unit CRC32;
 
 {$DEFINE LargeBuffer}
 
+{$IFDEF PurePascal}
+  {$UNDEF ASM_x64}
+{$ENDIF}
+
 interface
 
 uses

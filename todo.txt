@@ -1,0 +1,15 @@
+global 
+  - linux version (x86 and amd64) - req. zlib recomp. and rework of versioning
+  - more options for DLL object functions
+  - merge 3nK and decoding into decryptor (discontinue 3nK Transcode and SII Decode projects)
+  - more thorough tester
+  - automate tester
+  
+3nK
+  
+decoder
+  - user definable type-number binding (ini, cmd-line params, selection in GUI)
+  - slowdown on reprocessing in laz builds, investigate
+
+decryptor
+  - code cleanup

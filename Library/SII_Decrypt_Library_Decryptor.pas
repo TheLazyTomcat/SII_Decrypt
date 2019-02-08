@@ -15,33 +15,33 @@ uses
   AuxTypes,
   SII_Decrypt_Library_Header;
 
-Function Exp_Decryptor_Create: TSIIDecContext; stdcall;
-procedure Exp_Decryptor_Free(Context: PSIIDecContext); stdcall;
+Function Exp_Decryptor_Create: TSIIDecryptorObject; stdcall;
+procedure Exp_Decryptor_Free(PDecryptor: PSIIDecryptorObject); stdcall;
 
-Function Exp_Decryptor_GetOptionBool(Context: TSIIDecContext; OptionID: Int32): LongBool; stdcall;
-procedure Exp_Decryptor_SetOptionBool(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool); stdcall;
-procedure Exp_Decryptor_SetProgressCallback(Context: TSIIDecContext; CallbackFunc: Pointer); stdcall;
+Function Exp_Decryptor_GetOptionBool(Decryptor: TSIIDecryptorObject; OptionID: Int32): LongBool; stdcall;
+procedure Exp_Decryptor_SetOptionBool(Decryptor: TSIIDecryptorObject; OptionID: Int32; NewValue: LongBool); stdcall;
+procedure Exp_Decryptor_SetProgressCallback(Decryptor: TSIIDecryptorObject; CallbackFunc: TSIIDecryptorProgressCallback); stdcall;
 
-Function Exp_Decryptor_GetMemoryFormat(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32; stdcall;
-Function Exp_Decryptor_GetFileFormat(Context: TSIIDecContext; FileName: PUTF8Char): Int32; stdcall;
-Function Exp_Decryptor_IsEncryptedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
-Function Exp_Decryptor_IsEncryptedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
-Function Exp_Decryptor_IsEncodedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
-Function Exp_Decryptor_IsEncodedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
-Function Exp_Decryptor_Is3nKEncodedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
-Function Exp_Decryptor_Is3nKEncodedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+Function Exp_Decryptor_GetMemoryFormat(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): Int32; stdcall;
+Function Exp_Decryptor_GetFileFormat(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_IsEncryptedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_Decryptor_IsEncryptedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
+Function Exp_Decryptor_IsEncodedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_Decryptor_IsEncodedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
+Function Exp_Decryptor_Is3nKEncodedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+Function Exp_Decryptor_Is3nKEncodedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
 
-Function Exp_Decryptor_DecryptMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
-Function Exp_Decryptor_DecryptFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
-Function Exp_Decryptor_DecryptFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecryptMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_Decryptor_DecryptFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecryptFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
-Function Exp_Decryptor_DecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
-Function Exp_Decryptor_DecodeFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
-Function Exp_Decryptor_DecodeFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecodeMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_Decryptor_DecodeFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecodeFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
-Function Exp_Decryptor_DecryptAndDecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
-Function Exp_Decryptor_DecryptAndDecodeFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
-Function Exp_Decryptor_DecryptAndDecodeFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecryptAndDecodeMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+Function Exp_Decryptor_DecryptAndDecodeFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+Function Exp_Decryptor_DecryptAndDecodeFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 implementation
 
@@ -56,46 +56,46 @@ uses
 {$ENDIF}
 
 type
-  TSIIDecContextInternal = record
+  TSIIDecryptorObjectInternal = record
     Decryptor:  TSII_Decryptor;
-    Callback:   TSIIDecProgressCallback;
+    Callback:   TSIIDecryptorProgressCallback;
     Helper:     TMemoryStream;
   end;
-  PSIIDecContextInternal = ^TSIIDecContextInternal;
+  PSIIDecryptorObjectInternal = ^TSIIDecryptorObjectInternal;
 
 //==============================================================================
 
-Function CtxDecryptor(Context: Pointer): TSII_Decryptor;
+Function DerefDecryptor(Decryptor: Pointer): TSII_Decryptor;
 begin
-Result := PSIIDecContextInternal(Context)^.Decryptor;
+Result := PSIIDecryptorObjectInternal(Decryptor)^.Decryptor;
 end;
 
 //------------------------------------------------------------------------------
 
-Function CtxHelper(Context: Pointer): TMemoryStream;
+Function DerefHelper(Helper: Pointer): TMemoryStream;
 begin
-Result := PSIIDecContextInternal(Context)^.Helper;
+Result := PSIIDecryptorObjectInternal(Helper)^.Helper;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure ProgressCallbackFwd(Sender: TObject; Progress: Double);
 begin
-PSIIDecContextInternal((Sender as TSII_Decryptor).UserPtrData)^.
-  Callback(TSIIDecContext((Sender as TSII_Decryptor).UserPtrData),Progress);
+PSIIDecryptorObjectInternal(TSII_Decryptor(Sender).UserPtrData)^.
+  Callback(TSIIDecryptorObject(TSII_Decryptor(Sender).UserPtrData),Progress);
 end;
 
 //==============================================================================
 
-Function Exp_Decryptor_Create: TSIIDecContext;
+Function Exp_Decryptor_Create: TSIIDecryptorObject;
 begin
 try
-  New(PSIIDecContextInternal(Result));
-  PSIIDecContextInternal(Result)^.Decryptor := TSII_Decryptor.Create;
-  PSIIDecContextInternal(Result)^.Decryptor.ReraiseExceptions := False;
-  PSIIDecContextInternal(Result)^.Decryptor.UserPtrData := Result;
-  PSIIDecContextInternal(Result)^.Callback := nil;
-  PSIIDecContextInternal(Result)^.Helper := nil;
+  New(PSIIDecryptorObjectInternal(Result));
+  PSIIDecryptorObjectInternal(Result)^.Decryptor := TSII_Decryptor.Create;
+  PSIIDecryptorObjectInternal(Result)^.Decryptor.ReraiseExceptions := False;
+  PSIIDecryptorObjectInternal(Result)^.Decryptor.UserPtrData := Result;
+  PSIIDecryptorObjectInternal(Result)^.Callback := nil;
+  PSIIDecryptorObjectInternal(Result)^.Helper := nil;
 except
   Result := nil;
 end;
@@ -103,19 +103,19 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure Exp_Decryptor_Free(Context: PSIIDecContext);
+procedure Exp_Decryptor_Free(PDecryptor: PSIIDecryptorObject);
 begin
 try
-  If Assigned(Context^) then
+  If Assigned(PDecryptor^) then
     begin
-      PSIIDecContextInternal(Context^)^.Decryptor.Free;
-      PSIIDecContextInternal(Context^)^.Decryptor := nil;
-      PSIIDecContextInternal(Context^)^.Callback := nil;
-      If Assigned(PSIIDecContextInternal(Context^)^.Helper) then
-        PSIIDecContextInternal(Context^)^.Helper.Free;
-      PSIIDecContextInternal(Context^)^.Helper := nil;
-      Dispose(PSIIDecContextInternal(Context^));
-      Context^ := nil;
+      PSIIDecryptorObjectInternal(PDecryptor^)^.Decryptor.Free;
+      PSIIDecryptorObjectInternal(PDecryptor^)^.Decryptor := nil;
+      PSIIDecryptorObjectInternal(PDecryptor^)^.Callback := nil;
+      If Assigned(PSIIDecryptorObjectInternal(PDecryptor^)^.Helper) then
+        PSIIDecryptorObjectInternal(PDecryptor^)^.Helper.Free;
+      PSIIDecryptorObjectInternal(PDecryptor^)^.Helper := nil;
+      Dispose(PSIIDecryptorObjectInternal(PDecryptor^));
+      PDecryptor^ := nil;
     end;
 except
   // do nothing
@@ -124,12 +124,12 @@ end;
 
 //==============================================================================
 
-Function Exp_Decryptor_GetOptionBool(Context: TSIIDecContext; OptionID: Int32): LongBool;
+Function Exp_Decryptor_GetOptionBool(Decryptor: TSIIDecryptorObject; OptionID: Int32): LongBool;
 begin
 try
   case OptionID of
-    SIIDEC_OPTIONID_ACCEL_AES:  Result := CtxDecryptor(Context).AcceleratedAES;
-    SIIDEC_OPTIONID_DEC_UNSUPP: Result := CtxDecryptor(Context).DecodeUnsuported;
+    SIIDEC_OPTIONID_ACCEL_AES:  Result := DerefDecryptor(Decryptor).AcceleratedAES;
+    SIIDEC_OPTIONID_DEC_UNSUPP: Result := DerefDecryptor(Decryptor).DecodeUnsuported;
   else
     Result := False;
   end;
@@ -140,12 +140,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure Exp_Decryptor_SetOptionBool(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool);
+procedure Exp_Decryptor_SetOptionBool(Decryptor: TSIIDecryptorObject; OptionID: Int32; NewValue: LongBool);
 begin
 try
   case OptionID of
-    SIIDEC_OPTIONID_ACCEL_AES:  CtxDecryptor(Context).AcceleratedAES := NewValue;
-    SIIDEC_OPTIONID_DEC_UNSUPP: CtxDecryptor(Context).DecodeUnsuported := NewValue;
+    SIIDEC_OPTIONID_ACCEL_AES:  DerefDecryptor(Decryptor).AcceleratedAES := NewValue;
+    SIIDEC_OPTIONID_DEC_UNSUPP: DerefDecryptor(Decryptor).DecodeUnsuported := NewValue;
   end;
 except
   // do nothing
@@ -154,14 +154,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure Exp_Decryptor_SetProgressCallback(Context: TSIIDecContext; CallbackFunc: Pointer);
+procedure Exp_Decryptor_SetProgressCallback(Decryptor: TSIIDecryptorObject; CallbackFunc: TSIIDecryptorProgressCallback);
 begin
 try
-  PSIIDecContextInternal(Context)^.Callback := TSIIDecProgressCallback(CallbackFunc);
+  PSIIDecryptorObjectInternal(Decryptor)^.Callback := CallbackFunc;
   If Assigned(CallbackFunc) then
-    CtxDecryptor(Context).OnProgressCallback := ProgressCallbackFwd
+    DerefDecryptor(Decryptor).OnProgressCallback := ProgressCallbackFwd
   else
-    CtxDecryptor(Context).OnProgressCallback := nil;
+    DerefDecryptor(Decryptor).OnProgressCallback := nil;
 except
   // do nothing
 end;
@@ -169,14 +169,14 @@ end;
 
 //==============================================================================
 
-Function Exp_Decryptor_GetMemoryFormat(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32;
+Function Exp_Decryptor_GetMemoryFormat(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): Int32;
 var
   MemStream:  TStaticMemoryStream;
 begin
 try
   MemStream := TStaticMemoryStream.Create(Mem,Size);
   try
-    Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(MemStream));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).GetStreamFormat(MemStream));
   finally
     MemStream.Free;
   end;
@@ -187,57 +187,57 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_GetFileFormat(Context: TSIIDecContext; FileName: PUTF8Char): Int32;
+Function Exp_Decryptor_GetFileFormat(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): Int32;
 begin
-Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(FileName)));
+Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(FileName)));
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_IsEncryptedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool;
+Function Exp_Decryptor_IsEncryptedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool;
 begin
-Result := Exp_Decryptor_GetMemoryFormat(Context,Mem,Size) = SIIDEC_RESULT_FORMAT_ENCRYPTED;
+Result := Exp_Decryptor_GetMemoryFormat(Decryptor,Mem,Size) = SIIDEC_RESULT_FORMAT_ENCRYPTED;
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_IsEncryptedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool;
+Function Exp_Decryptor_IsEncryptedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool;
 begin
-Result := Exp_Decryptor_GetFileFormat(Context,FileName) = SIIDEC_RESULT_FORMAT_ENCRYPTED;
+Result := Exp_Decryptor_GetFileFormat(Decryptor,FileName) = SIIDEC_RESULT_FORMAT_ENCRYPTED;
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_IsEncodedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool;
+Function Exp_Decryptor_IsEncodedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool;
 begin
-Result := Exp_Decryptor_GetMemoryFormat(Context,Mem,Size) = SIIDEC_RESULT_FORMAT_BINARY;
+Result := Exp_Decryptor_GetMemoryFormat(Decryptor,Mem,Size) = SIIDEC_RESULT_FORMAT_BINARY;
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_IsEncodedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool;
+Function Exp_Decryptor_IsEncodedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool;
 begin
-Result := Exp_Decryptor_GetFileFormat(Context,FileName) = SIIDEC_RESULT_FORMAT_BINARY;
+Result := Exp_Decryptor_GetFileFormat(Decryptor,FileName) = SIIDEC_RESULT_FORMAT_BINARY;
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_Is3nKEncodedMemory(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool;
+Function Exp_Decryptor_Is3nKEncodedMemory(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool;
 begin
-Result := Exp_Decryptor_GetMemoryFormat(Context,Mem,Size) = SIIDEC_RESULT_FORMAT_3NK;
+Result := Exp_Decryptor_GetMemoryFormat(Decryptor,Mem,Size) = SIIDEC_RESULT_FORMAT_3NK;
 end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_Is3nKEncodedFile(Context: TSIIDecContext; FileName: PUTF8Char): LongBool;
+Function Exp_Decryptor_Is3nKEncodedFile(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool;
 begin
-Result := Exp_Decryptor_GetFileFormat(Context,FileName) = SIIDEC_RESULT_FORMAT_3NK;
+Result := Exp_Decryptor_GetFileFormat(Decryptor,FileName) = SIIDEC_RESULT_FORMAT_3NK;
 end;
 
 //==============================================================================
 
 {$IFDEF FPCDWM}{$PUSH}W5057{$ENDIF}
-Function Exp_Decryptor_DecryptMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
+Function Exp_Decryptor_DecryptMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
 var
   InMemStream:  TStaticMemoryStream;
   Header:       TSIIHeader;
@@ -246,7 +246,7 @@ begin
 try
   InMemStream := TStaticMemoryStream.Create(Input,InSize);
   try
-    Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(InMemStream));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).GetStreamFormat(InMemStream));
     If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
       begin
         InMemStream.ReadBuffer(Header,SizeOf(TSIIHeader));
@@ -257,7 +257,7 @@ try
               begin
                 OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                 try
-                  Result := GetResultAsInt(CtxDecryptor(Context).DecryptStream(InMemStream,OutMemStream,True));
+                  Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptStream(InMemStream,OutMemStream,True));
                   If Result = SIIDEC_RESULT_SUCCESS then
                     OutSize^ := TMemSize(OutMemStream.Position);
                 finally
@@ -283,12 +283,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecryptFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecryptFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecryptFile(StrConv(InputFile),StrConv(OutputFile)));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptFile(StrConv(InputFile),StrConv(OutputFile)));
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
@@ -296,12 +296,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecryptFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecryptFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result = SIIDEC_RESULT_FORMAT_ENCRYPTED then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecryptFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
@@ -309,7 +309,7 @@ end;
 
 //==============================================================================
 
-Function Exp_Decryptor_DecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
+Function Exp_Decryptor_DecodeMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
 var
   InMemStream:  TStaticMemoryStream;
   OutMemStream: TWritableStaticMemoryStream;
@@ -317,32 +317,32 @@ begin
 try
   InMemStream := TStaticMemoryStream.Create(Input,InSize);
   try
-    Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(InMemStream));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).GetStreamFormat(InMemStream));
     If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
       begin
         If Assigned(Output) then
           begin
-            If Assigned(CtxHelper(Context)) then
+            If Assigned(DerefHelper(Decryptor)) then
               begin
                 // helper stream is assigned, only copy its content
                 try
-                  If OutSize^ >= CtxHelper(Context).Size then
+                  If OutSize^ >= DerefHelper(Decryptor).Size then
                     begin
-                      Move(CtxHelper(Context).Memory^,Output^,CtxHelper(Context).Size);
-                      OutSize^ := TMemSize(CtxHelper(Context).Size);
+                      Move(DerefHelper(Decryptor).Memory^,Output^,DerefHelper(Decryptor).Size);
+                      OutSize^ := TMemSize(DerefHelper(Decryptor).Size);
                       Result := SIIDEC_RESULT_SUCCESS;
                     end
                   else Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
                 finally
-                  CtxHelper(Context).Free;
-                  PSIIDecContextInternal(Context)^.Helper := nil;
+                  DerefHelper(Decryptor).Free;
+                  PSIIDecryptorObjectInternal(Decryptor)^.Helper := nil;
                 end;
               end
             else  // helper stream not assigned, do complete decode...
               begin
                 OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                 try
-                  Result := GetResultAsInt(CtxDecryptor(Context).DecodeStream(InMemStream,OutMemStream,True));
+                  Result := GetResultAsInt(DerefDecryptor(Decryptor).DecodeStream(InMemStream,OutMemStream,True));
                   If Result = SIIDEC_RESULT_SUCCESS then
                     OutSize^ := TMemSize(OutMemStream.Position);
                 finally
@@ -352,14 +352,14 @@ try
           end
         else  // output not assigned, only get size...
           begin
-            PSIIDecContextInternal(Context)^.Helper := TMemoryStream.Create;
-            Result := GetResultAsInt(CtxDecryptor(Context).DecodeStream(InMemStream,CtxHelper(Context),False));
+            PSIIDecryptorObjectInternal(Decryptor)^.Helper := TMemoryStream.Create;
+            Result := GetResultAsInt(DerefDecryptor(Decryptor).DecodeStream(InMemStream,DerefHelper(Decryptor),False));
             If Result <> SIIDEC_RESULT_SUCCESS then
               begin
-                CtxHelper(Context).Free;
-                PSIIDecContextInternal(Context)^.Helper := nil;
+                DerefHelper(Decryptor).Free;
+                PSIIDecryptorObjectInternal(Decryptor)^.Helper := nil;
               end
-            else OutSize^ := TMemSize(CtxHelper(Context).Size);
+            else OutSize^ := TMemSize(DerefHelper(Decryptor).Size);
           end;
       end;
   finally
@@ -372,12 +372,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecodeFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecodeFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecodeFile(StrConv(InputFile),StrConv(OutputFile)));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecodeFile(StrConv(InputFile),StrConv(OutputFile)));
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
@@ -385,12 +385,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecodeFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecodeFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result in [SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)));
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
@@ -398,7 +398,7 @@ end;
 
 //==============================================================================
 
-Function Exp_Decryptor_DecryptAndDecodeMemory(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
+Function Exp_Decryptor_DecryptAndDecodeMemory(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32;
 var
   InMemStream:  TStaticMemoryStream;
   OutMemStream: TWritableStaticMemoryStream;
@@ -406,32 +406,32 @@ begin
 try
   InMemStream := TStaticMemoryStream.Create(Input,InSize);
   try
-    Result := GetResultAsInt(CtxDecryptor(Context).GetStreamFormat(InMemStream));
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).GetStreamFormat(InMemStream));
     If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
       begin
         If Assigned(Output) then
           begin
-            If Assigned(CtxHelper(Context)) then
+            If Assigned(DerefHelper(Decryptor)) then
               begin
                 // helper stream is assigned, only copy its content
                 try
-                  If OutSize^ >= CtxHelper(Context).Size then
+                  If OutSize^ >= DerefHelper(Decryptor).Size then
                     begin
-                      Move(CtxHelper(Context).Memory^,Output^,CtxHelper(Context).Size);
-                      OutSize^ := TMemSize(CtxHelper(Context).Size);
+                      Move(DerefHelper(Decryptor).Memory^,Output^,DerefHelper(Decryptor).Size);
+                      OutSize^ := TMemSize(DerefHelper(Decryptor).Size);
                       Result := SIIDEC_RESULT_SUCCESS;
                     end
                   else Result := SIIDEC_RESULT_BUFFER_TOO_SMALL;
                 finally
-                  CtxHelper(Context).Free;
-                  PSIIDecContextInternal(Context)^.Helper := nil;
+                  DerefHelper(Decryptor).Free;
+                  PSIIDecryptorObjectInternal(Decryptor)^.Helper := nil;
                 end;
               end
             else  // helper stream not assigned, do complete decrypt/decode...
               begin
                 OutMemStream := TWritableStaticMemoryStream.Create(Output,OutSize^);
                 try
-                  Result := GetResultAsInt(CtxDecryptor(Context).DecryptAndDecodeStream(InMemStream,OutMemStream,True));
+                  Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptAndDecodeStream(InMemStream,OutMemStream,True));
                   If Result = SIIDEC_RESULT_SUCCESS then
                     OutSize^ := TMemSize(OutMemStream.Position);
                 finally
@@ -441,14 +441,14 @@ try
           end
         else  // output not assigned, only get size...
           begin
-            PSIIDecContextInternal(Context)^.Helper := TMemoryStream.Create;
-            Result := GetResultAsInt(CtxDecryptor(Context).DecryptAndDecodeStream(InMemStream,CtxHelper(Context),False));
+            PSIIDecryptorObjectInternal(Decryptor)^.Helper := TMemoryStream.Create;
+            Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptAndDecodeStream(InMemStream,DerefHelper(Decryptor),False));
             If Result <> SIIDEC_RESULT_SUCCESS then
               begin
-                CtxHelper(Context).Free;
-                PSIIDecContextInternal(Context)^.Helper := nil;
+                DerefHelper(Decryptor).Free;
+                PSIIDecryptorObjectInternal(Decryptor)^.Helper := nil;
               end
-            else OutSize^ := TMemSize(CtxHelper(Context).Size);
+            else OutSize^ := TMemSize(DerefHelper(Decryptor).Size);
           end;
       end;
   finally
@@ -461,12 +461,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecryptAndDecodeFile(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecryptAndDecodeFile(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptAndDecodeFile(StrConv(InputFile),StrConv(OutputFile)))
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
@@ -474,12 +474,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function Exp_Decryptor_DecryptAndDecodeFileInMemory(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32;
+Function Exp_Decryptor_DecryptAndDecodeFileInMemory(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32;
 begin
 try
-  Result := GetResultAsInt(CtxDecryptor(Context).GetFileFormat(StrConv(InputFile)));
+  Result := GetResultAsInt(DerefDecryptor(Decryptor).GetFileFormat(StrConv(InputFile)));
   If Result in [SIIDEC_RESULT_FORMAT_ENCRYPTED,SIIDEC_RESULT_FORMAT_BINARY,SIIDEC_RESULT_FORMAT_3NK] then
-    Result := GetResultAsInt(CtxDecryptor(Context).DecryptAndDecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
+    Result := GetResultAsInt(DerefDecryptor(Decryptor).DecryptAndDecodeFileInMemory(StrConv(InputFile),StrConv(OutputFile)))
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
 end;
