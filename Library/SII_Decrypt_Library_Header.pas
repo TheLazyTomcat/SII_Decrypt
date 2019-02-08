@@ -19,8 +19,8 @@
 
   Changelog:
 
-    1.5.0 - added context-aware functions to the API
-          - library API version changed to 1.1
+    1.5.0 - added object functions to the API
+          - library API version increased to 1.1
     1.4.2 - no change in the library API
     1.4.1 - no change in the library API
     1.4.0 - started documenting changes
@@ -60,6 +60,7 @@ uses
     PUTF8Char - pointer to the first character of UTF8-encoded, null-terminated
                 string
     LongBool  = 32bit wide boolean value (0 = False, any other value = True)
+    Double    = 64bit floating point number (IEEE 754)
 
   There is also a procedural type defined. Technically, it is just an ordinary
   pointer.
@@ -681,30 +682,30 @@ var
 {===============================================================================
 --------------------------------------------------------------------------------
 
-  Context functions
-  
-    Following functions are working on a context object. This object must be 
+  Object functions
+
+    Following functions are working on an decryptor object. This object must be
     explicitly created before using it and also freed when you are done working
     with it.
-    Unlike standalone functions, the use of context object enables you to use
+    Unlike standalone functions, the use of decryptor object enables you to use
     more advanced options, for example setting decryptor properties or 
     receiving progress reports.
-    Note that most context-aware functions behave the same as their standalone
-    version, so they are not fully documented and documentation only redirects
-    to proper counterpart. The only difference is, of course, that you must pass
-    a valid context object to these functions, that is all.
+    Note that most object functions behave the same as their standalone version,
+    so they are not fully documented and documentation only redirects to proper
+    counterpart. The only difference is, of course, that you must pass a valid
+    object reference to these functions, that is all.
 
-    Example of how to use the context object property (written in pascal):
+    Example of how to use the decryptor object function (written in pascal):
 
       var
-        Context:  TSIIDecContext;
+        Decryptor:  TSIIDecryptorObject;
       begin
-        Context := Decryptor_Create;
+        Decryptor := Decryptor_Create;
         try
-          Decryptor_SetOptionBool(Context,SIIDEC_OPTIONID_DEC_UNSUPP,True);
-          Decryptor_DecryptAndDecodeFile(Context,InputFileName,OutputFileName);
+          Decryptor_SetOptionBool(Decryptor,SIIDEC_OPTIONID_DEC_UNSUPP,True);
+          Decryptor_DecryptAndDecodeFile(Decryptor,InputFileName,OutputFileName);
         finally
-          Decryptor_Free(@Context);
+          Decryptor_Free(@Decryptor);
         end;
       end;
 
@@ -713,7 +714,7 @@ var
 
 {
   Following constants serves as identifiers that can be used to access
-  individual properties of context object.
+  individual properties of decryptor object.
 }
 const
 {-------------------------------------------------------------------------------
@@ -746,40 +747,42 @@ const
 type
 {-------------------------------------------------------------------------------
 
-  TSIIDecProgressCallback
+  TSIIDecryptorObject
+
+    Type used for decryptor object reference in object functions.
+    It is defined as an untyped pointer, but internally is points to an
+    implementation-specific structure. Do not assume anything about this
+    structure and do not try to access it directly.
+
+  PSIIDecryptorObject
+
+    This type is defined as a pointer to TSIIDecryptorObject type.
+}
+  TSIIDecryptorObject = Pointer;
+  PSIIDecryptorObject = ^TSIIDecryptorObject;
+
+{-------------------------------------------------------------------------------
+
+  TSIIDecryptorProgressCallback
 
     This procedural type defines signature of callback function that should
     receive progress notifications.
 
-    When you want to receive progress from context object, implement function
+    When you want to receive progress from decryptor object, implement function
     that has this signature and that will process the progress (eg. shows it to
     the user), and then pass pointer to this function to
     Decryptor_SetProgressCallback. Next time the decryptor will be doing some
     long processing, this function will be repeatedly called with original
-    context and current progress value.
+    object reference and current progress value.
 
     Progress will always be a value betveen 0.0 and 1.0. The value is not
     strictly growing (same value can be reported several times), but it will
     never go down (every progress value will be equal or larger then the
     preceding one, never smaller).
+
+    Note for translation - this type is technically an ordinary pointer.
 }
-  TSIIDecProgressCallback = procedure(Context: Pointer; Progress: Double); stdcall;
-
-{-------------------------------------------------------------------------------
-
-  TSIIDecContext
-
-    Type used as a context in context-aware functions.
-    It is defined as an untyped pointer, but internally is points to an
-    implementation-specific structure. Do not assume anything about this
-    structure and do not try to access it directly.
-
-  PSIIDecContext
-
-    This type is defined as a pointer to TSIIDecContext type.
-}
-  TSIIDecContext = Pointer;
-  PSIIDecContext = ^TSIIDecContext;
+  TSIIDecryptorProgressCallback = procedure(Decryptor: TSIIDecryptorObject; Progress: Double); stdcall;
 
 //==============================================================================
 
@@ -788,90 +791,90 @@ var
 
   Decryptor_Create
 
-    Creates and initializes context object and returns it.
-    Each context must be freed by passing it to Decryptor_Free procedure,
+    Creates and initializes decryptor object and returns it.
+    Each object must be freed by passing it to Decryptor_Free procedure,
     otherwise it will create memory leak.
 
   Returns:
 
-    Context object that can be used in context-aware funtions.
+    Decryptor object that can be used in object-aware funtions.
 }
-  Decryptor_Create: Function: TSIIDecContext; stdcall;
+  Decryptor_Create: Function: TSIIDecryptorObject; stdcall;
 
 {-------------------------------------------------------------------------------
 
   Decryptor_Free
 
-    Frees context object.
-    Already freed context can be passed, the function just returns immediately.
+    Frees decryptor object.
+    Already freed object can be passed, the function just returns immediately.
 
   Parameters:
 
-    Context - pointer to context object to be freed
+    Decryptor - pointer to decryptor object to be freed
 
   Returns:
 
     This routine does not have a return value.
 }
-  Decryptor_Free: procedure(Context: PSIIDecContext); stdcall;
+  Decryptor_Free: procedure(Decryptor: PSIIDecryptorObject); stdcall;
 
 {-------------------------------------------------------------------------------
 
   Decryptor_GetOptionBool
 
-    Returns value of boolean property of passed context object defined by
+    Returns value of boolean property of passed decryptor object defined by
     OptionID (see constants SIIDEC_OPTIONID_* for details).
     If an invalid OptionID is passed, the function will return false.
 
   Parameters:
 
-    Context  - context object to work with
-    OptionID - ID of context property to be queried
+    Decryptor - Decryptor object to work with
+    OptionID  - ID of decryptor property to be queried
 
   Returns:
 
-    Value of the requested context property or false on invalid OptionID.
+    Value of the requested decryptor property or false for invalid OptionID.
 }
-  Decryptor_GetOptionBool: Function(Context: TSIIDecContext; OptionID: Int32): LongBool; stdcall;
+  Decryptor_GetOptionBool: Function(Decryptor: TSIIDecryptorObject; OptionID: Int32): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
   Decryptor_SetOptionBool
 
-    Sets value of boolean property of passed context object defined by
+    Sets value of boolean property of passed decryptor object defined by
     OptionID (see constants SIIDEC_OPTIONID_* for details).
-    If an invalid OptionID is passed, the function do nothing.
+    If an invalid OptionID is passed, the function does nothing.
 
   Parameters:
 
-    Context  - context object to work with
-    OptionID - ID of context property to be set
-    NewValue - new value of the property
+    Decryptor - Decryptor object to work with
+    OptionID  - ID of decryptor property to be set
+    NewValue  - new value of the property
 
   Returns:
 
     This routine does not have a return value.
 }
-  Decryptor_SetOptionBool: procedure(Context: TSIIDecContext; OptionID: Int32; NewValue: LongBool); stdcall;
+  Decryptor_SetOptionBool: procedure(Decryptor: TSIIDecryptorObject; OptionID: Int32; NewValue: LongBool); stdcall;
 
 {-------------------------------------------------------------------------------
 
   Decryptor_SetProgressCallback
 
     Sets callback functions that will be receiving progress notifications on
-    long processing done by the context object.
+    long processing done by the decryptor object.
     When you pass nil (null/0), the callback will be effectively deassigned.
 
   Parameters:
 
-    Context      - context object to work with
+    Decryptor    - Decryptor object to work with
     CallbackFunc - pointer to function that will be receiving notifications
 
   Returns:
 
     This routine does not have a return value.
 }
-  Decryptor_SetProgressCallback: procedure(Context: TSIIDecContext; CallbackFunc: TSIIDecProgressCallback); stdcall;
+  Decryptor_SetProgressCallback: procedure(Decryptor: TSIIDecryptorObject; CallbackFunc: TSIIDecryptorProgressCallback); stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -880,7 +883,7 @@ var
     Behaves the same as standalone function GetMemoryFormat. See there for
     details.
 }
-  Decryptor_GetMemoryFormat: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): Int32; stdcall;
+  Decryptor_GetMemoryFormat: Function(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -889,7 +892,7 @@ var
     Behaves the same as standalone function GetFileFormat. See there for
     details.
 }
-  Decryptor_GetFileFormat: Function(Context: TSIIDecContext; FileName: PUTF8Char): Int32; stdcall;
+  Decryptor_GetFileFormat: Function(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -898,7 +901,7 @@ var
     Behaves the same as standalone function IsEncryptedMemory. See there for
     details.
 }
-  Decryptor_IsEncryptedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_IsEncryptedMemory: Function(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -907,7 +910,7 @@ var
     Behaves the same as standalone function IsEncryptedFile. See there for
     details.
 }
-  Decryptor_IsEncryptedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+  Decryptor_IsEncryptedFile: Function(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -916,7 +919,7 @@ var
     Behaves the same as standalone function IsEncodedMemory. See there for
     details.
 }
-  Decryptor_IsEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_IsEncodedMemory: Function(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -925,7 +928,7 @@ var
     Behaves the same as standalone function IsEncodedFile. See there for
     details.
 }
-  Decryptor_IsEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+  Decryptor_IsEncodedFile: Function(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -934,7 +937,7 @@ var
     Behaves the same as standalone function Is3nKEncodedMemory. See there for
     details.
 }
-  Decryptor_Is3nKEncodedMemory: Function(Context: TSIIDecContext; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
+  Decryptor_Is3nKEncodedMemory: Function(Decryptor: TSIIDecryptorObject; Mem: Pointer; Size: TMemSize): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -943,7 +946,7 @@ var
     Behaves the same as standalone function Is3nKEncodedFile. See there for
     details.
 }
-  Decryptor_Is3nKEncodedFile: Function(Context: TSIIDecContext; FileName: PUTF8Char): LongBool; stdcall;
+  Decryptor_Is3nKEncodedFile: Function(Decryptor: TSIIDecryptorObject; FileName: PUTF8Char): LongBool; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -952,7 +955,7 @@ var
     Behaves the same as standalone function DecryptMemory. See there for
     details.
 }
-  Decryptor_DecryptMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecryptMemory: Function(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -960,7 +963,7 @@ var
 
     Behaves the same as standalone function DecryptFile. See there for details.
 }
-  Decryptor_DecryptFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptFile: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -969,7 +972,7 @@ var
     Behaves the same as standalone function DecryptFileInMemory. See there for
     details.
 }
-  Decryptor_DecryptFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptFileInMemory: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -979,7 +982,7 @@ var
     have to manage the helper object.
     See DecodeMemoryHelper documentation for details.
 }
-  Decryptor_DecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecodeMemory: Function(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -987,7 +990,7 @@ var
 
     Behaves the same as standalone function DecodeFile. See there for details.
 }
-  Decryptor_DecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecodeFile: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -996,7 +999,7 @@ var
     Behaves the same as standalone function DecodeFileInMemory. See there for
     details.
 }
-  Decryptor_DecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecodeFileInMemory: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -1006,7 +1009,7 @@ var
     just don't have to manage the helper object.
     See DecryptAndDecodeMemoryHelper documentation for details.
 }
-  Decryptor_DecryptAndDecodeMemory: Function(Context: TSIIDecContext; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
+  Decryptor_DecryptAndDecodeMemory: Function(Decryptor: TSIIDecryptorObject; Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -1015,7 +1018,7 @@ var
     Behaves the same as standalone function DecryptAndDecodeFile. See there for
     details.
 }
-  Decryptor_DecryptAndDecodeFile: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptAndDecodeFile: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 {-------------------------------------------------------------------------------
 
@@ -1024,7 +1027,7 @@ var
     Behaves the same as standalone function DecryptAndDecodeFileInMemory.
     See there for details.
 }
-  Decryptor_DecryptAndDecodeFileInMemory: Function(Context: TSIIDecContext; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
+  Decryptor_DecryptAndDecodeFileInMemory: Function(Decryptor: TSIIDecryptorObject; InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 
 //==============================================================================
 {

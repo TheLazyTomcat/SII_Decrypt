@@ -56,14 +56,14 @@ end;
 
 Function Exp_GetMemoryFormat(Mem: Pointer; Size: TMemSize): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_GetMemoryFormat(Context,Mem,Size);
+    Result := Exp_Decryptor_GetMemoryFormat(Decryptor,Mem,Size);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -74,14 +74,14 @@ end;
 
 Function Exp_GetFileFormat(FileName: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_GetFileFormat(Context,FileName);
+    Result := Exp_Decryptor_GetFileFormat(Decryptor,FileName);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -157,14 +157,14 @@ end;
 
 Function Exp_DecryptMemory(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecryptMemory(Context,Input,InSize,Output,OutSize);
+    Result := Exp_Decryptor_DecryptMemory(Decryptor,Input,InSize,Output,OutSize);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -175,14 +175,14 @@ end;
 
 Function Exp_DecryptFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecryptFile(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecryptFile(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -193,14 +193,14 @@ end;
 
 Function Exp_DecryptFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecryptFileInMemory(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecryptFileInMemory(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -211,40 +211,40 @@ end;
 
 Function Exp_DecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
   If Assigned(Output) then
     begin
       If Assigned(Helper) then
         begin
-          Context := TSIIDecContext(Helper^);
+          Decryptor := TSIIDecryptorObject(Helper^);
           try
-            Result := Exp_Decryptor_DecodeMemory(Context,Input,InSize,Output,OutSize);
+            Result := Exp_Decryptor_DecodeMemory(Decryptor,Input,InSize,Output,OutSize);
           finally
-            Exp_Decryptor_Free(PSIIDecContext(Helper));
+            Exp_Decryptor_Free(PSIIDecryptorObject(Helper));
           end;
         end
       else
         begin
-          Context := Exp_Decryptor_Create();
+          Decryptor := Exp_Decryptor_Create();
           try
-            Result := Exp_Decryptor_DecodeMemory(Context,Input,InSize,Output,OutSize);
+            Result := Exp_Decryptor_DecodeMemory(Decryptor,Input,InSize,Output,OutSize);
           finally
-            Exp_Decryptor_Free(@Context);
+            Exp_Decryptor_Free(@Decryptor);
           end;
         end;
     end
   else
     begin
-      Context := Exp_Decryptor_Create();
+      Decryptor := Exp_Decryptor_Create();
       try
-        Result := Exp_Decryptor_DecodeMemory(Context,Input,InSize,Output,OutSize);
+        Result := Exp_Decryptor_DecodeMemory(Decryptor,Input,InSize,Output,OutSize);
       finally
         If Assigned(Helper) then
-          Helper^ := Pointer(Context)
+          Helper^ := Pointer(Decryptor)
         else
-          Exp_Decryptor_Free(@Context);
+          Exp_Decryptor_Free(@Decryptor);
       end;
     end;
 except
@@ -267,14 +267,14 @@ end;
 
 Function Exp_DecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecodeFile(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecodeFile(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -285,14 +285,14 @@ end;
 
 Function Exp_DecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecodeFileInMemory(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecodeFileInMemory(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -303,40 +303,40 @@ end;
 
 Function Exp_DecryptAndDecodeMemoryHelper(Input: Pointer; InSize: TMemSize; Output: Pointer; OutSize: PMemSize; Helper: PPointer): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
   If Assigned(Output) then
     begin
       If Assigned(Helper) then
         begin
-          Context := TSIIDecContext(Helper^);
+          Decryptor := TSIIDecryptorObject(Helper^);
           try
-            Result := Exp_Decryptor_DecryptAndDecodeMemory(Context,Input,InSize,Output,OutSize);
+            Result := Exp_Decryptor_DecryptAndDecodeMemory(Decryptor,Input,InSize,Output,OutSize);
           finally
-            Exp_Decryptor_Free(PSIIDecContext(Helper));
+            Exp_Decryptor_Free(PSIIDecryptorObject(Helper));
           end;
         end
       else
         begin
-          Context := Exp_Decryptor_Create();
+          Decryptor := Exp_Decryptor_Create();
           try
-            Result := Exp_Decryptor_DecryptAndDecodeMemory(Context,Input,InSize,Output,OutSize);
+            Result := Exp_Decryptor_DecryptAndDecodeMemory(Decryptor,Input,InSize,Output,OutSize);
           finally
-            Exp_Decryptor_Free(@Context);
+            Exp_Decryptor_Free(@Decryptor);
           end;
         end;
     end
   else
     begin
-      Context := Exp_Decryptor_Create();
+      Decryptor := Exp_Decryptor_Create();
       try
-        Result := Exp_Decryptor_DecryptAndDecodeMemory(Context,Input,InSize,Output,OutSize);
+        Result := Exp_Decryptor_DecryptAndDecodeMemory(Decryptor,Input,InSize,Output,OutSize);
       finally
         If Assigned(Helper) then
-          Helper^ := Pointer(Context)
+          Helper^ := Pointer(Decryptor)
         else
-          Exp_Decryptor_Free(@Context);
+          Exp_Decryptor_Free(@Decryptor);
       end;
     end;
 except
@@ -359,14 +359,14 @@ end;
 
 Function Exp_DecryptAndDecodeFile(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecryptAndDecodeFile(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecryptAndDecodeFile(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -377,14 +377,14 @@ end;
 
 Function Exp_DecryptAndDecodeFileInMemory(InputFile,OutputFile: PUTF8Char): Int32; stdcall;
 var
-  Context:  TSIIDecContext;
+  Decryptor:  TSIIDecryptorObject;
 begin
 try
-  Context := Exp_Decryptor_Create();
+  Decryptor := Exp_Decryptor_Create();
   try
-    Result := Exp_Decryptor_DecryptAndDecodeFileInMemory(Context,InputFile,OutputFile);
+    Result := Exp_Decryptor_DecryptAndDecodeFileInMemory(Decryptor,InputFile,OutputFile);
   finally
-    Exp_Decryptor_Free(@Context);
+    Exp_Decryptor_Free(@Decryptor);
   end;
 except
   Result := SIIDEC_RESULT_GENERIC_ERROR;
@@ -397,7 +397,7 @@ procedure Exp_FreeHelper(Helper: PPointer); stdcall;
 begin
 try
   If Assigned(Helper) then
-    Exp_Decryptor_Free(PSIIDecContext(Helper));
+    Exp_Decryptor_Free(PSIIDecryptorObject(Helper));
 except
   // do nothing
 end;

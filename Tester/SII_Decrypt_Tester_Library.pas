@@ -36,7 +36,7 @@ var
   OutSize:        TMemSize;
   AllocSize:      TMemSize;
   Helper:         Pointer;
-  Context:        TSIIDecContext;
+  Context:        TSIIDecryptorObject;
 begin
 WriteLn;
 WriteLn(StringOfChar('-',75));
@@ -197,7 +197,7 @@ try
       WriteLn;
       WriteLn('  Opt(SIIDEC_OPTIONID_ACCEL_AES):  ',Decryptor_GetOptionBool(Context,SIIDEC_OPTIONID_ACCEL_AES));
       WriteLn('  Opt(SIIDEC_OPTIONID_DEC_UNSUPP): ',Decryptor_GetOptionBool(Context,SIIDEC_OPTIONID_DEC_UNSUPP));
-      //Decryptor_SetProgressCallback(Context,@ProgressCallback);
+      Decryptor_SetProgressCallback(Context,@ProgressCallback);
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       WriteLn;
       WriteLn('  Decryptor_GetMemoryFormat:    ',Decryptor_GetMemoryFormat(Context,FileDataStream.Memory,FileDataStream.Size));
