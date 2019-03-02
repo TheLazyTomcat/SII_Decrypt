@@ -9,14 +9,14 @@ library SII_Decrypt;
 
 {$INCLUDE '..\..\Source\SII_Decrypt_defs.inc'}
 
-{$WARN 5023 OFF}  // does not seem to work :\
-
 uses
   // following units must be here otherwise their exports would be ignored
   SII_Decrypt_Library_Decryptor,
   SII_Decrypt_Library_Standalone;
 
 {$R *.res}
+
+{$WARN 5023 OFF}  // must be here, otherwise does not work...
 
 begin
 end.
