@@ -264,10 +264,10 @@ object fMainForm: TfMainForm
   object lblDonate_Text: TLabel
     Left = 8
     Height = 33
-    Top = 328
+    Top = 326
     Width = 353
     AutoSize = False
-    Caption = 'If you find this tool useful and want to support its author, consider making a small donation on PayPal by clicking in this box.'
+    Caption = 'If you find this tool useful and want to support its further development, consider making a small donation on PayPal (click anywhere in this box).'
     Font.Color = clGray
     Font.Height = -11
     Font.Name = 'Tahoma'
@@ -422,10 +422,10 @@ object fMainForm: TfMainForm
     Hint = 'Copy input file path'
     Top = 47
     Width = 25
-    Caption = 'q'
+    Caption = '6'
     Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Wingdings 3'
+    Font.Height = -19
+    Font.Name = 'Webdings'
     OnClick = btnCopyFileNameClick
     ParentFont = False
     ParentShowHint = False

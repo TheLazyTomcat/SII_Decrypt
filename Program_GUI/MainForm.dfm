@@ -354,13 +354,14 @@ object fMainForm: TfMainForm
   end
   object lblDonate_Text: TLabel
     Left = 8
-    Top = 328
+    Top = 326
     Width = 353
     Height = 33
     AutoSize = False
     Caption = 
-      'If you find this tool useful and want to support its author, con' +
-      'sider making a small donation on PayPal by clicking in this box.'
+      'If you find this tool useful and want to support its further dev' +
+      'elopment, consider making a small donation on PayPal (click anyw' +
+      'here in this box).'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clGray
     Font.Height = -11
@@ -509,11 +510,11 @@ object fMainForm: TfMainForm
     Width = 25
     Height = 22
     Hint = 'Copy input file path'
-    Caption = 'q'
+    Caption = '6'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Wingdings 3'
+    Font.Height = -19
+    Font.Name = 'Webdings'
     Font.Style = []
     ParentFont = False
     ParentShowHint = False
