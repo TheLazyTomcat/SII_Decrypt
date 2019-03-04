@@ -20,15 +20,16 @@ type
   TfMainForm = class(TForm)
     leInputFile: TLabeledEdit;
     btnBrowseInFile: TButton;
-  {$IFNDEF FPC}
-    oXPManifest: TXPManifest;
-  {$ENDIF}
+    btnCopyFileName: TButton;
     leOutputFile: TLabeledEdit;
     btnBrowseOutFile: TButton;
     bvlHor_Progress: TBevel;
     lblProgress: TLabel;
     pbProgress: TProgressBar;
     stbStatusBar: TStatusBar;
+  {$IFNDEF FPC}
+    oXPManifest: TXPManifest;
+  {$ENDIF}    
     diaOpenInputFile: TOpenDialog;
     diaSaveOutputFile: TSaveDialog;
     btnStartProcessing: TButton;
@@ -37,11 +38,18 @@ type
     cbDecUnsupp: TCheckBox;
     cbAccelAES: TCheckBox;
     cbInMemProc: TCheckBox;
+    bvlDonate_Split: TBevel;
+    shpDonate_Bcgr: TShape;
+    imgDonate_Logo: TImage;
+    lblDonate_Text: TLabel;
+    lblDonate_Overlay: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnBrowseInFileClick(Sender: TObject);
+    procedure btnCopyFileNameClick(Sender: TObject);
     procedure btnBrowseOutFileClick(Sender: TObject);
     procedure btnStartProcessingClick(Sender: TObject);
+    procedure lblDonate_OverlayClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -64,12 +72,20 @@ implementation
 {$ENDIF}
 
 uses
-  WinTaskbarProgress, WinFileInfo, StrRect, SimpleCMDLineParser;
+  AuxTypes, WinTaskbarProgress, WinFileInfo, StrRect, SimpleCMDLineParser;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
+
+type
+  INT       = Int32;
+  HINSTANCE = THandle;
+  
+Function ShellExecuteW(hwnd: HWND; lpOperation: LPCWSTR; lpFile: LPCWSTR; lpParameters: LPCWSTR; lpDirectory: LPCWSTR; nShowCmd: INT): HINSTANCE; stdcall; external 'Shell32.dll';
+
+//==============================================================================
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.ProgressHandler(Sender: TObject; Progress: Double);
@@ -196,6 +212,16 @@ end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TfMainForm.btnCopyFileNameClick(Sender: TObject);
+begin
+If Length(leInputFile.Text) > 0 then
+  leOutputFile.Text := leInputFile.Text;
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+//------------------------------------------------------------------------------
  
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TfMainForm.btnBrowseOutFileClick(Sender: TObject);
@@ -231,6 +257,15 @@ If leInputFile.Text <> '' then
     ProcessingThread.Run;
   end
 else MessageDlg('No input file selected.',mtError,[mbOk],0);
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+//------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+procedure TfMainForm.lblDonate_OverlayClick(Sender: TObject);
+begin
+ShellExecuteW(Handle,PWideChar(StrToWide('open')),PWideChar(StrToWide('https://www.paypal.me/FMilt')),nil,nil,SW_SHOWNORMAL);
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 

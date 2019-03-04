@@ -1,8 +1,8 @@
-﻿================================================================================
+================================================================================
 
                          SII Decrypt project - programs
 
-                                  version 1.5
+                                 version 1.5.1
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  96
-  Known problems and limitations .......................... 147
-  Repositories ............................................ 154
-  Licensing ............................................... 168
-  Authors, contacts ....................................... 176
-  Copyright ............................................... 189
+  Known problems and limitations .......................... 152
+  Repositories ............................................ 159
+  Licensing ............................................... 173
+  Authors, contacts ....................................... 181
+  Copyright ............................................... 193
 
 
 Description
@@ -96,6 +96,11 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.5 -> SII Decrypt program 1.5.1
+  - added button for copying input file path to output file path
+  - added donation banner to GUI program
+
 
 SII Decrypt program 1.4.2 -> SII Decrypt program 1.5
   - added an option to activate experimental decoding of unsupported types

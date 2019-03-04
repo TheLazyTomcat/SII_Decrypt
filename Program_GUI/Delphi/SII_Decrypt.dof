@@ -110,8 +110,8 @@ IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=1
 MinorVer=5
-Release=0
-Build=12
+Release=1
+Build=18
 Debug=0
 PreRelease=0
 Special=0
@@ -122,13 +122,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=SII Decrypt - GUI program
-FileVersion=1.5.0.12
+FileVersion=1.5.1.18
 InternalName=SII Decrypt
 LegalCopyright=© 2016 - 2019 František Milt
 LegalTrademarks=SII Decrypt
 OriginalFilename=SII_Decrypt.exe
 ProductName=SII Decrypt
-ProductVersion=1.5
+ProductVersion=1.5.1
 Comments=Tool for SII files decryption/decoding
 [HistoryLists\hlUnitAliases]
 Count=1
