@@ -217,7 +217,11 @@ end;
 procedure TfMainForm.btnCopyFileNameClick(Sender: TObject);
 begin
 If Length(leInputFile.Text) > 0 then
-  leOutputFile.Text := leInputFile.Text;
+  begin
+    leOutputFile.Text := leInputFile.Text;
+    leOutputFile.SetFocus;
+    leOutputFile.SelStart := Length(leOutputFile.Text);
+  end;
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
