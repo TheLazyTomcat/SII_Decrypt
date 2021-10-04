@@ -110,8 +110,8 @@ IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=1
 MinorVer=5
-Release=1
-Build=52
+Release=2
+Build=53
 Debug=0
 PreRelease=0
 Special=0
@@ -122,13 +122,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=František Milt
 FileDescription=Library for SII file decryption
-FileVersion=1.5.1.52
+FileVersion=1.5.2.53
 InternalName=SII Decrypt Library
-LegalCopyright=© 2016 - 2019 František Milt
+LegalCopyright=© 2016 - 2021 František Milt
 LegalTrademarks=SII Decrypt Library
 OriginalFilename=SII_Decrypt.dll
 ProductName=SII Decrypt Library
-ProductVersion=1.5.1
+ProductVersion=1.5.2
 Comments=Library designed to decrypt SII files (save format of SCS Software truck games)
 [HistoryLists\hlConditionals]
 Count=1

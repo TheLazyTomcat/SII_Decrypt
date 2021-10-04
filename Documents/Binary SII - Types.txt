@@ -16,8 +16,8 @@ to read that file first.
   0x00000004                  array of encoded string
   0x00000005                  single
   0x00000006                  array of single
-  0x00000007                 *unknown (expecting double)
-  0x00000008                 *unknown (expecting array of double)
+  0x00000007                  vec2s
+  0x00000008                 *unknown (expecting array of vec2s)
   0x00000009                  vec3s
   0x0000000A                  array of vec3s
   0x0000000B - 0x00000010     unknown
@@ -37,6 +37,10 @@ to read that file first.
   0x0000002A                 *unknown (expecting array of int16)
   0x0000002B                  uint16
   0x0000002C                  array of uint16
+  
+
+  0x0000002F              ??? 4 bytes integer
+  
   0x0000002D - 0x00000030     unknown
   0x00000031                  int64
   0x00000032                 *unknown (probably array of int64)

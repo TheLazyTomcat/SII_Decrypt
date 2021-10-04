@@ -61,7 +61,6 @@ type
     Function GetStringValue(OrdinalValue: UInt32): AnsiString; virtual;
   end;
 
-
 implementation
 
 uses
@@ -132,7 +131,7 @@ SetLength(fList,Stream_ReadUInt32(Stream));
 For i := Low(fList) to High(fList) do
   begin
     fList[i].OrdinalValue := Stream_ReadUInt32(Stream);
-    SIIBin_LoadString(Stream,fList[i].StringValue); 
+    SIIBin_LoadString(Stream,fList[i].StringValue);
   end;
 end;
 
