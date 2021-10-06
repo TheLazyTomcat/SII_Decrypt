@@ -37,11 +37,10 @@ to read that file first.
   0x0000002A                 *unknown (expecting array of int16)
   0x0000002B                  uint16
   0x0000002C                  array of uint16
-  
-
-  0x0000002F              ??? 4 bytes integer
-  
-  0x0000002D - 0x00000030     unknown
+  0x0000002D                  unknown
+  0x0000002E                  unknown
+  0x0000002F                  UInt32 (uncertain)
+  0x00000030                  unknown
   0x00000031                  int64
   0x00000032                 *unknown (probably array of int64)
   0x00000033                  uint64
@@ -158,6 +157,18 @@ Stored as a following structure:
   begin
     UInt32    (4B)             - length of the array
     Single[]  (variable size)  - array of single-precisiotn fp numbers
+  end
+
+
+--------------------------------------------------------------------------------
+Vec2s                                                                 0x00000007
+--------------------------------------------------------------------------------
+Vector of two single-precision floating point numbers.
+Stored as a following structure:
+
+  begin
+    Single  (4B)  - first component of the vector (usually X)
+    Single  (4B)  - second component of the vector (Y)
   end
 
 
@@ -371,6 +382,12 @@ Stored as a following structure:
     UInt32    (4B)             - length of the array
     UInt16[]  (variable size)  - array of 16bit unsigned integers
   end
+
+
+--------------------------------------------------------------------------------
+UInt32                                                                0x0000002F
+--------------------------------------------------------------------------------
+32 bits (4 bytes) wide unsigned integer.
 
 
 --------------------------------------------------------------------------------

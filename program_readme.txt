@@ -2,7 +2,7 @@
 
                          SII Decrypt project - programs
 
-                                 version 1.5.1
+                                 version 1.5.2
 
 ================================================================================
 
@@ -97,6 +97,10 @@ Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
 
+SII Decrypt program 1.5.1 -> SII Decrypt program 1.5.2
+  - added support for decoding of value types 0x2F and 0x07
+  
+
 SII Decrypt program 1.5 -> SII Decrypt program 1.5.1
   - added button for copying input file path to output file path
   - added donation banner to GUI program
@@ -158,12 +162,10 @@ problems, contact author or run the tool with command no_decode.
 
 Repositories
 ----------------------------------------
-You can get actual copies of complete SII Decrypt project, including source code
-of this program, on either of these git repositories:
+You can get actual copy and source code of SII Decrypt project on the following
+git repository:
 
-https://github.com/ncs-sniper/SII_Decrypt
-https://bitbucket.org/ncs-sniper/sii_decrypt
-https://gitlab.com/ncs-sniper/SII_Decrypt
+https://github.com/TheLazyTomcat/SII_Decrypt
 
 Note - master branch does not contain binaries, you can find them in a branch
        called "bin".
@@ -182,8 +184,6 @@ Authors, contacts, links
 ----------------------------------------
 František Milt, frantisek.milt@gmail.com
 
-Forum thread: https://forum.scssoft.com/viewtopic.php?f=34&t=245874
-
 If you find this program useful and don't know what to do with your money ;),
 consider making a small donation using the following link:
 https://www.paypal.me/FMilt
@@ -192,4 +192,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2019 František Milt, all rights reserved
+©2016-2021 František Milt, all rights reserved
