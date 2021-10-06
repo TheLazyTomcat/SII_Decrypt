@@ -15,14 +15,6 @@ uses
   Classes,
   SII_Decode_Common, SII_Decode_ValueNode;
 
-{!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                                    WARNING
-
-                 Actual type is not known, it was only guessed.
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}
-
 {===============================================================================
 --------------------------------------------------------------------------------
                            TSIIBin_ValueNode_00000007
@@ -34,7 +26,7 @@ uses
 type
   TSIIBin_ValueNode_00000007 = class(TSIIBin_ValueNode)
   private
-    fValue: Double;
+    fValue: TSIIBin_Vec2s;
   protected
     Function GetValueType: TSIIBin_ValueType; override;
     procedure Load(Stream: TStream); override;
@@ -45,7 +37,8 @@ type
 implementation
 
 uses
-  BinaryStreaming,
+  SysUtils,
+  BinaryStreaming, StrRect,
   SII_Decode_Utils;
 
 {===============================================================================
@@ -69,7 +62,7 @@ end;
 
 procedure TSIIBin_ValueNode_00000007.Load(Stream: TStream);
 begin
-fValue := Stream_ReadFloat64(Stream);
+Stream_ReadBuffer(Stream,fValue,SizeOf(TSIIBin_Vec2s));
 end;
 
 {-------------------------------------------------------------------------------
@@ -78,7 +71,7 @@ end;
 
 Function TSIIBin_ValueNode_00000007.AsString: AnsiString;
 begin
-Result := SIIBin_DoubleToStr(fValue);
+Result := StrToAnsi(Format('(%s, %s)',[SIIBin_SingleToStr(fValue[0]),SIIBin_SingleToStr(fValue[1])]));
 end;
 
 end.

@@ -30,6 +30,7 @@ type
 
   TSIIBin_StructureID  = UInt32;
 
+  TSIIBin_Vec2s = packed array[0..1] of Single;
   TSIIBin_Vec3s = packed array[0..2] of Single;
   TSIIBin_Vec4s = packed array[0..3] of Single;
   TSIIBin_Vec8s = packed array[0..7] of Single;

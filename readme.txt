@@ -1,4 +1,4 @@
-﻿================================================================================
+================================================================================
 
                               SII Decrypt project
 
@@ -32,7 +32,7 @@ is using while writing the saves.
 
 Since version 1.4, it is also possible to decode 3nK-encoded files. This
 encoding is usually used in localization SII files. See project 3nK Transcode
-(https://github.com/ncs-sniper/3nK_Transcode) for further details on this
+(https://github.com/TheLazyTomcat/3nK_Transcode) for further details on this
 format.
 
 The project is primarily developed in Delphi 7 Personal and Lazarus 1.8.x
@@ -116,12 +116,10 @@ List of folders with description of their content:
 
 Repositories
 ----------------------------------------
-You can get actual copies of SII Decrypt project on either of these git
-repositories:
+You can get actual copy and source code of SII Decrypt project on the following
+git repository:
 
-https://github.com/ncs-sniper/SII_Decrypt
-https://bitbucket.org/ncs-sniper/sii_decrypt
-https://gitlab.com/ncs-sniper/SII_Decrypt
+https://github.com/TheLazyTomcat/SII_Decrypt
 
 Note - master branch does not contain binaries, you can find them in a branch
        called "bin".
@@ -148,4 +146,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2019 František Milt, all rights reserved
+©2016-2021 František Milt, all rights reserved
