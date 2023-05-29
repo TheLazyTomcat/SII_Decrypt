@@ -2,7 +2,7 @@
 
                          SII Decrypt project - programs
 
-                                 version 1.5.2
+                                 version 1.5.3
 
 ================================================================================
 
@@ -13,11 +13,11 @@ Index
   Description .............................................  23
   Use of the program ......................................  41
   Changelog ...............................................  96
-  Known problems and limitations .......................... 152
-  Repositories ............................................ 159
-  Licensing ............................................... 173
-  Authors, contacts ....................................... 181
-  Copyright ............................................... 193
+  Known problems and limitations .......................... 161
+  Repositories ............................................ 168
+  Licensing ............................................... 180
+  Authors, contacts ....................................... 188
+  Copyright ............................................... 198
 
 
 Description
@@ -96,6 +96,11 @@ Extended scheme
 Changelog
 ----------------------------------------
 List of changes between individual versions of this program.
+
+SII Decrypt program 1.5.2 -> SII Decrypt program 1.5.3
+  - value type 0x32 moved from experimental to supported
+  - added support for format version 3
+  
 
 SII Decrypt program 1.5.1 -> SII Decrypt program 1.5.2
   - added support for decoding of value types 0x2F and 0x07
@@ -192,4 +197,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2021 František Milt, all rights reserved
+©2016-2023 František Milt, all rights reserved

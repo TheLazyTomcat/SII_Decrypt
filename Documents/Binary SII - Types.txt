@@ -1,4 +1,4 @@
-This file describes types used in binary SII file of format version 1 and 2.
+This file describes types used in binary SII file of format version 1,2 and 3.
 It is a supplement to file "Binary SII - Format.txt" - you are strongly advised
 to read that file first.
 
@@ -42,7 +42,7 @@ to read that file first.
   0x0000002F                  UInt32 (uncertain)
   0x00000030                  unknown
   0x00000031                  int64
-  0x00000032                 *unknown (probably array of int64)
+  0x00000032                  array of int64
   0x00000033                  uint64
   0x00000034                  array of uint64
   0x00000035                  bytebool
@@ -249,9 +249,9 @@ Stored as a following structure:
 
 
 --------------------------------------------------------------------------------
-Vec7s(1), Vec8s(2)                                                    0x00000019
+Vec7s(1), Vec8s(2+)                                                   0x00000019
 --------------------------------------------------------------------------------
-This type differs in format version 1 and 2.
+This type differs in format version 1 and 2+.
 
 Format version 1 (Vec7s)
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -269,7 +269,7 @@ Stored as a following structure:
   end
 
 
-Format version 2 (Vec8s)
+Format version 2+ (Vec8s)
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Vector of eight single-precision floating point numbers.
 The first and third components are stored biased, that is, shifted by some
@@ -309,11 +309,11 @@ WARNING - it is not known whether second component is biased too, but in all
 
 
 --------------------------------------------------------------------------------
-Array of Vec7s(1), array of Vec8s(2)                                  0x0000001A
+Array of Vec7s(1), array of Vec8s(2+)                                 0x0000001A
 --------------------------------------------------------------------------------
-This type differs in format version 1 and 2.
+This type differs in format version 1 and 2+.
 Array of vectors, where each vector contains seven (format version 1) or
-eight (format version 2) single-precision floating point numbers. For details
+eight (format version 2+) single-precision floating point numbers. For details
 about the vec7s and/or vec8s, refer to documentation of type 0x00000019.
 Stored as a following structure in format version 1:
 
@@ -322,7 +322,7 @@ Stored as a following structure in format version 1:
     Vec7s[]   (variable size)  - array of vectors
   end
 
-...or, for format version 2:
+...or, for format version 2+:
 
   begin
     UInt32    (4B)             - length of the array
@@ -394,6 +394,18 @@ UInt32                                                                0x0000002F
 Int64                                                                 0x00000031
 --------------------------------------------------------------------------------
 64 bits (8 bytes) wide signed integer.
+
+
+--------------------------------------------------------------------------------
+Array of int64                                                        0x00000032
+--------------------------------------------------------------------------------
+An array of 64bit signed integers.
+Stored as a following structure:
+
+  begin
+    UInt32    (4B)             - length of the array
+    Int64[]   (variable size)  - array of 64bit signed integers
+  end
 
 
 --------------------------------------------------------------------------------

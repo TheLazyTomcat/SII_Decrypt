@@ -22,10 +22,10 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <RevisionNr Value="2"/>
+      <RevisionNr Value="3"/>
       <BuildNr Value="56"/>
       <Language Value="0405"/>
-      <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 - 2021 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.5.2"/>
+      <StringTable Comments="Library designed to decrypt SII files (save format of SCS Software truck games)" CompanyName="František Milt" FileDescription="Library for SII file decryption" InternalName="SII Decrypt Library" LegalCopyright="© 2016 - 2023 František Milt" LegalTrademarks="SII Decrypt Library" OriginalFilename="SII_Decrypt.dll" ProductName="SII Decrypt Library" ProductVersion="1.5.3"/>
     </VersionInfo>
     <BuildModes Count="4">
       <Item1 Name="Debug_win_x86" Default="True"/>

@@ -7,7 +7,7 @@
 -------------------------------------------------------------------------------}
 {===============================================================================
 
-  Current SII Decrypt version:  1.5.2
+  Current SII Decrypt version:  1.5.3
   Current library API version:  1.1
 
   Note:
@@ -19,6 +19,7 @@
 
   Changelog:
 
+    1.5.3 - no change in the library API
     1.5.2 - no change in the library API
     1.5.1 - no change in the library API
     1.5.0 - added object functions to the API

@@ -146,4 +146,4 @@ https://www.paypal.me/FMilt
 
 Copyright
 ----------------------------------------
-©2016-2021 František Milt, all rights reserved
+©2016-2023 František Milt, all rights reserved
