@@ -37,8 +37,8 @@ try
   CMDParser := TCLPParser.Create;
   try
     WriteLn('************************************');
-    WriteLn('*    SII Decrypt program 1.5.2     *');
-    WriteLn('*   (c) 2016-2021 Frantisek Milt   *');
+    WriteLn('*    SII Decrypt program 1.5.3     *');
+    WriteLn('*   (c) 2016-2023 Frantisek Milt   *');
     WriteLn('************************************');
 
     If CMDParser.GetCommandCount > 0 then

@@ -164,6 +164,7 @@ case ValueType of
   $0000002C:  Result := TSIIBin_ValueNode_0000002C.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $0000002F:  Result := TSIIBin_ValueNode_0000002F.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000031:  Result := TSIIBin_ValueNode_00000031.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
+  $00000032:  Result := TSIIBin_ValueNode_00000032.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000033:  Result := TSIIBin_ValueNode_00000033.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000034:  Result := TSIIBin_ValueNode_00000034.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000035:  Result := TSIIBin_ValueNode_00000035.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
@@ -186,7 +187,7 @@ end;
 
 class Function TSIIBin_DataBlock.ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean;
 begin
-Result := ValueType in [$01..$06,$07,$09,$0A,$11,$12,$17..$1A,$25..$28,$2B,$2C,$2F,$31,$33..$37,$39..$3D];
+Result := ValueType in [$01..$06,$07,$09,$0A,$11,$12,$17..$1A,$25..$28,$2B,$2C,$2F,$31..$37,$39..$3D];
 end;
 
 //------------------------------------------------------------------------------
@@ -256,7 +257,6 @@ case ValueType of
   $00000008:  Result := TSIIBin_ValueNode_00000008.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000029:  Result := TSIIBin_ValueNode_00000029.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $0000002A:  Result := TSIIBin_ValueNode_0000002A.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
-  $00000032:  Result := TSIIBin_ValueNode_00000032.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $00000038:  Result := TSIIBin_ValueNode_00000038.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
   $0000003E:  Result := TSIIBin_ValueNode_0000003A.Create(fFormatVersion,fStructure.Fields[FieldIndex],Stream);
 else
@@ -270,7 +270,7 @@ end;
 
 class Function TSIIBin_DataBlockUnknowns.ValueTypeSupported(ValueType: TSIIBin_ValueType): Boolean;
 begin
-Result := inherited ValueTypeSupported(ValueType) or (ValueType in [$08,$29,$2A,$32,$38,$3E]);
+Result := inherited ValueTypeSupported(ValueType) or (ValueType in [$08,$29,$2A,$38,$3E]);
 end;
 
 end.

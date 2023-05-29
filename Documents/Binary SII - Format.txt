@@ -47,15 +47,15 @@ Structure of the header:
   begin
     UInt32 (4B)   - file signature, 0x49495342 ("BSII" when read as text)
     UInt32 (4B)   - version of format used in the file
-                    (must be 1 or 2 for current implementation)
+                    (must be 1,2 or 3 for current implementation)
   end
 
 WARNING - This documentation and also the decoder are both written only for
-          format versions 1 and 2! Other versions may differ in details and
+          format versions 1,2 and 3! Other versions may differ in details and
           current decoder cannot work with them.
 
-NOTE    - Currently, only known difference between version 1 and 2 is in value
-          types 0x19 and 0x1A.
+NOTE    - Currently, only known difference between version 1 and others is in 
+          value types 0x19 and 0x1A.
 
 
 Blocks
